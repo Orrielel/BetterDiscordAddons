@@ -1,5 +1,4 @@
 # Twitch Stream Panel
-### (Formerly NOPAN & Friends Twitch Status)
 #### Support: https://discord.gg/YEZkpkj
 
 ### Quick Rundown
