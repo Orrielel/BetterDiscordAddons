@@ -2,7 +2,6 @@
 ### `„Now i can truly shitpost”`
 
 ### Quick Rundown:
-#### Support: https://discord.gg/YEZkpkj
 
 #### What?
 This is a BetterDiscord plugin that wraps all possible media in embeds for in-client play possibilities. This also includes previews for 4chan threads, Sadpanda galleries, Vocaroo recordings and Pastebins. There's also greentexting and magnet hotlinking.
