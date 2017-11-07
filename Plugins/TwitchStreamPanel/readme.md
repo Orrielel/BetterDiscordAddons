@@ -1,7 +1,6 @@
 # Twitch Stream Panel
 
 ### Quick Rundown
-#### Support: https://discord.gg/YEZkpkj
 
 #### What?
 BetterDiscord plugin that fetches a few streams from the Twitch API and displays them in a small table with a viewcounter if ever online. Uses member colors from [Better Role Colors](https://github.com/rauenzi/BetterDiscordAddons/tree/master/Plugins/BetterRoleColors) if possible.
