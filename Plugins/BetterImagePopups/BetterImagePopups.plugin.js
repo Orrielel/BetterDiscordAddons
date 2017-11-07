@@ -29,7 +29,7 @@ class BetterImagePopups {
 
 	observer(e) {
 		const target = e.target;
-		if (target.classList.contains("modal-image") || !target.classList.contains("bip-scroller")) {
+		if (target.classList.contains("modal-image") && !target.classList.contains("bip-scroller")) {
 			const img = target.firstElementChild;
 			if (img.src) {
 				target.classList.add("bip-scroller");
