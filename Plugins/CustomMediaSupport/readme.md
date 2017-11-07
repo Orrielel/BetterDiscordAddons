@@ -9,7 +9,7 @@
 This is a BetterDiscord plugin that wraps all possible media in embeds for in-client play possibilities. This also includes previews for 4chan threads, Sadpanda galleries, Vocaroo recordings and Pastebins. There's also greentexting and magnet hotlinking.
 
 #### How?
-Open the [latest](https://gist.githubusercontent.com/Orrielel/da6be88e64b049ca8d04d24858590019/raw/customMediaSupport.plugin.js) version and save the file in the BetterDiscord plugins folder (Right-click, save page as. Right-clicking the link also works). You can reach the folder either with the shortcut in the plugin list overview, or by pasting this into the explorer navigation line `%appdata%\BetterDiscord\plugins`. Make sure the filename is `customMediaSupport.plugin.js`.
+Open the [latest](https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/CustomMediaSupport/CustomMediaSupport.plugin.js) version and save the file in the BetterDiscord plugins folder (Right-click, save page as. Right-clicking the link also works). You can reach the folder either with the shortcut in the plugin list overview, or by pasting this into the explorer navigation line `%appdata%\BetterDiscord\plugins`. Make sure the filename is `CustomMediaSupport.plugin.js`.
 
 Obviously requires [BetterDiscord](https://github.com/jiiks/betterdiscordapp) installed.
 
