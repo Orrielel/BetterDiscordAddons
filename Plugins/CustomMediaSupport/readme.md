@@ -1,5 +1,4 @@
 # Custom Media Support
-### (Formerly NOPAN Media Support)
 ### `„Now i can truly shitpost”`
 
 ### Quick Rundown:
