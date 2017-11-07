@@ -7,7 +7,7 @@ const StreamPanel = (function(){
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "StreamPanel",
-		version: "1.2.0",
+		version: "1.2.1",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/StreamPanel",
