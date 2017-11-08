@@ -1,4 +1,4 @@
-# Custom Media Support
+# Custom Media Support - [Download](https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/CustomMediaSupport/CustomMediaSupport.plugin.js)
 ### `„Now i can truly shitpost”`
 
 ### Quick Rundown:
