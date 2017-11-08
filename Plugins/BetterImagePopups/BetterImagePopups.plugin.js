@@ -6,7 +6,7 @@ class BetterImagePopups {
 	getName() {return "Better Image Popups";}
 	getShortName() {return "BetterImagePopups";}
 	getDescription() {return "Show full sized images in image popup";}
-	getVersion() {return "1.0.0";}
+	getVersion() {return "1.0.1";}
 	getAuthor() {return "Orrie";}
 
 	load() {}
@@ -27,8 +27,7 @@ class BetterImagePopups {
 		BdApi.clearCSS(this.getShortName());
 	}
 
-	observer(e) {
-		const target = e.target;
+	observer({target}) {
 		if (target.classList.contains("modal-image") && !target.classList.contains("bip-scroller")) {
 			const img = target.firstElementChild;
 			if (img.src) {
