@@ -7,7 +7,7 @@ const CustomMediaSupport = (function(){
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.7.7",
+		version: "1.7.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -122,8 +122,6 @@ const CustomMediaSupport = (function(){
 .CustomMediaSupport.orriePluginSettings .orriePluginFooter button {width: 26%; margin: 0 3.6%;}
 			`,
 			shared: `
-.orriePluginSettings {margin-top: -30px;}
-.orriePluginSettings .orriePluginHeader {border-bottom: 1px solid #3f4146; margin-bottom: 5px; padding-bottom: 5px;}
 .orriePluginSettings .orriePluginTable {margin: 0 !important;}
 .orriePluginSettings .orriePluginTable table {width: 100%;}
 .orriePluginSettings .orriePluginTable td {vertical-align: middle;}
@@ -158,7 +156,7 @@ const CustomMediaSupport = (function(){
 		log("info", "Settings Loaded");
 	},
 	checkForUpdate = function() {
-		var libraryScript = document.getElementById('zeresLibraryScript');
+		let libraryScript = document.getElementById('zeresLibraryScript');
 		if (!libraryScript) {
 			libraryScript = _createElement("script", "", "", {id: "zeresLibraryScript", type: "text/javascript", src: "https://rauenzi.github.io/BetterDiscordAddons/Plugins/PluginLibrary.js"});
 			document.head.appendChild(libraryScript);
@@ -338,7 +336,7 @@ const CustomMediaSupport = (function(){
 			}
 			if (endInterval) {
 				// remove original accessory previews if they exist
-				if (data.fileSite && data.fileSite[4] || script.media.replace.indexOf(data.hrefSplit[2]) !== -1) {
+				if (data.fileSite && data.fileSite[4] || script.media.replace.includes(data.hrefSplit[2])) {
 					const replaceMedia = data.message.querySelectorAll(".accessory:not(.customMedia)");
 					if (replaceMedia[0].firstElementChild) {
 						replaceMedia[0].firstElementChild.remove();
@@ -439,7 +437,7 @@ const CustomMediaSupport = (function(){
 			script.check.chan = true;
 			const archive = (function(archives) {
 				for (let _a_k = Object.keys(archives), _a=0, _a_len=_a_k.length; _a<_a_len; _a++) {
-					if (archives[_a_k[_a]].indexOf(data.hrefSplit[3]) !== -1) {
+					if (archives[_a_k[_a]].includes(data.hrefSplit[3])) {
 						return _a_k[_a];
 					}
 				}
@@ -478,7 +476,7 @@ const CustomMediaSupport = (function(){
 						return [reply, media];
 					})(thread.posts);
 					container.id = `post_${thread_id}`;
-					container.innerHTML = `<div class='embed-wrapper'><div class='embed-color-pill ${script.chan.nsfw.indexOf(data.hrefSplit[3]) !== -1 ? "board-nsfw" : "board-sfw"}'></div><div class='embed'><table cellspacing='0'><tr><td colspan='4'><div class='thread_head'><a class='embed-provider linkIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link'>Thread: <a class='linkIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='embed-title custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info'><span class='thread_title' title='${post.title_processed ? post.title_processed : ""}'>${post.title_processed ? post.title_processed : ""}</span> <span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='linkIgnore' href='${data.href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='linkIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`;
+					container.innerHTML = `<div class='embed-wrapper'><div class='embed-color-pill ${script.chan.nsfw.includes(data.hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embed'><table cellspacing='0'><tr><td colspan='4'><div class='thread_head'><a class='embed-provider linkIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link'>Thread: <a class='linkIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='embed-title custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info'><span class='thread_title' title='${post.title_processed ? post.title_processed : ""}'>${post.title_processed ? post.title_processed : ""}</span> <span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='linkIgnore' href='${data.href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='linkIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`;
 					forceScrolling(container.scrollHeight, "messages");
 					// cache embed html in database and remove fetching tag
 					script.db[thread_id] = container.innerHTML;
@@ -575,7 +573,7 @@ const CustomMediaSupport = (function(){
 			for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 				settingsOptions += settingType(_s_k[_s], script.settingsMenu[_s_k[_s]]);
 			}
-			return `<div class='${script.file} orriePluginSettings'><div class='orriePluginHeader'><span class='bda-name'>${script.name} v${script.version} by ${script.author}</span></div><div class='orriePluginTable'><table>${settingsOptions}</table></div><div class='orriePluginFooter'><button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button></div><div class='orriePluginNotice'>It's recommended to clean the database on a regular basis</div></div>`;
+			return `<div class='${script.file} orriePluginSettings'><div class='orriePluginTable'><table>${settingsOptions}</table></div><div class='orriePluginFooter'><button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button></div><div class='orriePluginNotice'>It's recommended to clean the database on a regular basis</div></div>`;
 		}
 		// save settings
 		settingsSave(key, value) {
@@ -605,9 +603,9 @@ const CustomMediaSupport = (function(){
 				textParser();
 			}
 		}
-		observer(mutation) {
-			if (mutation.addedNodes.length > 0 && document.getElementsByClassName("messages")) {
-				switch(mutation.target.className) {
+		observer({addedNodes, target}) {
+			if (addedNodes.length > 0 && document.getElementsByClassName("messages")) {
+				switch(target.className) {
 					case "flex-spacer flex-vertical":
 						mediaConvert(true);
 						textParser();
