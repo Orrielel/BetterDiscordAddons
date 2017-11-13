@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.0",
+		version: "1.8.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -517,6 +517,32 @@ const CustomMediaSupport = (function() {
 			script.check.textParser = false;
 		}
 	},
+	createSettingsPanel = function() {
+		// settings panel creation
+		const settingsFragment = document.createDocumentFragment(),
+		settingType = function(key, props) {
+			switch(props[1]) {
+				case "check":
+					return _createElement("tr", {innerHTML: `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' type='checkbox'${script.settings[key] ? " checked=checked" : ""} onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.checked)'/></td><td>${props[2]}</td>`});
+				case "range":
+					return _createElement("tr", {innerHTML: `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' value='${script.settings[key]}' type='range' min='0' max='1' step='0.05' onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.value)'/></td><td>${props[2]}</td>`});
+				case "text":
+					return _createElement("tr", {innerHTML: `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' value='${script.settings[key]}' type='text' onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.value)'/></td><td>${props[2]}</td>`});
+				default:
+					return "";
+			}
+		};
+		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
+			settingsFragment.appendChild(settingType(_s_k[_s], script.settingsMenu[_s_k[_s]]));
+		}
+		return _createElement("div", {className: `${script.file} orriePluginSettings`}, [
+			_createElement("div", {className: "orriePluginTable"}, [
+				_createElement("table", "", settingsFragment)
+			]),
+			_createElement("div", {className: "orriePluginFooter", innerHTML: `<button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button class='warning' onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button>`}),
+			_createElement("div", {className: "orriePluginNotice", innerHTML: "It's recommended to clean the database on a regular basis"}),
+		]);
+	},
 	_createElement = function(tag, attributes, children) {
 		// element creation
 		const element = document.createElement(tag);
@@ -526,8 +552,13 @@ const CustomMediaSupport = (function() {
 			}
 		}
 		if (children) {
-			for (let _c=0, _c_len=children.length; _c<_c_len; _c++) {
-				element.appendChild(children[_c]);
+			if (children.childElementCount) {
+				element.appendChild(children);
+			}
+			else {
+				for (let _c=0, _c_len=children.length; _c<_c_len; _c++) {
+					element.appendChild(children[_c]);
+				}
 			}
 		}
 		return element;
@@ -540,23 +571,7 @@ const CustomMediaSupport = (function() {
 		getDescription() {return script.desc;}
 		// create settings panel
 		getSettingsPanel() {
-			let settingsOptions = "";
-			const settingType = function(key, props) {
-				switch(props[1]) {
-					case "check":
-						return `<tr><td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' type='checkbox'${script.settings[key] ? " checked=checked" : ""} onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.checked)'/></td><td>${props[2]}</td></tr>`;
-					case "range":
-						return `<tr><td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' value='${script.settings[key]}' type='range' min='0' max='1' step='0.05' onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.value)'/></td><td>${props[2]}</td></tr>`;
-					case "text":
-						return `<tr><td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' value='${script.settings[key]}' type='text' onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.value)'/></td><td>${props[2]}</td></tr>`;
-					default:
-						return "";
-				}
-			};
-			for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
-				settingsOptions += settingType(_s_k[_s], script.settingsMenu[_s_k[_s]]);
-			}
-			return `<div class='${script.file} orriePluginSettings'><div class='orriePluginTable'><table>${settingsOptions}</table></div><div class='orriePluginFooter'><button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button class='warning' onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button></div><div class='orriePluginNotice'>It's recommended to clean the database on a regular basis</div></div>`;
+			return createSettingsPanel();
 		}
 		// save settings
 		settingsSave(key, value) {
