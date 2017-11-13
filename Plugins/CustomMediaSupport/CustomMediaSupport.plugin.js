@@ -2,12 +2,12 @@
 
 /* global bdPluginStorage, BdApi, PluginUtilities */
 
-const CustomMediaSupport = (function(){
+const CustomMediaSupport = (function() {
 	// plugin settings
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.7.9",
+		version: "1.8.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -47,7 +47,7 @@ const CustomMediaSupport = (function(){
 				"https://archived.moe": ["3","a","aco","adv","an","asp","b","biz","c","cgl","ck","cm","co","con","d","diy","e","f","fa","fit","g","gd","gif","h","hc","his","hm","hr","i","ic","int","jp","k","lgbt","lit","m","mlp","mu","n","news","o","out","p","po","pol","q","qa","qst","r","r9k","s","s4s","sci","soc","sp","t","tg","toy","trash","trv","tv","u","v","vg","vip","vp","vr","w","wg","wsg","wsr","x","y"]
 			}
 		},
-		settings: {embedding: true, loop: true, volume: 0.25, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, pinktext: false, debug: false},
+		settings: {embedding: true, loop: true, volume: 0.25, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, debug: false},
 		settingsMenu: {
 			//          localized           type     description
 			embedding: ["Media Embedding",  "check", "Embeds supported elements"],
@@ -58,46 +58,47 @@ const CustomMediaSupport = (function(){
 			board:     ["4chan",            "check", "Embed 4chan thread links"],
 			sadpanda:  ["Sadpanda",         "check", "Embed Sadpanda galleries"],
 			greentext: ["Greentext",        "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
-			pinktext:  ["Pinktext",         "check", "<span class='pinktext'>&lt;Traps are..?</span>"],
 			debug:     ["Debug",            "check", "Displays verbose stuff into the console"]
 		},
 		css: {
 			script: `
 .customMedia .embed-wrapper {max-width: unset;}
-.customMedia.media-video video {cursor: pointer; width: 400px; max-height: 576px;}
+.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 400px; max-height: 576px;}
 .customMedia.media-video.media-large video {width: 1024px; max-height: 720px;}
+.customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
+.customMedia.media-video video::-webkit-media-controls-panel {display: flex !important; opacity: 1 !important;}
 .customMedia.media-video .embed-zoom {color: #202225; cursor: pointer; font-size: 30px; font-weight: bold; opacity: 0.15; position: absolute; right: 11px;}
 .customMedia.media-video:hover .embed-zoom {opacity: 0.80;}
 .customMedia.media-video .embed-zoom:hover {opacity: 1;}
-.customMedia video {border-radius: 2px 2px 0 0; padding-bottom: 32px;}
-.customMedia video::-webkit-media-controls {padding-top: 32px;}
-.customMedia video::-webkit-media-controls-panel {display: flex !important; opacity: 1 !important;}
+.customMedia.media-audio audio {width: 400px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto;}
 .customMedia table td {font-size: 0.875rem; padding: 0 2px; vertical-align: top;}
-.customMedia .gallery_info .desc {color: hsla(0,0%,100%,.7);}
-.customMedia .gallery_info .tags span {display: inline-block; margin: 0 3px;}
-.customMedia .gallery_preview {max-height: 250px;}
+.customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
+.customMedia.sadpanda .gallery_info .desc {color: hsla(0,0%,100%,.7);}
+.customMedia.sadpanda .gallery_info .tags span {display: inline-block; margin: 0 3px;}
+.customMedia.sadpanda .gallery_preview {padding: 0;}
+.customMedia.sadpanda .gallery_preview img {max-height: 250px;}
 .customMedia.sadpanda .embed-wrapper {max-width: 600px;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Doujinshi {background-color: #FF2525;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Manga {background-color: #FFB225;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Artistcg {background-color: #E8D825;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Gamecg {background-color: #259225;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Western {background-color: #9AFF38;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Non-H {background-color: #38ACFF;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Imageset {background-color: #2525FF;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Cosplay {background-color: #652594;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Asianporn {background-color: #F2A7F2;}
-.customMedia.sadpanda .embed-wrapper .embed-color-pill.cat-Misc {background-colorcolor: #D3D3D3;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Doujinshi {color: #FF2525;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Manga {color: #FFB225;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Artistcg {color: #E8D825;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Gamecg {color: #259225;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Western {color: #9AFF38;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Non-H {color: #38ACFF;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Imageset {color: #2525FF;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Cosplay {color: #652594;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Asianporn {color: #F2A7F2;}
-.customMedia.sadpanda .embed-wrapper .gallery_info .cat-Misc {color: #D3D3D3;}
+.customMedia.sadpanda .embed-color-pill.cat-Doujinshi {background-color: #FF2525;}
+.customMedia.sadpanda .embed-color-pill.cat-Manga {background-color: #FFB225;}
+.customMedia.sadpanda .embed-color-pill.cat-Artistcg {background-color: #E8D825;}
+.customMedia.sadpanda .embed-color-pill.cat-Gamecg {background-color: #259225;}
+.customMedia.sadpanda .embed-color-pill.cat-Western {background-color: #9AFF38;}
+.customMedia.sadpanda .embed-color-pill.cat-Non-H {background-color: #38ACFF;}
+.customMedia.sadpanda .embed-color-pill.cat-Imageset {background-color: #2525FF;}
+.customMedia.sadpanda .embed-color-pill.cat-Cosplay {background-color: #652594;}
+.customMedia.sadpanda .embed-color-pill.cat-Asianporn {background-color: #F2A7F2;}
+.customMedia.sadpanda .embed-color-pill.cat-Misc {background-colorcolor: #D3D3D3;}
+.customMedia.sadpanda .gallery_info .cat-Doujinshi {color: #FF2525;}
+.customMedia.sadpanda .gallery_info .cat-Manga {color: #FFB225;}
+.customMedia.sadpanda .gallery_info .cat-Artistcg {color: #E8D825;}
+.customMedia.sadpanda .gallery_info .cat-Gamecg {color: #259225;}
+.customMedia.sadpanda .gallery_info .cat-Western {color: #9AFF38;}
+.customMedia.sadpanda .gallery_info .cat-Non-H {color: #38ACFF;}
+.customMedia.sadpanda .gallery_info .cat-Imageset {color: #2525FF;}
+.customMedia.sadpanda .gallery_info .cat-Cosplay {color: #652594;}
+.customMedia.sadpanda .gallery_info .cat-Asianporn {color: #F2A7F2;}
+.customMedia.sadpanda .gallery_info .cat-Misc {color: #D3D3D3;}
 .customMedia.knittingboard {color: #AAAAAA;}
 .customMedia.knittingboard .embed-wrapper {max-width: 600px; min-width: 520px;}
 .customMedia.knittingboard .embed-wrapper .board-sfw {background-color: #9099D0;}
@@ -118,11 +119,11 @@ const CustomMediaSupport = (function(){
 .customMedia.knittingboard .thread_foot {padding: 10px 2px 0;}
 .custom_warning {color: #F32323;}
 .greentext {color: #709900;}
-.pinktext {color: #F25E83;}
-.CustomMediaSupport.orriePluginSettings .orriePluginFooter button {width: 26%; margin: 0 3.6%;}
 			`,
 			shared: `
-.orriePluginSettings .orriePluginTable {margin: 0 !important;}
+.orriePluginSettings .orriePluginHeader {border-bottom: 1px solid #3F4146; font-weight: 700; margin-bottom: 5px; padding-bottom: 2px; text-align: center;}
+.orriePluginSettings .orriePluginHeader .iconDefault-xzclSQ {position: static;}
+.orriePluginSettings .orriePluginTable {margin: 0;}
 .orriePluginSettings .orriePluginTable table {width: 100%;}
 .orriePluginSettings .orriePluginTable td {vertical-align: middle;}
 .orriePluginSettings .orriePluginTable input[type=checkbox] {-webkit-appearance: none; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; cursor: pointer; height: 18px; width: 18px; position: relative; -webkit-transition: .15s;}
@@ -135,10 +136,11 @@ const CustomMediaSupport = (function(){
 .orriePluginSettings .orriePluginTable input[type=range]:focus::-webkit-slider-runnable-track {background: #787C84;}
 .orriePluginSettings .orriePluginTable input[type=range]::-webkit-slider-thumb {-webkit-appearance: none; background: #45484E; border: 2px solid #CFD8DC; border-radius: 3px; cursor: pointer; height: 16px; margin-top: -6px; width: 8px;}
 .orriePluginSettings .orriePluginTable input[type=text] {color: #B0B6B9; background: inherit; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; padding: 0 2px;}
-.orriePluginSettings .orriePluginFooter {border-top: 1px solid #3f4146; font-size: 12px; font-weight: 700; margin-bottom: 5px; padding-top: 5px;}
-.orriePluginSettings .orriePluginFooter button a {color: #FFFFFF;}
+.orriePluginSettings .orriePluginFooter {border-top: 1px solid #3F4146; font-size: 12px; font-weight: 700; margin-bottom: 5px; padding-top: 5px; display: flex; justify-content: space-around;}
 .orriePluginSettings .orriePluginNotice {text-align: center;}
-.orriePluginSettings .orriePluginFooter button {background: #3A71C1; color: #FFFFFF; border-radius: 5px; height: 20px; margin: 2px 8%;}
+.orriePluginSettings button {background: #3A71C1; color: #FFFFFF; border-radius: 5px;}
+.orriePluginSettings button.warning {background: #F04747;}
+.orriePluginSettings button a {color: #FFFFFF;}
 .theme-dark .orriePluginSettings {color: #B0B6B9;}
 			`
 		},
@@ -214,7 +216,7 @@ const CustomMediaSupport = (function(){
 					let href = decodeURI(encodeURI(link.getAttribute("href").replace("http:", "https:").replace(".gifv", ".mp4")));
 					const hrefCheck = href.match(/\.(\w+)$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net/),
 					message = link.closest('.message');
-					if (hrefCheck && message) {					
+					if (hrefCheck && message) {
 						const message_body = message.firstElementChild,
 						hrefSplit = href.split("/");
 						let container;
@@ -287,43 +289,40 @@ const CustomMediaSupport = (function(){
 			_createElement("div", {className: "embed-wrapper"}, [
 				_createElement("div", {className: "embed-color-pill", style: `background-color:#${Math.random().toString(16).substr(2,6)};`}),
 				_createElement("div", {className: "embed"}, [
-					_createElement(fileMedia, (function(fileMedia){
-							switch(fileMedia) {
-								case "video":
-								case "audio":
-									return {"className": fileMedia, "innerHTML": `<source src='${href}'>`, controls: true, preload: "metadata", loop: script.settings.loop, autoplay: script.settings.autoplay, check: href, html: `<source src='${href}'>`, onclick() {if (this.paused) {this.play();} else {this.pause();}},
-										onloadedmetadata() {
-											if (fileMedia == "video") {
-												if (script.settings.hoverPlay) {
-													this.onmouseover = function() {
-														if (this.paused) {
-															this.play();
-														}
-													};
-													this.onmouseout = function() {
-														this.pause();
-													};
-												}
-												this.parentNode.appendChild(_createElement("div", {className: "embed-zoom", innerHTML: "❐", onclick() {container.classList.toggle("media-large");}}));
+					_createElement(fileMedia, (function() {
+						switch(fileMedia) {
+							case "video":
+							case "audio":
+								return {check: href, controls: true, preload: "metadata", loop: script.settings.loop, autoplay: script.settings.autoplay,
+									onclick() {if (this.paused) {this.play();}else {this.pause();}},
+									onloadedmetadata() {
+										if (fileMedia == "video") {
+											if (script.settings.hoverPlay) {
+												this.onmouseover = function() {
+													if (this.paused) {
+														this.play();
+													}
+												};
+												this.onmouseout = function() {
+													this.pause();
+												};
 											}
-											this.volume = script.settings.volume;
-											forceScrolling(this.scrollHeight, "messages");
-										},
-										onloadstart() {
-											this.firstElementChild.addEventListener("error", function() {
-												container.classList.remove(`media-${fileMedia}`);
-												this.parentNode.parentNode.innerHTML = "Error 403/404 - Media unavailable";
-											});
+											this.parentNode.appendChild(_createElement("div", {className: "embed-zoom", innerHTML: "❐", onclick() {container.classList.toggle("media-large");}}));
 										}
-									};
-								case "img":
-								case "iframe":
-									return {"className": fileMedia, src: href, check: href, allowFullscreen: true};
-								default:
-									log("error", "mediaEmbed", href);
-							}
-						})(fileMedia)
-					)
+										this.volume = script.settings.volume;
+										forceScrolling(this.scrollHeight, "messages");
+									}
+								};
+							case "img":
+							case "iframe":
+								return {"className": fileMedia, src: href, check: href, allowFullscreen: true};
+							default:
+								log("error", "mediaEmbed", href);
+						}
+					})(),
+					[
+						_createElement("source", {src: href, onerror() {container.classList.remove(`media-${fileMedia}`); this.parentNode.parentNode.innerHTML = "Error 403/404 - Media unavailable";}})
+					])
 				])
 			])
 		]);
@@ -389,13 +388,13 @@ const CustomMediaSupport = (function(){
 								})(gallery.tags),
 								gallery_size = (function(filesize) {
 									let l = 0;
-									while(filesize >= 1024){
+									while(filesize >= 1024) {
 										filesize = filesize/1024;
 										l++;
 									}
 									return `${filesize.toFixed(3)} ${["Bytes","KB","MB","GB"][l]}`;
 								})(gallery.filesize),
-								container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-wrapper'><div class='embed-color-pill cat-${gallery.category}'></div><div class='embed'><table><tr><td colspan='2'><div><a class='embed-provider linkIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div><a class='embed-title linkIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td><div><img class='image gallery_preview' src='${gallery.thumb}'></div></td><td><table class='gallery_info'><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td class='tags'>${gallery_tags}</td></tr><tr><td>Size:</td><td class='desc'>${gallery_size}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='linkIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+								container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-wrapper'><div class='embed-color-pill cat-${gallery.category}'></div><div class='embed'><table><tr><td colspan='2'><div><a class='embed-provider linkIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div><a class='embed-title linkIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td class='tags'>${gallery_tags}</td></tr><tr><td>Size:</td><td class='desc'>${gallery_size}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='linkIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
 								element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 								forceScrolling(container.scrollHeight, "messages");
 								// cache embed html in database and remove fetching tag
@@ -503,12 +502,6 @@ const CustomMediaSupport = (function(){
 									elemHtml = elemHtml.replace(new RegExp(line.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"),"g"), `<span class='greentext'>${line}</span>`);
 								}
 								break;
-							case /^&lt;/.test(line):
-								// pinktext for the gay kids on the block
-								if (script.settings.pinktext) {
-									elemHtml = elemHtml.replace(new RegExp(line.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"),"g"), `<span class='pinktext'>${line}</span>`);
-								}
-								break;
 							case /magnet:\?/.test(line):
 								// parse magnet links
 								elemHtml = elemHtml.replace(/(magnet:\?[\w=:%&\-.;/]+)/g, "<a class='linkIgnore' href='$1' target='_blank' rel='noreferrer'>$1</a> (Click to Open in Torrent Client)");
@@ -563,7 +556,7 @@ const CustomMediaSupport = (function(){
 			for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 				settingsOptions += settingType(_s_k[_s], script.settingsMenu[_s_k[_s]]);
 			}
-			return `<div class='${script.file} orriePluginSettings'><div class='orriePluginTable'><table>${settingsOptions}</table></div><div class='orriePluginFooter'><button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button></div><div class='orriePluginNotice'>It's recommended to clean the database on a regular basis</div></div>`;
+			return `<div class='${script.file} orriePluginSettings'><div class='orriePluginTable'><table>${settingsOptions}</table></div><div class='orriePluginFooter'><button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button class='warning' onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button></div><div class='orriePluginNotice'>It's recommended to clean the database on a regular basis</div></div>`;
 		}
 		// save settings
 		settingsSave(key, value) {
@@ -606,7 +599,7 @@ const CustomMediaSupport = (function(){
 						textParser();
 						break;
 					case "body":
-						setTimeout(function(){
+						setTimeout(function() {
 							textParser();
 						}, 250);
 						break;
