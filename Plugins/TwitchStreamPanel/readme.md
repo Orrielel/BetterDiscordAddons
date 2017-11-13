@@ -15,4 +15,4 @@ Stream list is customizeable, with dedicated lists per Discord Server -- Check t
 
 ## Previews
 ![Streamlist](https://orrie.s-ul.eu/preview/8C9ehBur)
-![Settings](https://orrie.s-ul.eu/preview/vLQShoWJ)
+![Settings](https://orrie.s-ul.eu/preview/7dtOHZ3n)
