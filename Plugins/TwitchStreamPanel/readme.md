@@ -11,7 +11,8 @@ Open the [latest](https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons
 Obviously requires [BetterDiscord](https://github.com/jiiks/betterdiscordapp) installed.
 
 #### And?
-PM if you want add -- for a gentle 5€ fee :^)
+Stream list is customizeable, with dedicated lists per Discord Server -- Check the settings for halp
 
 ## Previews
 ![Streamlist](https://orrie.s-ul.eu/preview/8C9ehBur)
+![Settings](https://orrie.s-ul.eu/preview/vLQShoWJ)
