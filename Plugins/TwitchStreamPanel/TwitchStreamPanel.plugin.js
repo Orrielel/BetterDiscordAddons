@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.2.3",
+		version: "1.2.4",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -147,7 +147,7 @@ const TwitchStreamPanel = (function() {
 		serverStreams = script.streams[serverID],
 		streamFragment = document.createDocumentFragment(),
 		streamString = [],
-		colorData = script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? bdPluginStorage.get("BRC", "color-data")[serverID] : false;
+		colorData = script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? BdApi.getPlugin('BetterRoleColors').colorData[serverID] : false;
 		for (let _s_k = Object.keys(serverStreams), _s=0; _s<_s_k.length; _s++) {
 			const stream = serverStreams[_s_k[_s]];
 			streamString.push(stream[1]);
@@ -242,7 +242,7 @@ const TwitchStreamPanel = (function() {
 		}
 	},
 	createSettingsPanel = function() {
-		// better settings panel creation
+		// settings panel creation
 		const settingsFragment = document.createDocumentFragment(),
 		settingType = function(key, props) {
 			switch(props[1]) {
