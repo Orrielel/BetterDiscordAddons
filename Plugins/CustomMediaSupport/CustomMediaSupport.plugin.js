@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.1",
+		version: "1.8.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -127,7 +127,7 @@ const CustomMediaSupport = (function() {
 .orriePluginSettings .orriePluginTable table {width: 100%;}
 .orriePluginSettings .orriePluginTable td {vertical-align: middle;}
 .orriePluginSettings .orriePluginTable input[type=checkbox] {-webkit-appearance: none; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; cursor: pointer; height: 18px; width: 18px; position: relative; -webkit-transition: .15s;}
-.orriePluginSettings .orriePluginTable input[type=checkbox]:checked {background-color: #3A71C1; border: none;}
+.orriePluginSettings .orriePluginTable input[type=checkbox]:checked {background-color: #7289DA; border: none;}
 .orriePluginSettings .orriePluginTable input[type=checkbox]:before, .orriePluginSettings .orriePluginTable input[type=checkbox]:checked:before {color: #FFFFFF; position: absolute; top: 0; left: 0; height: 100%; width: 100%; line-height: 100%; text-align: center;}
 .orriePluginSettings .orriePluginTable input[type=checkbox]:checked:before {content: '✔'; line-height: unset;}
 .orriePluginSettings .orriePluginTable input[type=range]:focus {outline: none;}
@@ -136,9 +136,10 @@ const CustomMediaSupport = (function() {
 .orriePluginSettings .orriePluginTable input[type=range]:focus::-webkit-slider-runnable-track {background: #787C84;}
 .orriePluginSettings .orriePluginTable input[type=range]::-webkit-slider-thumb {-webkit-appearance: none; background: #45484E; border: 2px solid #CFD8DC; border-radius: 3px; cursor: pointer; height: 16px; margin-top: -6px; width: 8px;}
 .orriePluginSettings .orriePluginTable input[type=text] {color: #B0B6B9; background: inherit; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; padding: 0 2px;}
-.orriePluginSettings .orriePluginFooter {border-top: 1px solid #3F4146; font-size: 12px; font-weight: 700; margin-bottom: 5px; padding-top: 5px; display: flex; justify-content: space-around;}
+.orriePluginSettings .orriePluginFooter {border-top: 1px solid #3F4146; font-size: 12px; font-weight: 700; margin-bottom: 5px; padding-top: 5px;}
 .orriePluginSettings .orriePluginNotice {text-align: center;}
-.orriePluginSettings button {background: #3A71C1; color: #FFFFFF; border-radius: 5px;}
+.orriePluginSettings .orriePluginFlex {display: flex; justify-content: space-around;}
+.orriePluginSettings button {background: #7289DA; color: #FFFFFF; border-radius: 5px; padding: 2px 16px;}
 .orriePluginSettings button.warning {background: #F04747;}
 .orriePluginSettings button a {color: #FFFFFF;}
 .theme-dark .orriePluginSettings {color: #B0B6B9;}
@@ -237,6 +238,9 @@ const CustomMediaSupport = (function() {
 								}
 								break;
 							case "boards.4chan.org":
+								if (!hrefSplit[5]) {
+									break;
+								}
 								const thread_id = `${hrefSplit[3]}_${/#/.test(hrefSplit[5]) ? hrefSplit[5].replace("#","_") : hrefSplit[5]}`;
 								if (script.settings.board && !link.classList.contains("fetchingMedia") && message.querySelectorAll(`#post_${thread_id}`).length === 0) {
 									link.classList.add("customMediaLink",`anchor_${thread_id}`);
@@ -267,6 +271,13 @@ const CustomMediaSupport = (function() {
 									if ((fileMedia || fileSite) && mediaCheck(message, href)) {
 										link.classList.add("customMediaLink");
 										mediaEmbedding(fileMedia, fileSite, href, hrefSplit, message, message_body);
+									}
+									// remove original accessory previews if they exist
+									if (fileSite && fileSite[4] || script.media.replace.includes(hrefSplit[2])) {
+										const replaceMedia = message.querySelectorAll(".accessory:not(.customMedia)");
+										if (replaceMedia[0].firstElementChild) {
+											replaceMedia[0].firstElementChild.remove();
+										}
 									}
 								}
 								break;
@@ -327,13 +338,6 @@ const CustomMediaSupport = (function() {
 			])
 		]);
 		message_body.parentNode.insertBefore(container, message_body.nextSibling);
-		// remove original accessory previews if they exist
-		if (fileSite && fileSite[4] || script.media.replace.includes(hrefSplit[2])) {
-			const replaceMedia = message.querySelectorAll(".accessory:not(.customMedia)");
-			if (replaceMedia[0].firstElementChild) {
-				replaceMedia[0].firstElementChild.remove();
-			}
-		}
 	},
 	mediaCheck = function(message, href) {
 		const media_elements = message.getElementsByClassName("customMedia");
@@ -539,7 +543,7 @@ const CustomMediaSupport = (function() {
 			_createElement("div", {className: "orriePluginTable"}, [
 				_createElement("table", "", settingsFragment)
 			]),
-			_createElement("div", {className: "orriePluginFooter", innerHTML: `<button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button class='warning' onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button>`}),
+			_createElement("div", {className: "orriePluginFooter orriePluginFlex", innerHTML: `<button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button class='warning' onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button>`}),
 			_createElement("div", {className: "orriePluginNotice", innerHTML: "It's recommended to clean the database on a regular basis"}),
 		]);
 	},
