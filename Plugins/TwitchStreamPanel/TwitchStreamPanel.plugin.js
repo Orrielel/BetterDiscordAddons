@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.2.6",
+		version: "1.2.7",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -19,6 +19,7 @@ const TwitchStreamPanel = (function() {
 			timer: 0
 		},
 		streamAPI: "",
+		streamAPInew: "",
 		streams: {},
 		settings: {colors: true, state: true, update: true, freq: 300, debug: false},
 		settingsMenu: {
@@ -42,6 +43,7 @@ const TwitchStreamPanel = (function() {
 .TwitchStreamPanel .stream_container .channel-stream_child {display: inline-block; vertical-align: middle;}
 .TwitchStreamPanel .stream_container .channel-stream_icon {width: 20px; height: 20px; margin: 0 8px; background-size: 20px 20px; background-repeat: no-repeat; background-position: 50% 50%;}
 .TwitchStreamPanel .stream_container .channel-stream_anchor {width: 140px;}
+.TwitchStreamPanel .stream_container .channel-stream_anchor a {color: #979C9F;}
 .TwitchStreamPanel .stream_container .stream-online .channel-stream_status {color: #709900; font-weight: 700;}
 .TwitchStreamPanel .stream_container .stream-offline .channel-stream_status {color: #F32323;}
 .TwitchStreamPanel footer {color: #72767d; line-height: 24px; text-align: center;}
@@ -154,7 +156,7 @@ const TwitchStreamPanel = (function() {
 		for (let _s_k = Object.keys(serverStreams), _s=0; _s<_s_k.length; _s++) {
 			const stream = serverStreams[_s_k[_s]];
 			streamString.push(stream[1]);
-			streamFragment.appendChild(_createElement("li", {className: "channel-stream stream-offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<div class='channel-stream_child channel-stream_icon' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></div><div class='channel-stream_child channel-stream_anchor'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank'><span class='channel-stream_name' style='color: ${stream[2] && colorData ? colorData[stream[2]] : "#979C9F"}'>${stream[0]}</span></a></div><div class='channel-stream_child channel-stream_status'>Offline</div>`}));
+			streamFragment.appendChild(_createElement("li", {className: "channel-stream stream-offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<div class='channel-stream_child channel-stream_icon' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></div><div class='channel-stream_child channel-stream_anchor'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]}'` : ""}>${stream[0]}</a></div><div class='channel-stream_child channel-stream_status'>Offline</div>`}));
 		}
 		// insert stream table before requesting data
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
@@ -176,15 +178,16 @@ const TwitchStreamPanel = (function() {
 
 		// store streams
 		script.streamAPI = `https://api.twitch.tv/kraken/streams/?channel=${streamString.join(",")}`;
+		script.streamAPInew = `https://api.twitch.tv/helix/streams?user_login=${streamString.join("&user_login=")}`;
 
 		// update streams and set update interval to 2mins
-		streamsUpdate("initial");
+		streamsUpdate("initial", serverStreams);
 		if (script.settings.update) {
 			const updateFreq = !Number.isNaN(script.settings.freq) && script.settings.freq >= 120 ? script.settings.freq*1000 : 120000;
 			window.streamUpdateInterval = setInterval(function() {streamsUpdate("interval");}, updateFreq);
 		}
 	},
-	streamsUpdate = function(mode) {
+	streamsUpdate = function(mode, serverStreams) {
 		// request data from twitch api and insert into stream table
 		if (!script.check.updating && (mode == "click" || mode == "initial" || script.check.timer < 30)) {
 			script.check.updating = true;
@@ -214,8 +217,18 @@ const TwitchStreamPanel = (function() {
 							BDfunctionsDevilBro.showToast(`${streamItem.name} is streaming with ${stream.viewers} viewers!`);
 						}
 						streamItem.title = stream.game;
-						streamItem.lastElementChild.innerHTML = stream.viewers;
+						streamItem.lastElementChild.innerHTML = stream.viewers.toLocaleString();
 						onlineStreams.push(streamName);
+						if (!serverStreams[stream.channel.name][0]) {
+							serverStreams[stream.channel.name][0] = stream.channel.display_name;
+							streamItem.children[1].innerHTML = stream.channel.display_name;
+							bdPluginStorage.set(script.file, "streams", script.streams);
+						}
+						if (!serverStreams[stream.channel.name][3]) {
+							serverStreams[stream.channel.name][3] = stream.channel.logo;
+							streamItem.firstElementChild.style.backgroundImage = `url('${stream.channel.logo}')`;
+							bdPluginStorage.set(script.file, "streams", script.streams);
+						}
 					}
 					else {
 						log("error", "streamItem doesn't exist -- Discord inactive?", [stream.channel.name, stream]);
@@ -272,7 +285,7 @@ const TwitchStreamPanel = (function() {
 							this.nextElementSibling.classList.toggle("toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");
 						}
 					}),
-					_createElement("div", {className: "orriePluginStreamInput toggled", id: "saveStreamInput", innerHTML: `<table><tr><td>Discord Name</td><td><input type="text" name="discord_name" placeholder="Required -- Can be anything"></td></tr><tr><td>Twitch Username</td><td><input type="text" name="twitch_name" placeholder="Required"></td></tr><tr><td>Discord ID</td><td><input type="text" name="discord_id" placeholder="For BetterRoleColors -- Use Discord developer mode, right click the user and copy ID"></td></tr><tr><td>Icon</td><td><input type="text" name="icon" placeholder="Will be resized to 20x20"></td></tr><tr><td>Server to Hook (ID)</td><td><input type="text" name="server_id" placeholder="Required -- Use Discord developer mode, right click the server icon and copy ID"></td></tr></table><div class='orriePluginStreamFooter orriePluginFlex'><button onclick='BdApi.getPlugin("${script.name}").saveStream()'>Add to List</button><span id='saveStreamInfo'></span></div>`})
+					_createElement("div", {className: "orriePluginStreamInput toggled", id: "saveStreamInput", innerHTML: `<table><tr><td>Discord Name</td><td><input type="text" name="discord_name" placeholder="Optional -- If left blank, plugin will user Twitch display name"></td></tr><tr><td>Twitch Username</td><td><input type="text" name="twitch_name" placeholder="Required"></td></tr><tr><td>Discord ID</td><td><input type="text" name="discord_id" placeholder="Optional -- For colorized names. Use developer mode; right click the user and copy ID"></td></tr><tr><td>Custom Icon</td><td><input type="text" name="icon" placeholder="Optional -- If left blank, plugin will use Twitch profile image next time stream is live"></td></tr><tr><td>Server to Hook (ID)</td><td><input type="text" name="server_id" placeholder="Required -- Use developer mode; right click the server icon and copy ID"></td></tr></table><div class='orriePluginStreamFooter orriePluginFlex'><button onclick='BdApi.getPlugin("${script.name}").saveStream()'>Add to List</button><span id='saveStreamInfo'></span></div>`})
 			]),
 			_createElement("div", {className: "orriePluginStreamList orriePluginTable", id: "twitchStreamList"}, createSettingsServerList()),
 			_createElement("div", {className: "orriePluginFooter orriePluginFlex", innerHTML: `<button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button class='warning' onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (Irreversible!)</button>`})
@@ -359,7 +372,7 @@ const TwitchStreamPanel = (function() {
 			for (let _i=0, _i_len = inputs.length; _i<_i_len; _i++) {
 				data.push(inputs[_i].value);
 			}
-			if (data[0] && data[1] && data[4]) {
+			if (data[1] && data[4]) {
 				if (BDfunctionsDevilBro.getDivOfServer(data[4])) {
 					const twitchStreamList = document.getElementById("twitchStreamList");
 					if (!script.streams[data[4]]) {
