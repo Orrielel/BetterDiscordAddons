@@ -19,7 +19,6 @@ const TwitchStreamPanel = (function() {
 			timer: 0
 		},
 		streamAPI: "",
-		streamAPInew: "",
 		streams: {},
 		settings: {colors: true, state: true, update: true, freq: 300, debug: false},
 		settingsMenu: {
@@ -178,7 +177,6 @@ const TwitchStreamPanel = (function() {
 
 		// store streams
 		script.streamAPI = `https://api.twitch.tv/kraken/streams/?channel=${streamString.join(",")}`;
-		script.streamAPInew = `https://api.twitch.tv/helix/streams?user_login=${streamString.join("&user_login=")}`;
 
 		// update streams and set update interval to 2mins
 		streamsUpdate("initial", serverStreams);
