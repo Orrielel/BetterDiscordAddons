@@ -14,5 +14,6 @@ Obviously requires [BetterDiscord](https://github.com/jiiks/betterdiscordapp) in
 Stream list is customizeable, with dedicated lists per Discord Server -- Check the settings for halp
 
 ## Previews
-![Streamlist](https://orrie.s-ul.eu/preview/8C9ehBur)
-![Settings](https://orrie.s-ul.eu/preview/AiJHVB5i)
+![Panel](https://orrie.s-ul.eu/preview/nBwalSft)
+![Settings](https://orrie.s-ul.eu/preview/Dy5qKRGO)
+![Streamlist](https://orrie.s-ul.eu/preview/M2rpvG2i)
