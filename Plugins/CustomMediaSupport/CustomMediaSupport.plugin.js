@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.2",
+		version: "1.8.3",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -103,6 +103,7 @@ const CustomMediaSupport = (function() {
 .customMedia.knittingboard .embed-wrapper {max-width: 600px; min-width: 520px;}
 .customMedia.knittingboard .embed-wrapper .board-sfw {background-color: #9099D0;}
 .customMedia.knittingboard .embed-wrapper .board-nsfw {background-color: #FFBEAF;}
+.customMedia.knittingboard .embed {width: 100%;}
 .customMedia.knittingboard .embed > table {width: 100%;}
 .customMedia.knittingboard .thread_head {position: relative;}
 .customMedia.knittingboard .thread_head .thread_posttype {font-weight: bold; line-height: 30px;}
@@ -272,13 +273,6 @@ const CustomMediaSupport = (function() {
 										link.classList.add("customMediaLink");
 										mediaEmbedding(fileMedia, fileSite, href, hrefSplit, message, message_body);
 									}
-									// remove original accessory previews if they exist
-									if (fileSite && fileSite[4] || script.media.replace.includes(hrefSplit[2])) {
-										const replaceMedia = message.querySelectorAll(".accessory:not(.customMedia)");
-										if (replaceMedia[0].firstElementChild) {
-											replaceMedia[0].firstElementChild.remove();
-										}
-									}
 								}
 								break;
 						}
@@ -322,6 +316,13 @@ const CustomMediaSupport = (function() {
 										}
 										this.volume = script.settings.volume;
 										forceScrolling(this.scrollHeight, "messages");
+										// remove original accessory previews if they exist
+										if (fileSite && fileSite[4] || script.media.replace.includes(hrefSplit[2])) {
+											const replaceMedia = message.querySelectorAll(".accessory:not(.customMedia)");
+											if (replaceMedia[0].firstElementChild) {
+												replaceMedia[0].firstElementChild.remove();
+											}
+										}
 									}
 								};
 							case "img":
