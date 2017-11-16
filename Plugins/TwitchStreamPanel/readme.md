@@ -11,7 +11,10 @@ Open the [latest](https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons
 Obviously requires [BetterDiscord](https://github.com/jiiks/betterdiscordapp) installed.
 
 #### And?
-Stream list is customizeable, with dedicated lists per Discord Server -- Check the settings for halp
+Stream list is customizeable, with dedicated lists per Discord Server
+
+#### Soon
+* Import/Export streamlist
 
 ## Previews
 ![Panel](https://orrie.s-ul.eu/preview/nBwalSft)
