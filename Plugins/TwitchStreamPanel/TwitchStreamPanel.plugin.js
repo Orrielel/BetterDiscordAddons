@@ -212,7 +212,7 @@ const TwitchStreamPanel = (function() {
 						if (streamItem.classList.contains("stream-offline")) {
 							streamItem.classList.remove("stream-offline");
 							streamItem.classList.add("stream-online");
-							BDfunctionsDevilBro.showToast(`${streamItem.name} is streaming with ${stream.viewers} viewers!`);
+							BDfunctionsDevilBro.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
 						}
 						streamItem.title = stream.game;
 						streamItem.lastElementChild.innerHTML = stream.viewers.toLocaleString();
