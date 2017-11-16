@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.2.8",
+		version: "1.2.9",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -34,18 +34,20 @@ const TwitchStreamPanel = (function() {
 .TwitchStreamPanel {color: #72767D;}
 .TwitchStreamPanel .nameDefault-Lnjrwm:not(.stream_time) {cursor: pointer;}
 .TwitchStreamPanel .nameDefault-Lnjrwm:hover:not(.stream_time) {color: #B9BBBE;}
-.TwitchStreamPanel .text-right {position: absolute; right: 20px;}
+.TwitchStreamPanel .text-right {position: absolute; right: 15px;}
 .TwitchStreamPanel .containerDefault-1bbItS {margin-bottom: 10px;}
 .TwitchStreamPanel .containerDefault-1bbItS .stream_collapse {display: inline-block; padding-left: 18px; position: relative;}
 .TwitchStreamPanel .containerDefault-1bbItS .stream_collapse .iconDefault-xzclSQ {top: 2px;}
 .TwitchStreamPanel .containerDefault-1bbItS .stream_collapse:hover *, .TwitchStreamPanel .containerDefault-1bbItS .text-right:hover {color: #B9BBBE;}
+.TwitchStreamPanel .stream_container {padding-right: 10px; width: 100%;}
 .TwitchStreamPanel .stream_container .channel-stream {font-size: 14px; font-weight: 500; height: 24px; overflow: hidden; text-overflow: ellipsis; position: relative; white-space: nowrap;}
 .TwitchStreamPanel .stream_container .channel-stream:hover {background-color: #1E2124}
-.TwitchStreamPanel .stream_container .channel-stream_child {display: inline-block; vertical-align: middle;}
-.TwitchStreamPanel .stream_container .channel-stream_icon {width: 20px; height: 20px; margin: 0 8px; background-size: 20px 20px; background-repeat: no-repeat; background-position: 50% 50%;}
-.TwitchStreamPanel .stream_container .channel-stream_anchor {width: 140px;}
+.TwitchStreamPanel .stream_container .channel-stream_child {vertical-align: middle;}
+.TwitchStreamPanel .stream_container .channel-stream_icon {width: 20px; height: 20px; padding: 0 8px; background-size: 20px 20px; background-repeat: no-repeat; background-position: 50% 50%;}
+.TwitchStreamPanel .stream_container .channel-stream_anchor {max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 .TwitchStreamPanel .stream_container .channel-stream_anchor a {color: #979C9F;}
-.TwitchStreamPanel .stream_container .stream-online .channel-stream_status {color: #709900; font-weight: 700;}
+.TwitchStreamPanel .stream_container .channel-stream_status {padding-right: 8px; text-align: right; width: 40px;}
+.TwitchStreamPanel .stream_container .stream-online .channel-stream_status {color: #709900; font-weight: 700; padding-right: 10px;}
 .TwitchStreamPanel .stream_container .stream-offline .channel-stream_status {color: #F32323;}
 .TwitchStreamPanel .stream_footer {position: relative;}
 .TwitchStreamPanel .stream_time {display: inline-block; padding-left: 18px;}
@@ -68,6 +70,9 @@ const TwitchStreamPanel = (function() {
 .orriePluginModal .orriePluginServer th, .orriePluginModal .orriePluginServer td {font-size: 14px; text-align: center;}
 .orriePluginModal .orriePluginServer button {padding: 1px 6px;}
 .TwitchStreamPanel .toggled, .orriePluginModal .toggled {display: none;}
+.bd-minimal .TwitchStreamPanel .stream_container {padding-right: 0;}
+.bd-minimal .TwitchStreamPanel .stream_container .channel-stream_icon {padding: 0 4px;}
+.bd-minimal .TwitchStreamPanel .stream_container .channel-stream_anchor {max-width: 70px;}
 			`,
 			shared: `
 .orriePluginSettings .orriePluginHeader {border-bottom: 1px solid #3F4146; font-weight: 700; margin-bottom: 5px; padding-bottom: 2px; text-align: center;}
@@ -159,7 +164,7 @@ const TwitchStreamPanel = (function() {
 		for (let _s_k = Object.keys(serverStreams), _s=0; _s<_s_k.length; _s++) {
 			const stream = serverStreams[_s_k[_s]];
 			streamString.push(stream[1]);
-			streamFragment.appendChild(_createElement("li", {className: "channel-stream stream-offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<div class='channel-stream_child channel-stream_icon' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></div><div class='channel-stream_child channel-stream_anchor'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]}'` : ""}>${stream[0]}</a></div><div class='channel-stream_child channel-stream_status'>Offline</div>`}));
+			streamFragment.appendChild(_createElement("tr", {className: "channel-stream stream-offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='channel-stream_child channel-stream_icon' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='channel-stream_child channel-stream_anchor'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]}'` : ""}>${stream[0]}</a></td><td class='channel-stream_child channel-stream_status'>✘</td>`}));
 		}
 		// insert stream table before requesting data
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
@@ -174,7 +179,7 @@ const TwitchStreamPanel = (function() {
 				}),
 				_createElement("span", {className: "nameDefault-Lnjrwm text-right", innerHTML: "Update", onclick() {streamsUpdate("click");}})
 			]),
-			_createElement("ul", {className: `stream_container${!script.settings.state ? " toggled" : ""}`}, streamFragment),
+			_createElement("table", {className: `stream_container${!script.settings.state ? " toggled" : ""}`, cellSpacing: 0}, streamFragment),
 			_createElement("div", {className: "stream_footer"}, [
 				_createElement("div", {className: "stream_time nameDefault-Lnjrwm", innerHTML: `<span id="stream-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="stream-timer">00:00</span>`}),
 				_createElement("span", {className: "stream_edit nameDefault-Lnjrwm text-right", innerHTML: "Edit", onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}}),
@@ -222,16 +227,16 @@ const TwitchStreamPanel = (function() {
 							BDfunctionsDevilBro.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
 						}
 						streamItem.title = stream.game;
-						streamItem.lastElementChild.innerHTML = stream.viewers.toLocaleString();
+						streamItem.cells[2].innerHTML = stream.viewers.toLocaleString();
 						onlineStreams.push(streamName);
 						if (!serverStreams[stream.channel.name][0]) {
 							serverStreams[stream.channel.name][0] = stream.channel.display_name;
-							streamItem.children[1].innerHTML = stream.channel.display_name;
+							streamItem.cells[1].innerHTML = stream.channel.display_name;
 							bdPluginStorage.set(script.file, "streams", script.streams);
 						}
 						if (!serverStreams[stream.channel.name][3]) {
 							serverStreams[stream.channel.name][3] = stream.channel.logo;
-							streamItem.firstElementChild.style.backgroundImage = `url('${stream.channel.logo}')`;
+							streamItem.cells[0].style.backgroundImage = `url('${stream.channel.logo}')`;
 							bdPluginStorage.set(script.file, "streams", script.streams);
 						}
 					}
@@ -245,7 +250,7 @@ const TwitchStreamPanel = (function() {
 						streamItem.classList.add("stream-offline");
 						streamItem.classList.remove("stream-online");
 						delete streamItem.title;
-						streamItem.lastElementChild.innerHTML = "Offline";
+						streamItem.cells[2].innerHTML = "✘";
 					}
 				}
 				if (streamStamp) {
