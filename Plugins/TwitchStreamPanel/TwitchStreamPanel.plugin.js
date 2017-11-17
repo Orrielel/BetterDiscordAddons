@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.3.2",
+		version: "1.3.3",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -305,7 +305,6 @@ const TwitchStreamPanel = (function() {
 		]);
 	},
 	createStreamModal = function() {
-		
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal orriePluginSettings DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div><div class='modal-2LIEKY'><div class='inner-1_1f7b'><div class='modal-3HOjGZ sizeMedium-1-2BNS'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO marginBottom8-1mABJ4 orriePlugin-menu' style='flex: 0 0 auto;'></div><div class='scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW'><div class='scroller-fzNley inner-tqJwAU orriePlugin-content orriePluginStreamList orriePluginTable'></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontalReverse-2LanvO horizontalReverse-k5PqxT flex-3B1Tl4 directionRowReverse-2eZTxP justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO footer-1PYmcw'><div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'>Saves Automatically</div></div></div></div></div>"});
 		modal.getElementsByClassName("orriePlugin-menu")[0].appendChild(_createElement("div", {className: "orriePluginAddStream orriePluginTable inner-tqJwAU"}, [
 			_createElement("div", {className: "orrieAddStreamHeader", innerHTML: `<button type='button'>Add New Stream</button>`, onclick() {this.nextElementSibling.classList.toggle("toggled");}}),
@@ -335,19 +334,22 @@ const TwitchStreamPanel = (function() {
 								_createElement("button", {className: "warning", innerHTML: "✘",
 									onclick() {
 										delete script.streams[data.id][streamer[1]];
-										this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);
+										this.parentNode.parentNode.remove();
+										streamsRemove();
 										if (Object.keys(script.streams[data.id]).length === 0) {
 											delete script.streams[data.id];
+											document.getElementById(`streamTable_${data.id}`).remove();
+										}
+										else {
+											streamsInsert();
 										}
 										bdPluginStorage.set(script.file, "streams", script.streams);
-										streamsRemove();
-										streamsInsert();
 									}
 								})
 							])
 						]));
 					}
-					serverFragment.appendChild(_createElement("div", {className: "orriePluginServer"}, [
+					serverFragment.appendChild(_createElement("div", {className: "orriePluginServer", id: `streamTable_${data.id}`}, [
 						_createElement("div", {className: "orriePluginHeader", innerHTML: `${data.name} &#8213; ID &#10151; ${data.id}`}),
 						_createElement("table", {innerHTML: "<thead><th>Display Name</th><th>Twitch Username</th><th>Discord ID</th><th>Icon</th><th>Remove</th></thead>", cellSpacing: 0}, streamFragment)
 					]));
@@ -463,11 +465,9 @@ const TwitchStreamPanel = (function() {
 		observer({addedNodes, target}) {
 			if (addedNodes.length > 0 && target.className == "flex-spacer flex-vertical" && BDfunctionsDevilBro && document.getElementsByClassName("messages")) {
 				const serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer());
-				if (script.streams[serverID]) {
-					if (!document.getElementById(`streams_${serverID}`)) {
-						streamsRemove();
-						streamsInsert();
-					}
+				if (script.streams[serverID] && !document.getElementById(`streams_${serverID}`)) {
+					streamsRemove();
+					streamsInsert();
 				}
 				else {
 					streamsRemove();
