@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.3.0",
+		version: "1.3.1",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -18,8 +18,9 @@ const TwitchStreamPanel = (function() {
 			version: false,
 			timer: 0
 		},
-		streamAPI: "",
+		streamAPI: false,
 		streams: {},
+		streamsActive: false, 
 		settings: {colors: true, state: true, update: true, freq: 300, debug: false},
 		settingsMenu: {
 			//       localized         type     description
@@ -150,6 +151,7 @@ const TwitchStreamPanel = (function() {
 		if (streamContainer) {
 			streamContainer.remove();
 		}
+		script.streamsActive = false;
 		clearInterval(window.nopanStreamsInterval);
 		clearInterval(window.streamUpdateCounter);
 	},
@@ -157,12 +159,12 @@ const TwitchStreamPanel = (function() {
 		// prepare static stream list data
 		const channelContainer = document.getElementsByClassName("scroller-NXV0-d")[0],
 		serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer()),
-		serverStreams = script.streams[serverID],
 		streamFragment = document.createDocumentFragment(),
 		streamString = [],
 		colorData = script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? BdApi.getPlugin('BetterRoleColors').colorData[serverID] : false;
-		for (let _s_k = Object.keys(serverStreams), _s=0; _s<_s_k.length; _s++) {
-			const stream = serverStreams[_s_k[_s]];
+		script.streamsActive = script.streams[serverID];
+		for (let _s_k = Object.keys(script.streamsActive), _s=0; _s<_s_k.length; _s++) {
+			const stream = script.streamsActive[_s_k[_s]];
 			streamString.push(stream[1]);
 			streamFragment.appendChild(_createElement("tr", {className: "channel-stream stream-offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='channel-stream_child channel-stream_icon' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='channel-stream_child channel-stream_anchor'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]}'` : ""}>${stream[0]}</a></td><td class='channel-stream_child channel-stream_status'></td>`}));
 		}
@@ -194,16 +196,16 @@ const TwitchStreamPanel = (function() {
 		script.streamAPI = `https://api.twitch.tv/kraken/streams/?channel=${streamString.join(",")}`;
 
 		// update streams and set update interval to 2mins
-		streamsUpdate("initial", serverStreams);
+		streamsUpdate("initial");
 		if (script.settings.update) {
 			const updateFreq = !Number.isNaN(script.settings.freq) && script.settings.freq >= 120 ? script.settings.freq*1000 : 120000;
 			clearInterval(window.streamUpdateInterval);
 			window.streamUpdateInterval = setInterval(function() {streamsUpdate("interval");}, updateFreq);
 		}
 	},
-	streamsUpdate = function(mode, serverStreams) {
+	streamsUpdate = function(mode) {
 		// request data from twitch api and insert into stream table
-		if (!script.check.updating && (mode == "click" || mode == "initial" || script.check.timer < 30)) {
+		if (!script.check.updating && script.streamsActive && (mode == "click" || mode == "initial" || script.check.timer < 30)) {
 			script.check.updating = true;
 			fetch(script.streamAPI, {
 				method: "GET",
@@ -233,13 +235,13 @@ const TwitchStreamPanel = (function() {
 						streamItem.title = stream.game;
 						streamItem.cells[2].innerHTML = stream.viewers.toLocaleString();
 						onlineStreams.push(streamName);
-						if (!serverStreams[stream.channel.name][0]) {
-							serverStreams[stream.channel.name][0] = stream.channel.display_name;
+						if (!script.streamsActive[stream.channel.name][0]) {
+							script.streamsActive[stream.channel.name][0] = stream.channel.display_name;
 							streamItem.cells[1].innerHTML = stream.channel.display_name;
 							bdPluginStorage.set(script.file, "streams", script.streams);
 						}
-						if (!serverStreams[stream.channel.name][3]) {
-							serverStreams[stream.channel.name][3] = stream.channel.logo;
+						if (!script.streamsActive[stream.channel.name][3]) {
+							script.streamsActive[stream.channel.name][3] = stream.channel.logo;
 							streamItem.cells[0].style.backgroundImage = `url('${stream.channel.logo}')`;
 							bdPluginStorage.set(script.file, "streams", script.streams);
 						}
