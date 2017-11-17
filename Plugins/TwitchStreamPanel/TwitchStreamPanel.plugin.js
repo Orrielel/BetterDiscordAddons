@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.2.9",
+		version: "1.3.0",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -36,20 +36,20 @@ const TwitchStreamPanel = (function() {
 .TwitchStreamPanel .nameDefault-Lnjrwm:hover:not(.stream_time) {color: #B9BBBE;}
 .TwitchStreamPanel .text-right {position: absolute; right: 15px;}
 .TwitchStreamPanel .containerDefault-1bbItS {margin-bottom: 10px;}
-.TwitchStreamPanel .containerDefault-1bbItS .stream_collapse {display: inline-block; padding-left: 18px; position: relative;}
+.TwitchStreamPanel .containerDefault-1bbItS .stream_collapse {display: inline-block; padding-left: 18px; position: relative; width: 145px;}
 .TwitchStreamPanel .containerDefault-1bbItS .stream_collapse .iconDefault-xzclSQ {top: 2px;}
 .TwitchStreamPanel .containerDefault-1bbItS .stream_collapse:hover *, .TwitchStreamPanel .containerDefault-1bbItS .text-right:hover {color: #B9BBBE;}
-.TwitchStreamPanel .stream_container {padding-right: 10px; width: 100%;}
+.TwitchStreamPanel .stream_container table {width: 100%;}
 .TwitchStreamPanel .stream_container .channel-stream {font-size: 14px; font-weight: 500; height: 24px; overflow: hidden; text-overflow: ellipsis; position: relative; white-space: nowrap;}
 .TwitchStreamPanel .stream_container .channel-stream:hover {background-color: #1E2124}
 .TwitchStreamPanel .stream_container .channel-stream_child {vertical-align: middle;}
 .TwitchStreamPanel .stream_container .channel-stream_icon {width: 20px; height: 20px; padding: 0 8px; background-size: 20px 20px; background-repeat: no-repeat; background-position: 50% 50%;}
 .TwitchStreamPanel .stream_container .channel-stream_anchor {max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 .TwitchStreamPanel .stream_container .channel-stream_anchor a {color: #979C9F;}
-.TwitchStreamPanel .stream_container .channel-stream_status {padding-right: 8px; text-align: right; width: 40px;}
-.TwitchStreamPanel .stream_container .stream-online .channel-stream_status {color: #709900; font-weight: 700; padding-right: 10px;}
-.TwitchStreamPanel .stream_container .stream-offline .channel-stream_status {color: #F32323;}
-.TwitchStreamPanel .stream_footer {position: relative;}
+.TwitchStreamPanel .stream_container .channel-stream_status {text-align: right; width: 40px;}
+.TwitchStreamPanel .stream_container .stream-online .channel-stream_status {color: #709900; font-weight: 700; padding-right: 14px;}
+.TwitchStreamPanel .stream_container .stream-offline .channel-stream_status {background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAqUExURQAAAPBGRvBGRu9GRu9GRvBGRvBFRfBHR/w+Pu9GRvBGRvBHR/BGRvBGRuDveooAAAANdFJOUwBv5ieBS/c2ClvMmqunDzf6AAAAk0lEQVQoz22R2xbAEAwEk7gE7f7/71ZVCYfHGWethGg77k470sYFZTMMbhzi1vsA+MCJfDWxczfTkjbTucx3rhia8V8B3J2HGvMZXgokwTDeFuA3/je2WIE1cXAHLIZpPn02GbvROY7FjCyxRknHAE0WrmQH7n8swS6i1sgtrXBa+VtDc3Dr4mC/tIkDb+bIqznyB/ANCkV2LxT1AAAAAElFTkSuQmCC") no-repeat right 10px center; background-size: 14px; opacity: 0.75;}
+.TwitchStreamPanel .stream_footer {margin-top: 10px; position: relative;}
 .TwitchStreamPanel .stream_time {display: inline-block; padding-left: 18px;}
 .TwitchStreamPanel .stream_time span {margin: 0 2px;}
 .TwitchStreamPanel .stream_time #stream-timer::before {content: "(";}
@@ -58,15 +58,15 @@ const TwitchStreamPanel = (function() {
 .orriePluginModal .orriePluginTable {margin: 15px 0 20px;}
 .orriePluginModal .orriePluginTable th {font-weight: 700;}
 .orriePluginModal .orriePluginTable img {height: 20px;}
-.orriePluginModal .orrieAddStreamHeader {text-align: center; position: relative;}
-.orriePluginModal .orriePluginStreamInput button {display: table; margin: 5px auto 0;}
+.orriePluginModal .orrieAddStreamHeader {margin: 0 0 5px; text-align: center; position: relative;}
 .orriePluginModal .orriePluginStreamInput td:first-of-type {white-space: nowrap;}
 .orriePluginModal .orriePluginStreamInput td:last-of-type {width: 100%;}
 .orriePluginModal .orriePluginStreamInput input {width: 100%;}
-.orriePluginModal .orriePluginStreamFooter {position: relative;}
+.orriePluginModal .orriePluginStreamFooter {margin: 5px 0 0; position: relative;}
 .orriePluginModal .orriePluginStreamFooter span {position: absolute; top: 7px; right: 8px;}
 .orriePluginModal .orriePluginStreamList {background-color: rgba(0, 0, 0, 0.15); border: 1px solid rgba(0, 0, 0, 0.25); border-radius: 5px; margin: 0;}
 .orriePluginModal .orriePluginServer {margin-bottom: 10px;}
+.orriePluginModal .orriePluginServer tr:hover td {background-color: #1E2124;}
 .orriePluginModal .orriePluginServer th, .orriePluginModal .orriePluginServer td {font-size: 14px; text-align: center;}
 .orriePluginModal .orriePluginServer button {padding: 1px 6px;}
 .TwitchStreamPanel .toggled, .orriePluginModal .toggled {display: none;}
@@ -164,25 +164,28 @@ const TwitchStreamPanel = (function() {
 		for (let _s_k = Object.keys(serverStreams), _s=0; _s<_s_k.length; _s++) {
 			const stream = serverStreams[_s_k[_s]];
 			streamString.push(stream[1]);
-			streamFragment.appendChild(_createElement("tr", {className: "channel-stream stream-offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='channel-stream_child channel-stream_icon' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='channel-stream_child channel-stream_anchor'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]}'` : ""}>${stream[0]}</a></td><td class='channel-stream_child channel-stream_status'>✘</td>`}));
+			streamFragment.appendChild(_createElement("tr", {className: "channel-stream stream-offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='channel-stream_child channel-stream_icon' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='channel-stream_child channel-stream_anchor'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]}'` : ""}>${stream[0]}</a></td><td class='channel-stream_child channel-stream_status'></td>`}));
 		}
 		// insert stream table before requesting data
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
 			_createElement("div", {className: "containerDefault-1bbItS"}, [
-				_createElement("div", {className: "stream_collapse", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85${!script.settings.state ? " closed-2Hef-I" : ""}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><span class='nameDefault-Lnjrwm'>Streams</span>`,
+				_createElement("div", {className: "stream_collapse nameDefault-Lnjrwm", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85${!script.settings.state ? " closed-2Hef-I" : ""}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><span>Streams</span>`,
 					onclick() {
 						script.settings.state = !script.settings.state;
 						streamContainer.children[1].classList.toggle("toggled");
 						this.firstElementChild.classList.toggle("closed-2Hef-I");
+						this.nextElementSibling.classList.toggle("toggled");
 						forceScrolling(streamContainer.scrollHeight, "scroller-NXV0-d");
 					}
 				}),
-				_createElement("span", {className: "nameDefault-Lnjrwm text-right", innerHTML: "Update", onclick() {streamsUpdate("click");}})
+				_createElement("span", {className: `nameDefault-Lnjrwm text-right${!script.settings.state ? " toggled" : ""}`, innerHTML: "Update", onclick() {streamsUpdate("click");}})
 			]),
-			_createElement("table", {className: `stream_container${!script.settings.state ? " toggled" : ""}`, cellSpacing: 0}, streamFragment),
-			_createElement("div", {className: "stream_footer"}, [
-				_createElement("div", {className: "stream_time nameDefault-Lnjrwm", innerHTML: `<span id="stream-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="stream-timer">00:00</span>`}),
-				_createElement("span", {className: "stream_edit nameDefault-Lnjrwm text-right", innerHTML: "Edit", onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}}),
+			_createElement("div", {className: `stream_container${!script.settings.state ? " toggled" : ""}`}, [
+				_createElement("table", {cellSpacing: 0}, streamFragment),
+				_createElement("div", {className: "stream_footer"}, [
+					_createElement("div", {className: "stream_time nameDefault-Lnjrwm", innerHTML: `<span id="stream-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="stream-timer">00:00</span>`}),
+					_createElement("span", {className: "stream_edit nameDefault-Lnjrwm text-right", innerHTML: "Edit", onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}}),
+				])
 			])
 		]);
 		channelContainer.appendChild(streamContainer);
@@ -194,6 +197,7 @@ const TwitchStreamPanel = (function() {
 		streamsUpdate("initial", serverStreams);
 		if (script.settings.update) {
 			const updateFreq = !Number.isNaN(script.settings.freq) && script.settings.freq >= 120 ? script.settings.freq*1000 : 120000;
+			clearInterval(window.streamUpdateInterval);
 			window.streamUpdateInterval = setInterval(function() {streamsUpdate("interval");}, updateFreq);
 		}
 	},
@@ -250,7 +254,6 @@ const TwitchStreamPanel = (function() {
 						streamItem.classList.add("stream-offline");
 						streamItem.classList.remove("stream-online");
 						delete streamItem.title;
-						streamItem.cells[2].innerHTML = "✘";
 					}
 				}
 				if (streamStamp) {
@@ -287,7 +290,7 @@ const TwitchStreamPanel = (function() {
 		}
 		return _createElement("div", {className: `${script.file} orriePluginSettings`}, [
 			_createElement("div", {className: "orriePluginTable"}, [
-				_createElement("table", "", settingsFragment)
+				_createElement("table", {cellSpacing: 0}, settingsFragment)
 			]),
 			_createElement("div", {className: "orriePluginFooter orriePluginFlex"}, [
 				_createElement("button", {type: "button", innerHTML: `<a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a>`}),
@@ -307,7 +310,7 @@ const TwitchStreamPanel = (function() {
 		servers = BDfunctionsDevilBro.readServerList();
 		serverFragment.appendChild(_createElement("div", {className: "orriePluginAddStream orriePluginTable"}, [
 			_createElement("div", {className: "orrieAddStreamHeader", innerHTML: `<button type='button'>Add New Stream</button>`, onclick() {this.nextElementSibling.classList.toggle("toggled");}}),
-			_createElement("div", {className: "orriePluginStreamInput toggled", id: "saveStreamInput", innerHTML: `<table><tr><td>Discord Name</td><td><input type="text" name="discord_name" placeholder="Optional &#8213; If left blank, plugin will use Twitch display name"></td></tr><tr><td>Twitch Username</td><td><input type="text" name="twitch_name" placeholder="Required"></td></tr><tr><td>Discord ID</td><td><input type="text" name="discord_id" placeholder="Optional &#8213; For coloring. Use dev mode; right click the user and copy ID"></td></tr><tr><td>Custom Icon</td><td><input type="text" name="icon" placeholder="Optional &#8213; If left blank, plugin will use Twitch profile image when possible"></td></tr><tr><td>Server to Hook (ID)</td><td><input type="text" name="server_id" placeholder="Required &#8213; Use dev mode; right click the server icon and copy ID"></td></tr></table><div class='orriePluginStreamFooter orriePluginFlex'><button type='button' onclick='BdApi.getPlugin("${script.name}").saveStream()'>Add to List</button><span id='saveStreamInfo'></span></div>`})
+			_createElement("div", {className: "orriePluginStreamInput toggled", id: "saveStreamInput", innerHTML: `<table><tr><td>Display Name</td><td><input type="text" name="discord_name" placeholder="Optional &#8213; If left blank, plugin will use Twitch display name"></td></tr><tr><td>Twitch Username</td><td><input type="text" name="twitch_name" placeholder="Required"></td></tr><tr><td>Discord ID</td><td><input type="text" name="discord_id" placeholder="Optional &#8213; For coloring. Use dev mode; right click the user and copy ID"></td></tr><tr><td>Custom Icon</td><td><input type="text" name="icon" placeholder="Optional &#8213; If left blank, plugin will use Twitch profile image when possible"></td></tr><tr><td>Server to Hook (ID)</td><td><input type="text" name="server_id" placeholder="Required &#8213; Use dev mode; right click the server icon and copy ID"></td></tr></table><div class='orriePluginStreamFooter orriePluginFlex'><button type='button' onclick='BdApi.getPlugin("${script.name}").saveStream()'>Add to List</button><span id='saveStreamInfo'></span></div>`})
 		]));
 		for (let _a=0, _a_len = servers.length; _a<_a_len; _a++) {
 			const server = servers[_a];
@@ -336,7 +339,7 @@ const TwitchStreamPanel = (function() {
 					}
 					serverFragment.appendChild(_createElement("div", {className: "orriePluginServer"}, [
 						_createElement("div", {className: "orriePluginHeader", innerHTML: `${data.name} &#8213; ID &#10151; ${data.id}`}),
-						_createElement("table", {innerHTML: "<thead><th>Discord Name</th><th>Twitch Username</th><th>Discord ID</th><th>Icon</th><th>Remove</th></thead>"}, streamFragment)
+						_createElement("table", {innerHTML: "<thead><th>Display Name</th><th>Twitch Username</th><th>Discord ID</th><th>Icon</th><th>Remove</th></thead>", cellSpacing: 0}, streamFragment)
 					]));
 				}
 			}
@@ -396,7 +399,7 @@ const TwitchStreamPanel = (function() {
 					script.streams[data[4]][data[1]] = data.splice(0,4);
 					bdPluginStorage.set(script.file, "streams", script.streams);
 					twitchStreamList.innerHTML = "";
-					twitchStreamList.appendChild(createSettingsServerList());
+					twitchStreamList.appendChild(createServerList());
 					streamStatus.classList.add("itemBrand-mC9YR4");
 					streamStatus.textContent = "Saved!";
 				}
