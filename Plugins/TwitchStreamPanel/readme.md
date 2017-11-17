@@ -17,6 +17,6 @@ Stream list is customizeable, with dedicated lists per Discord Server
 * Import/Export streamlist
 
 ## Previews
-![Panel](https://orrie.s-ul.eu/preview/nBwalSft)
+![Panel](https://orrie.s-ul.eu/preview/I6zb9vzH)
 ![Settings](https://orrie.s-ul.eu/preview/Dy5qKRGO)
 ![Streamlist](https://orrie.s-ul.eu/preview/M2rpvG2i)
