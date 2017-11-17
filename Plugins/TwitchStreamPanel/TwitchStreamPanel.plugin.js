@@ -336,10 +336,10 @@ const TwitchStreamPanel = (function() {
 									onclick() {
 										delete script.streams[data.id][streamer[1]];
 										this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);
-										bdPluginStorage.set(script.file, "streams", script.streams);
 										if (Object.keys(script.streams[data.id]).length === 0) {
 											delete script.streams[data.id];
 										}
+										bdPluginStorage.set(script.file, "streams", script.streams);
 										streamsRemove();
 										streamsInsert();
 									}
