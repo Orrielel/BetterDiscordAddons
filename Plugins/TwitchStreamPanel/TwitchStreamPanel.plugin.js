@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.3.1",
+		version: "1.3.2",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -59,14 +59,16 @@ const TwitchStreamPanel = (function() {
 .orriePluginModal .orriePluginTable {margin: 15px 0 20px;}
 .orriePluginModal .orriePluginTable th {font-weight: 700;}
 .orriePluginModal .orriePluginTable img {height: 20px;}
+.orriePluginModal .orriePluginAddStream {margin: 0; width: 100%;}
 .orriePluginModal .orrieAddStreamHeader {margin: 0 0 5px; text-align: center; position: relative;}
+.orriePluginModal .orriePluginStreamInput {height: 150px;}
 .orriePluginModal .orriePluginStreamInput td:first-of-type {white-space: nowrap;}
 .orriePluginModal .orriePluginStreamInput td:last-of-type {width: 100%;}
 .orriePluginModal .orriePluginStreamInput input {width: 100%;}
 .orriePluginModal .orriePluginStreamFooter {margin: 5px 0 0; position: relative;}
 .orriePluginModal .orriePluginStreamFooter span {position: absolute; top: 7px; right: 8px;}
 .orriePluginModal .orriePluginStreamList {background-color: rgba(0, 0, 0, 0.15); border: 1px solid rgba(0, 0, 0, 0.25); border-radius: 5px; margin: 0;}
-.orriePluginModal .orriePluginServer {margin-bottom: 10px;}
+.orriePluginModal .orriePluginServer {margin: 10px 0;}
 .orriePluginModal .orriePluginServer tr:hover td {background-color: #1E2124;}
 .orriePluginModal .orriePluginServer th, .orriePluginModal .orriePluginServer td {font-size: 14px; text-align: center;}
 .orriePluginModal .orriePluginServer button {padding: 1px 6px;}
@@ -89,7 +91,7 @@ const TwitchStreamPanel = (function() {
 .orriePluginSettings .orriePluginTable input[type=range]::-webkit-slider-runnable-track {border: 2px solid #CFD8DC; cursor: pointer; height: 8px;}
 .orriePluginSettings .orriePluginTable input[type=range]:focus::-webkit-slider-runnable-track {background: #787C84;}
 .orriePluginSettings .orriePluginTable input[type=range]::-webkit-slider-thumb {-webkit-appearance: none; background: #45484E; border: 2px solid #CFD8DC; border-radius: 3px; cursor: pointer; height: 16px; margin-top: -6px; width: 8px;}
-.orriePluginSettings .orriePluginTable input[type=text] {color: #B0B6B9; background: inherit; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; padding: 0 2px;}
+.orriePluginSettings .orriePluginTable input[type=text] {box-sizing: border-box; color: #B0B6B9; background: inherit; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; padding: 0 2px;}
 .orriePluginSettings .orriePluginFooter {border-top: 1px solid #3F4146; font-size: 12px; font-weight: 700; margin-bottom: 5px; padding-top: 5px;}
 .orriePluginSettings .orriePluginNotice {text-align: center;}
 .orriePluginSettings .orriePluginFlex {display: flex; justify-content: space-around;}
@@ -303,17 +305,18 @@ const TwitchStreamPanel = (function() {
 		]);
 	},
 	createStreamModal = function() {
-		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal orriePluginSettings DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div><div class='modal-2LIEKY'><div class='inner-1_1f7b'><div class='modal-3HOjGZ sizeMedium-1-2BNS'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4><div class='guildName-1u0hy7 small-3-03j1 size12-1IGJl9 height16-1qXrGy primary-2giqSn'></div></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div><div class='scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW'><div  class='scroller-fzNley inner-tqJwAU orriePlugin-content orriePluginStreamList orriePluginTable'></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontalReverse-2LanvO horizontalReverse-k5PqxT flex-3B1Tl4 directionRowReverse-2eZTxP justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO footer-1PYmcw'><div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'>Saves Automatically</div></div></div></div></div>"});
+		
+		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal orriePluginSettings DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div><div class='modal-2LIEKY'><div class='inner-1_1f7b'><div class='modal-3HOjGZ sizeMedium-1-2BNS'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO marginBottom8-1mABJ4 orriePlugin-menu' style='flex: 0 0 auto;'></div><div class='scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW'><div class='scroller-fzNley inner-tqJwAU orriePlugin-content orriePluginStreamList orriePluginTable'></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontalReverse-2LanvO horizontalReverse-k5PqxT flex-3B1Tl4 directionRowReverse-2eZTxP justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO footer-1PYmcw'><div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'>Saves Automatically</div></div></div></div></div>"});
+		modal.getElementsByClassName("orriePlugin-menu")[0].appendChild(_createElement("div", {className: "orriePluginAddStream orriePluginTable inner-tqJwAU"}, [
+			_createElement("div", {className: "orrieAddStreamHeader", innerHTML: `<button type='button'>Add New Stream</button>`, onclick() {this.nextElementSibling.classList.toggle("toggled");}}),
+			_createElement("div", {className: "orriePluginStreamInput toggled", id: "saveStreamInput", innerHTML: `<table><tr><td>Display Name</td><td><input type="text" name="discord_name" placeholder="Optional &#8213; If left blank, plugin will use Twitch display name"></td></tr><tr><td>Twitch Username</td><td><input type="text" name="twitch_name" placeholder="Required"></td></tr><tr><td>Discord ID</td><td><input type="text" name="discord_id" placeholder="Optional &#8213; For coloring. Use dev mode; right click the user and copy ID"></td></tr><tr><td>Custom Icon</td><td><input type="text" name="icon" placeholder="Optional &#8213; If left blank, plugin will use Twitch profile image when possible"></td></tr><tr><td>Server to Hook (ID)</td><td><input type="text" name="server_id" placeholder="Required &#8213; Use dev mode; right click the server icon and copy ID"></td></tr></table><div class='orriePluginStreamFooter orriePluginFlex'><button type='button' onclick='BdApi.getPlugin("${script.name}").saveStream()'>Add to List</button><span id='saveStreamInfo'></span></div>`})
+		]));
 		modal.getElementsByClassName("orriePlugin-content")[0].appendChild(createServerList());
 		return modal;
 	},
 	createServerList = function () {
 		const serverFragment = document.createDocumentFragment(),
 		servers = BDfunctionsDevilBro.readServerList();
-		serverFragment.appendChild(_createElement("div", {className: "orriePluginAddStream orriePluginTable"}, [
-			_createElement("div", {className: "orrieAddStreamHeader", innerHTML: `<button type='button'>Add New Stream</button>`, onclick() {this.nextElementSibling.classList.toggle("toggled");}}),
-			_createElement("div", {className: "orriePluginStreamInput toggled", id: "saveStreamInput", innerHTML: `<table><tr><td>Display Name</td><td><input type="text" name="discord_name" placeholder="Optional &#8213; If left blank, plugin will use Twitch display name"></td></tr><tr><td>Twitch Username</td><td><input type="text" name="twitch_name" placeholder="Required"></td></tr><tr><td>Discord ID</td><td><input type="text" name="discord_id" placeholder="Optional &#8213; For coloring. Use dev mode; right click the user and copy ID"></td></tr><tr><td>Custom Icon</td><td><input type="text" name="icon" placeholder="Optional &#8213; If left blank, plugin will use Twitch profile image when possible"></td></tr><tr><td>Server to Hook (ID)</td><td><input type="text" name="server_id" placeholder="Required &#8213; Use dev mode; right click the server icon and copy ID"></td></tr></table><div class='orriePluginStreamFooter orriePluginFlex'><button type='button' onclick='BdApi.getPlugin("${script.name}").saveStream()'>Add to List</button><span id='saveStreamInfo'></span></div>`})
-		]));
 		for (let _a=0, _a_len = servers.length; _a<_a_len; _a++) {
 			const server = servers[_a];
 			if (server.offsetParent) {
@@ -334,6 +337,11 @@ const TwitchStreamPanel = (function() {
 										delete script.streams[data.id][streamer[1]];
 										this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);
 										bdPluginStorage.set(script.file, "streams", script.streams);
+										if (Object.keys(script.streams[data.id]).length === 0) {
+											delete script.streams[data.id];
+										}
+										streamsRemove();
+										streamsInsert();
 									}
 								})
 							])
@@ -394,7 +402,7 @@ const TwitchStreamPanel = (function() {
 			}
 			if (data[1] && data[4]) {
 				if (BDfunctionsDevilBro.getDivOfServer(data[4])) {
-					const twitchStreamList = document.getElementById("twitchStreamList");
+					const twitchStreamList = document.getElementsByClassName("orriePlugin-content")[0];
 					if (!script.streams[data[4]]) {
 						script.streams[data[4]] = {};
 					}
@@ -403,7 +411,10 @@ const TwitchStreamPanel = (function() {
 					twitchStreamList.innerHTML = "";
 					twitchStreamList.appendChild(createServerList());
 					streamStatus.classList.add("itemBrand-mC9YR4");
-					streamStatus.textContent = "Saved!";
+					streamStatus.textContent = "Saved Successfully!";
+					// remake streamlist
+					streamsRemove();
+					streamsInsert();
 				}
 				else {
 					streamStatus.classList.add("itemDanger-3m3dwx");
@@ -418,9 +429,6 @@ const TwitchStreamPanel = (function() {
 				streamStatus.className = "";
 				streamStatus.textContent = "";
 			}, 2500);
-			// remake streamlist
-			streamsRemove();
-			streamsInsert();
 		}
 		// clean database
 		cleanDB(elem) {
