@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.3.5",
+		version: "1.3.6",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -20,7 +20,7 @@ const TwitchStreamPanel = (function() {
 		},
 		streamAPI: false,
 		streams: {},
-		streamsActive: false, 
+		streamsActive: false,
 		settings: {colors: true, state: true, update: true, freq: 300, debug: false},
 		settingsMenu: {
 			//       localized         type     description
@@ -36,7 +36,7 @@ const TwitchStreamPanel = (function() {
 .TwitchStreamPanel .tsp-update_button {display: inline-block; padding-left: 0; width: auto;}
 .TwitchStreamPanel .nameDefault-Lnjrwm:hover {color: #B9BBBE;}
 .TwitchStreamPanel .nameDefault-Lnjrwm:hover svg {color: #B9BBBE;}
-.TwitchStreamPanel .content-2mSKOj {display: table; width: 100%;}
+.TwitchStreamPanel .content-2mSKOj {display: table; margin: 0; padding: 1px 0px 1px 16px; width: 100%;}
 .TwitchStreamPanel .tsp-stream_row {font-weight: 500; line-height: 24px;}
 .TwitchStreamPanel .tsp-stream_row:hover {background-color: rgba(0,0,0,0.2);}
 .TwitchStreamPanel .tsp-stream_row_child {vertical-align: middle;}
@@ -64,29 +64,13 @@ const TwitchStreamPanel = (function() {
 .orriePluginModal .tsp-stream_server button {border-radius: 5px; color: #FFFFFF; padding: 1px 6px;}
 			`,
 			shared: `
-.orriePluginSettings .orriePluginHeader {border-bottom: 1px solid #3F4146; font-weight: 700; margin-bottom: 5px; padding-bottom: 2px; text-align: center;}
-.orriePluginSettings .orriePluginTable {margin: 0;}
-.orriePluginSettings .orriePluginTable table {width: 100%;}
-.orriePluginSettings .orriePluginTable td {vertical-align: middle;}
-.orriePluginSettings .orriePluginTable input[type=checkbox] {-webkit-appearance: none; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,0.2); border-radius: 3px; cursor: pointer; height: 18px; width: 18px; position: relative; -webkit-transition: .15s;}
-.orriePluginSettings .orriePluginTable input[type=checkbox]:checked {background-color: #7289DA; border: none;}
-.orriePluginSettings .orriePluginTable input[type=checkbox]:before, .orriePluginSettings .orriePluginTable input[type=checkbox]:checked:before {color: #FFFFFF; position: absolute; top: 0; left: 0; height: 100%; width: 100%; line-height: 100%; text-align: center;}
-.orriePluginSettings .orriePluginTable input[type=checkbox]:checked:before {content: '✔'; line-height: unset;}
-.orriePluginSettings .orriePluginTable input[type=range]:focus {outline: none;}
-.orriePluginSettings .orriePluginTable input[type=range] {-webkit-appearance: none; margin: 0;}
-.orriePluginSettings .orriePluginTable input[type=range]::-webkit-slider-runnable-track {border: 2px solid #CFD8DC; cursor: pointer; height: 8px;}
-.orriePluginSettings .orriePluginTable input[type=range]:focus::-webkit-slider-runnable-track {background: #787C84;}
-.orriePluginSettings .orriePluginTable input[type=range]::-webkit-slider-thumb {-webkit-appearance: none; background: #45484E; border: 2px solid #CFD8DC; border-radius: 3px; cursor: pointer; height: 16px; margin-top: -6px; width: 8px;}
-.orriePluginSettings .orriePluginTable input[type=text] {box-sizing: border-box; color: #B0B6B9; background: inherit; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; padding: 0 2px;}
-.orriePluginSettings .orriePluginFooter {border-top: 1px solid #3F4146; font-size: 12px; font-weight: 700; margin-bottom: 5px; padding-top: 5px;}
-.orriePluginSettings .orriePluginNotice {text-align: center;}
-.orriePluginFlex {display: flex; justify-content: space-around;}
-.orriePluginSettings .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
+.orrie-flex {display: flex; justify-content: space-around;}
+.orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
-.orrie-toggled {display: none;}
+.orrie-toggled {display: none !important;}
 .orrie-centerText {text-align: center;}
-.theme-dark .orriePluginSettings {color: #B0B6B9;}
+.theme-dark .orrie-plugin {color: #B0B6B9;}
 			`
 		}
 	},
@@ -104,6 +88,29 @@ const TwitchStreamPanel = (function() {
 			script.streams = {};
 		}
 		log("info", "Settings Loaded");
+	},
+	settingsSave = function(key, data) {
+		// save settings
+		script.settings[key] = data;
+		bdPluginStorage.set(script.file, "settings", script.settings);
+		log("info", "Settings Saved", [key, data]);
+	},
+	settingsAnimate = function(data, type, elem) {
+		// animate settings changes
+		switch(type) {
+			case "check":
+				elem.nextElementSibling.classList.toggle("checked");
+				break;
+			case "range":
+				const value = `${(data*100).toFixed(0)}%`;
+				elem.previousElementSibling.textContent = value;
+				elem.style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
+				break;
+			case "text":
+				break;
+			default:
+				break;
+		}
 	},
 	cleanDB = function() {
 		// clean database
@@ -167,7 +174,7 @@ const TwitchStreamPanel = (function() {
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
 			_createElement("div", {className: "containerDefault-1bbItS"}, [
 				_createElement("div", {className: "flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStart-pnSyE6 noWrap-v6g9vO wrapperDefault-1Dl4SS cursorPointer-3oKATS"}, [
-					_createElement("div", {className: `nameDefault-Lnjrwm colorTransition-2iZaYd tsp-streams_button`, innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85${!script.settings.state ? " closed-2Hef-I" : ""}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg>Streams`, 
+					_createElement("div", {className: `nameDefault-Lnjrwm colorTransition-2iZaYd tsp-streams_button`, innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85${!script.settings.state ? " closed-2Hef-I" : ""}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg>Streams`,
 					onclick() {
 						script.settings.state = !script.settings.state;
 						streamContainer.children[1].classList.toggle("orrie-toggled");
@@ -275,23 +282,39 @@ const TwitchStreamPanel = (function() {
 		settingType = function(key, props) {
 			switch(props[1]) {
 				case "check":
-					return `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' type='checkbox'${script.settings[key] ? " checked=checked" : ""} onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.checked)'/></td><td>${props[2]}</td>`;
+					const checked = script.settings[key] ? "checked" : "";
+					return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
+						_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked, onchange() {settingsSave(key, this.checked); settingsAnimate(this.checked, "check", this);}}),
+						_createElement("div", {className: `ui-switch ${checked}`})
+					]);
 				case "range":
-					return `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' value='${script.settings[key]}' type='range' min='0' max='1' step='0.05' onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.value)'/></td><td>${props[2]}</td>`;
+					const value = `${(script.settings[key]*100).toFixed(0)}%`;
+					return _createElement("div", {className: "plugin-setting-input-container"}, [
+						_createElement("span", {className: "plugin-setting-label", innerHTML: value}),
+						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`, oninput() {settingsSave(key, this.value); settingsAnimate(this.value, "range", this);}})
+					]);
 				case "text":
-					return `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' value='${script.settings[key]}' type='text' onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.value)'/></td><td>${props[2]}</td>`;
+					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key], onchange() {settingsSave(key, this.value);}});
 				default:
 					return "";
 			}
 		};
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
-			settingsFragment.appendChild(_createElement("tr", {innerHTML: settingType(_s_k[_s], script.settingsMenu[_s_k[_s]])}));
+			const setting = script.settingsMenu[_s_k[_s]];
+			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
+				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row"}, [
+					_createElement("h3", {className: "input-wrapper", innerHTML: setting[0]}),
+					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
+				]),
+				_createElement("div", {className: "ui-form-text style-description margin-top-4", innerHTML: setting[2]})
+			]));
 		}
-		return _createElement("div", {className: `${script.file} orriePluginSettings`}, [
-			_createElement("div", {className: "orriePluginTable"}, [
-				_createElement("table", {cellSpacing: 0}, settingsFragment)
+		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
+			_createElement("div", {className: "ops-plugin_wrapper"}, [
+				_createElement("h2", {className: "h5-3KssQU title-1pmpPr marginReset-3hwONl height16-1qXrGy weightSemiBold-T8sxWH defaultMarginh5-2UwwFY marginBottom8-1mABJ4", innerHTML: "Settings"}),
+				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
-			_createElement("div", {className: "orriePluginFooter orriePluginFlex"}, [
+			_createElement("div", {className: "orrie-flex"}, [
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a>`}),
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a>`}),
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: "Edit Streamlist", onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}}),
@@ -300,7 +323,7 @@ const TwitchStreamPanel = (function() {
 		]);
 	},
 	createStreamModal = function() {
-		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div><div class='modal-2LIEKY'><div class='inner-1_1f7b'><div class='modal-3HOjGZ sizeMedium-1-2BNS'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO marginBottom8-1mABJ4 tsp-menu' style='flex: 0 0 auto;'></div><div class='scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW'><div class='scroller-fzNley inner-tqJwAU cardPrimary-ZVL9Jr tsp-content'></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontalReverse-2LanvO horizontalReverse-k5PqxT flex-3B1Tl4 directionRowReverse-2eZTxP justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO footer-1PYmcw'><div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'><h3 class='titleDefault-1CWM9y title-3i-5G_ marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;'>Saves Automatically</h3></div></div></div></div></div>"});
+		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div><div class='modal-2LIEKY'><div class='inner-1_1f7b'><div class='modal-3HOjGZ sizeMedium-1-2BNS'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO tsp-menu' style='flex: 0 0 auto;'></div><div class='scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW'><div class='scroller-fzNley inner-tqJwAU cardPrimary-ZVL9Jr tsp-content'></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontalReverse-2LanvO horizontalReverse-k5PqxT flex-3B1Tl4 directionRowReverse-2eZTxP justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO footer-1PYmcw'><div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'><h3 class='titleDefault-1CWM9y title-3i-5G_ marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;'>Saves Automatically</h3></div></div></div></div></div>"});
 		modal.getElementsByClassName("tsp-menu")[0].appendChild(_createElement("div", {className: "flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-bottom-8", style: "flex: 0 0 100%;"}, [
 			_createElement("div", {className: "tsp-stream_header", innerHTML: `<button class='buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC' type='button'>Add New Stream</button>`, onclick() {this.classList.toggle("orrie-toggled"); this.nextElementSibling.classList.toggle("orrie-toggled");}}),
 			_createElement("div", {className: "orrie-toggled", id: "tsp-stream_input", style: "flex: 0 1 100%;"}, [
@@ -309,7 +332,7 @@ const TwitchStreamPanel = (function() {
 						_createElement("div", {className: "orrie-centerText", innerHTML: "<div id='tsp-stream_status'></div>", style: "flex: 1 1 auto;"}),
 						_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {const stream_input = document.getElementById("tsp-stream_input"); stream_input.classList.toggle("orrie-toggled"); stream_input.previousElementSibling.classList.toggle("orrie-toggled");}})
 				]),
-				_createElement("div", {className: "content-2mSKOj flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-bottom-8", innerHTML: "<div class='ui-form-item flexChild-1KGW5q' style='flex: 1 0 auto;'><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='discord_name' placeholder='Display Name &#8213; Optional &#8213; If left blank, plugin will use Twitch display name' type='text'></div></div><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='twitch_name' placeholder='Twitch Username &#8213; Required' type='text'></div></div><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='discord_id' placeholder='Discord ID &#8213; Optional &#8213; For coloring. Use dev mode; right click the user and copy ID' type='text'></div></div><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='icon' placeholder='Custom Icon &#8213; Optional &#8213; If left blank, plugin will use Twitch profile image when possible' type='text'></div></div><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='server_id' placeholder='Server to Hook (ID) &#8213; Required &#8213; Use dev mode; right click the server icon and copy ID' type='text'></div></div></div>"})
+				_createElement("div", {className: "content-2mSKOj flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-bottom-8", innerHTML: "<div class='ui-form-item flexChild-1KGW5q' style='flex: 1 0 auto;'><div class='ui-input-button'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='discord_name' placeholder='Display Name &#8213; Optional &#8213; If left blank, plugin will use Twitch display name' type='text'></div></div><div class='ui-input-button'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='twitch_name' placeholder='Twitch Username &#8213; Required' type='text'></div></div><div class='ui-input-button'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='discord_id' placeholder='Discord ID &#8213; Optional &#8213; For coloring. Use dev mode; right click the user and copy ID' type='text'></div></div><div class='ui-input-button'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='icon' placeholder='Custom Icon &#8213; Optional &#8213; If left blank, plugin will use Twitch profile image when possible' type='text'></div></div><div class='ui-input-button'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='server_id' placeholder='Server to Hook (ID) &#8213; Required &#8213; Use dev mode; right click the server icon and copy ID' type='text'></div></div></div>"})
 			])
 		]));
 		modal.getElementsByClassName("tsp-content")[0].appendChild(createServerList());
@@ -407,7 +430,7 @@ const TwitchStreamPanel = (function() {
 			}
 		}
 		if (children) {
-			if (children.childElementCount) {
+			if (children.nodeType) {
 				element.appendChild(children);
 			}
 			else {
@@ -428,17 +451,11 @@ const TwitchStreamPanel = (function() {
 		getSettingsPanel() {
 			return createSettingsPanel();
 		}
-		// save settings
-		settingsSave(key, value) {
-			script.settings[key] = value;
-			bdPluginStorage.set(script.file, "settings", script.settings);
-			log("info", "Settings Saved", [key, value]);
-		}
 		// load, start and observer
 		load() {
 			console.info(`${script.name} v${script.version} loaded.`);
-			BdApi.clearCSS("orriePluginSettings");
-			BdApi.injectCSS("orriePluginSettings", script.css.shared);
+			BdApi.clearCSS("orrie-plugin");
+			BdApi.injectCSS("orrie-plugin", script.css.shared);
 		}
 		start() {
 			settingsLoad();
