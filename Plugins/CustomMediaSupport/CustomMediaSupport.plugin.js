@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.3",
+		version: "1.8.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -122,28 +122,13 @@ const CustomMediaSupport = (function() {
 .greentext {color: #709900;}
 			`,
 			shared: `
-.orriePluginSettings .orriePluginHeader {border-bottom: 1px solid #3F4146; font-weight: 700; margin-bottom: 5px; padding-bottom: 2px; text-align: center;}
-.orriePluginSettings .orriePluginHeader .iconDefault-xzclSQ {position: static;}
-.orriePluginSettings .orriePluginTable {margin: 0;}
-.orriePluginSettings .orriePluginTable table {width: 100%;}
-.orriePluginSettings .orriePluginTable td {vertical-align: middle;}
-.orriePluginSettings .orriePluginTable input[type=checkbox] {-webkit-appearance: none; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; cursor: pointer; height: 18px; width: 18px; position: relative; -webkit-transition: .15s;}
-.orriePluginSettings .orriePluginTable input[type=checkbox]:checked {background-color: #7289DA; border: none;}
-.orriePluginSettings .orriePluginTable input[type=checkbox]:before, .orriePluginSettings .orriePluginTable input[type=checkbox]:checked:before {color: #FFFFFF; position: absolute; top: 0; left: 0; height: 100%; width: 100%; line-height: 100%; text-align: center;}
-.orriePluginSettings .orriePluginTable input[type=checkbox]:checked:before {content: '✔'; line-height: unset;}
-.orriePluginSettings .orriePluginTable input[type=range]:focus {outline: none;}
-.orriePluginSettings .orriePluginTable input[type=range] {-webkit-appearance: none; margin: 0;}
-.orriePluginSettings .orriePluginTable input[type=range]::-webkit-slider-runnable-track {border: 2px solid #CFD8DC; cursor: pointer; height: 8px;}
-.orriePluginSettings .orriePluginTable input[type=range]:focus::-webkit-slider-runnable-track {background: #787C84;}
-.orriePluginSettings .orriePluginTable input[type=range]::-webkit-slider-thumb {-webkit-appearance: none; background: #45484E; border: 2px solid #CFD8DC; border-radius: 3px; cursor: pointer; height: 16px; margin-top: -6px; width: 8px;}
-.orriePluginSettings .orriePluginTable input[type=text] {color: #B0B6B9; background: inherit; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; padding: 0 2px;}
-.orriePluginSettings .orriePluginFooter {border-top: 1px solid #3F4146; font-size: 12px; font-weight: 700; margin-bottom: 5px; padding-top: 5px;}
-.orriePluginSettings .orriePluginNotice {text-align: center;}
-.orriePluginSettings .orriePluginFlex {display: flex; justify-content: space-around;}
-.orriePluginSettings button {background: #7289DA; color: #FFFFFF; border-radius: 5px; padding: 2px 16px;}
-.orriePluginSettings button.warning {background: #F04747;}
-.orriePluginSettings button a {color: #FFFFFF;}
-.theme-dark .orriePluginSettings {color: #B0B6B9;}
+.orrie-flex {display: flex; justify-content: space-around;}
+.orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
+.orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
+.orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
+.orrie-toggled {display: none !important;}
+.orrie-centerText {text-align: center;}
+.theme-dark .orrie-plugin {color: #B0B6B9;}
 			`
 		},
 		db: {}
@@ -158,6 +143,35 @@ const CustomMediaSupport = (function() {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
 		log("info", "Settings Loaded");
+	},
+	settingsSave = function(key, data) {
+		// save settings
+		script.settings[key] = data;
+		bdPluginStorage.set(script.file, "settings", script.settings);
+		log("info", "Settings Saved", [key, data]);
+	},
+	settingsAnimate = function(data, type, elem) {
+		// animate settings changes
+		switch(type) {
+			case "check":
+				elem.nextElementSibling.classList.toggle("checked");
+				break;
+			case "range":
+				const value = `${(data*100).toFixed(0)}%`;
+				elem.previousElementSibling.textContent = value;
+				elem.style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
+				break;
+			case "text":
+				break;
+			default:
+				break;
+		}
+	},
+	cleanDB = function(elem) {
+		// clean database
+		script.db = {};
+		bdPluginStorage.set(script.file, "db", {});
+		elem.innerHTML = "Clean Database (0)";
 	},
 	checkForUpdate = function() {
 		let libraryScript = document.getElementById('zeresLibraryScript');
@@ -299,7 +313,7 @@ const CustomMediaSupport = (function() {
 							case "video":
 							case "audio":
 								return {check: href, controls: true, preload: "metadata", loop: script.settings.loop, autoplay: script.settings.autoplay,
-									onclick() {if (this.paused) {this.play();}else {this.pause();}},
+									onclick(){if (this.paused) {this.play();}else {this.pause();}},
 									onloadedmetadata() {
 										if (fileMedia == "video") {
 											if (script.settings.hoverPlay) {
@@ -339,6 +353,13 @@ const CustomMediaSupport = (function() {
 			])
 		]);
 		message_body.parentNode.insertBefore(container, message_body.nextSibling);
+		// remove original accessory previews if they exist
+		if (fileSite && fileSite[4] || script.media.replace.includes(hrefSplit[2])) {
+			const replaceMedia = message.querySelectorAll(".accessory:not(.customMedia)");
+			if (replaceMedia[0].firstElementChild) {
+				replaceMedia[0].firstElementChild.remove();
+			}
+		}
 	},
 	mediaCheck = function(message, href) {
 		const media_elements = message.getElementsByClassName("customMedia");
@@ -528,24 +549,44 @@ const CustomMediaSupport = (function() {
 		settingType = function(key, props) {
 			switch(props[1]) {
 				case "check":
-					return _createElement("tr", {innerHTML: `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' type='checkbox'${script.settings[key] ? " checked=checked" : ""} onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.checked)'/></td><td>${props[2]}</td>`});
+					const checked = script.settings[key] ? "checked" : "";
+					return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
+						_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked, onchange() {settingsSave(key, this.checked); settingsAnimate(this.checked, "check", this);}}),
+						_createElement("div", {className: `ui-switch ${checked}`})
+					]);
 				case "range":
-					return _createElement("tr", {innerHTML: `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' value='${script.settings[key]}' type='range' min='0' max='1' step='0.05' onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.value)'/></td><td>${props[2]}</td>`});
+					const value = `${(script.settings[key]*100).toFixed(0)}%`;
+					return _createElement("div", {className: "plugin-setting-input-container"}, [
+						_createElement("span", {className: "plugin-setting-label", innerHTML: value}),
+						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`, oninput() {settingsSave(key, this.value); settingsAnimate(this.value, "range", this);}})
+					]);
 				case "text":
-					return _createElement("tr", {innerHTML: `<td><label for='id_${key}'>${props[0]}</label></td><td><input id='id_${key}' name='${key}' value='${script.settings[key]}' type='text' onchange='BdApi.getPlugin("${script.name}").settingsSave("${key}", this.value)'/></td><td>${props[2]}</td>`});
+					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key], onchange() {settingsSave(key, this.value);}});
 				default:
 					return "";
 			}
 		};
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
-			settingsFragment.appendChild(settingType(_s_k[_s], script.settingsMenu[_s_k[_s]]));
+			const setting = script.settingsMenu[_s_k[_s]];
+			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
+				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row"}, [
+					_createElement("h3", {className: "input-wrapper", innerHTML: setting[0]}),
+					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
+				]),
+				_createElement("div", {className: "ui-form-text style-description margin-top-4", innerHTML: setting[2]})
+			]));
 		}
-		return _createElement("div", {className: `${script.file} orriePluginSettings`}, [
-			_createElement("div", {className: "orriePluginTable"}, [
-				_createElement("table", "", settingsFragment)
+		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
+			_createElement("div", {className: "ops-plugin_wrapper"}, [
+				_createElement("h2", {className: "h5-3KssQU title-1pmpPr marginReset-3hwONl height16-1qXrGy weightSemiBold-T8sxWH defaultMarginh5-2UwwFY marginBottom8-1mABJ4", innerHTML: "Settings"}),
+				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
-			_createElement("div", {className: "orriePluginFooter orriePluginFlex", innerHTML: `<button><a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a></button><button><a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a></button><button class='warning' onclick='BdApi.getPlugin(\"${script.name}\").cleanDB(this)'>Clean Database (${Object.keys(script.db).length || 0})</button>`}),
-			_createElement("div", {className: "orriePluginNotice", innerHTML: "It's recommended to clean the database on a regular basis"}),
+			_createElement("div", {className: "orrie-flex"}, [
+				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a>`}),
+				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a>`}),
+				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db).length || 0})`, onclick() {cleanDB(this);}})
+			]),
+			_createElement("div", {className: "orrie-centerText", innerHTML: "It's recommended to clean the database on a regular basis"}),
 		]);
 	},
 	_createElement = function(tag, attributes, children) {
@@ -557,7 +598,7 @@ const CustomMediaSupport = (function() {
 			}
 		}
 		if (children) {
-			if (children.childElementCount) {
+			if (children.nodeType) {
 				element.appendChild(children);
 			}
 			else {
@@ -578,23 +619,11 @@ const CustomMediaSupport = (function() {
 		getSettingsPanel() {
 			return createSettingsPanel();
 		}
-		// save settings
-		settingsSave(key, value) {
-			script.settings[key] = value;
-			bdPluginStorage.set(script.file, "settings", script.settings);
-			log("info", "Settings Saved", [key, value]);
-		}
-		// clean database
-		cleanDB(elem) {
-			script.db = {};
-			bdPluginStorage.set(script.file, "db", {});
-			elem.innerHTML = "Clean Database (0)";
-		}
 		// load, start and observer
 		load() {
 			console.info(`${script.name} v${script.version} loaded.`);
-			BdApi.clearCSS("orriePluginSettings");
-			BdApi.injectCSS("orriePluginSettings", script.css.shared);
+			BdApi.clearCSS("orrie-plugin");
+			BdApi.injectCSS("orrie-plugin", script.css.shared);
 		}
 		start() {
 			checkForUpdate();
