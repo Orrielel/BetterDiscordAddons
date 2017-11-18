@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.3.4",
+		version: "1.3.5",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -32,57 +32,43 @@ const TwitchStreamPanel = (function() {
 		},
 		css: {
 			script: `
-.TwitchStreamPanel {color: #72767D;}
-.TwitchStreamPanel .nameDefault-Lnjrwm:not(.stream_time) {cursor: pointer;}
-.TwitchStreamPanel .nameDefault-Lnjrwm:hover:not(.stream_time) {color: #B9BBBE;}
-.TwitchStreamPanel .text-right {position: absolute; right: 15px;}
-.TwitchStreamPanel .containerDefault-1bbItS {margin-bottom: 10px;}
-.TwitchStreamPanel .containerDefault-1bbItS .stream_collapse {display: inline-block; padding-left: 18px; position: relative; width: 145px;}
-.TwitchStreamPanel .containerDefault-1bbItS .stream_collapse .iconDefault-xzclSQ {top: 2px;}
-.TwitchStreamPanel .containerDefault-1bbItS .stream_collapse:hover *, .TwitchStreamPanel .containerDefault-1bbItS .text-right:hover {color: #B9BBBE;}
-.TwitchStreamPanel .stream_container table {width: 100%;}
-.TwitchStreamPanel .stream_container .channel-stream {font-size: 14px; font-weight: 500; height: 24px; overflow: hidden; text-overflow: ellipsis; position: relative; white-space: nowrap;}
-.TwitchStreamPanel .stream_container .channel-stream:hover {background-color: #1E2124}
-.TwitchStreamPanel .stream_container .channel-stream_child {vertical-align: middle;}
-.TwitchStreamPanel .stream_container .channel-stream_icon {width: 20px; height: 20px; padding: 0 8px; background-size: 20px 20px; background-repeat: no-repeat; background-position: 50% 50%;}
-.TwitchStreamPanel .stream_container .channel-stream_anchor {max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
-.TwitchStreamPanel .stream_container .channel-stream_anchor a {color: #979C9F;}
-.TwitchStreamPanel .stream_container .channel-stream_status {text-align: right; width: 40px;}
-.TwitchStreamPanel .stream_container .stream-online .channel-stream_status {color: #709900; font-weight: 700; padding-right: 14px;}
-.TwitchStreamPanel .stream_container .stream-offline .channel-stream_status {background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAqUExURQAAAPBGRvBGRu9GRu9GRvBGRvBFRfBHR/w+Pu9GRvBGRvBHR/BGRvBGRuDveooAAAANdFJOUwBv5ieBS/c2ClvMmqunDzf6AAAAk0lEQVQoz22R2xbAEAwEk7gE7f7/71ZVCYfHGWethGg77k470sYFZTMMbhzi1vsA+MCJfDWxczfTkjbTucx3rhia8V8B3J2HGvMZXgokwTDeFuA3/je2WIE1cXAHLIZpPn02GbvROY7FjCyxRknHAE0WrmQH7n8swS6i1sgtrXBa+VtDc3Dr4mC/tIkDb+bIqznyB/ANCkV2LxT1AAAAAElFTkSuQmCC") no-repeat right 10px center; background-size: 14px; opacity: 0.75;}
-.TwitchStreamPanel .stream_footer {margin-top: 10px; position: relative;}
-.TwitchStreamPanel .stream_time {display: inline-block; padding-left: 18px;}
-.TwitchStreamPanel .stream_time span {margin: 0 2px;}
-.TwitchStreamPanel .stream_time #stream-timer::before {content: "(";}
-.TwitchStreamPanel .stream_time #stream-timer::after {content: ")";}
-.orriePluginModal .modal-2LIEKY {user-select: auto;}
-.orriePluginModal .orriePluginTable {margin: 15px 0 20px;}
-.orriePluginModal .orriePluginTable th {font-weight: 700;}
-.orriePluginModal .orriePluginTable img {height: 20px;}
-.orriePluginModal .orriePluginAddStream {margin: 0; width: 100%;}
-.orriePluginModal .orrieAddStreamHeader {margin: 0 0 5px; text-align: center; position: relative;}
-.orriePluginModal .orriePluginStreamInput {height: 150px;}
-.orriePluginModal .orriePluginStreamInput td:first-of-type {white-space: nowrap;}
-.orriePluginModal .orriePluginStreamInput td:last-of-type {width: 100%;}
-.orriePluginModal .orriePluginStreamInput input {width: 100%;}
-.orriePluginModal .orriePluginStreamFooter {margin: 5px 0 0; position: relative;}
-.orriePluginModal .orriePluginStreamFooter span {position: absolute; top: 7px; right: 8px;}
-.orriePluginModal .orriePluginStreamList {background-color: rgba(0, 0, 0, 0.15); border: 1px solid rgba(0, 0, 0, 0.25); border-radius: 5px; margin: 0;}
-.orriePluginModal .orriePluginServer {margin: 10px 0;}
-.orriePluginModal .orriePluginServer tr:hover td {background-color: #1E2124;}
-.orriePluginModal .orriePluginServer th, .orriePluginModal .orriePluginServer td {font-size: 14px; text-align: center;}
-.orriePluginModal .orriePluginServer button {padding: 1px 6px;}
-.TwitchStreamPanel .toggled, .orriePluginModal .toggled {display: none;}
-.bd-minimal .TwitchStreamPanel .stream_container {padding-right: 0;}
-.bd-minimal .TwitchStreamPanel .stream_container .channel-stream_icon {padding: 0 4px;}
-.bd-minimal .TwitchStreamPanel .stream_container .channel-stream_anchor {max-width: 70px;}
+.TwitchStreamPanel .tsp-streams_button {box-sizing: border-box; display: inline-block; margin-right: 0; padding-right: 0; width: 100%;}
+.TwitchStreamPanel .tsp-update_button {display: inline-block; padding-left: 0; width: auto;}
+.TwitchStreamPanel .nameDefault-Lnjrwm:hover {color: #B9BBBE;}
+.TwitchStreamPanel .nameDefault-Lnjrwm:hover svg {color: #B9BBBE;}
+.TwitchStreamPanel .content-2mSKOj {display: table; width: 100%;}
+.TwitchStreamPanel .tsp-stream_row {font-weight: 500; line-height: 24px;}
+.TwitchStreamPanel .tsp-stream_row:hover {background-color: rgba(0,0,0,0.2);}
+.TwitchStreamPanel .tsp-stream_row_child {vertical-align: middle;}
+.TwitchStreamPanel .tsp-stream_row_icon {background-size: 20px 20px; background-repeat: no-repeat; background-position: center left; height: 20px; padding-right: 8px; width: 20px;}
+.TwitchStreamPanel .tsp-stream_row_anchor {max-width: 140px;}
+.TwitchStreamPanel .tsp-stream_row_anchor a {color: #979C9F;}
+.TwitchStreamPanel .tsp-stream_row_status {text-align: right; width: 40px;}
+.TwitchStreamPanel .tsp-stream_online .tsp-stream_row_status {color: #709900; font-weight: 700; padding-right: 12px;}
+.TwitchStreamPanel .tsp-stream_offline .tsp-stream_row_status {background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAqUExURQAAAPBGRvBGRu9GRu9GRvBGRvBFRfBHR/w+Pu9GRvBGRvBHR/BGRvBGRuDveooAAAANdFJOUwBv5ieBS/c2ClvMmqunDzf6AAAAk0lEQVQoz22R2xbAEAwEk7gE7f7/71ZVCYfHGWethGg77k470sYFZTMMbhzi1vsA+MCJfDWxczfTkjbTucx3rhia8V8B3J2HGvMZXgokwTDeFuA3/je2WIE1cXAHLIZpPn02GbvROY7FjCyxRknHAE0WrmQH7n8swS6i1sgtrXBa+VtDc3Dr4mC/tIkDb+bIqznyB/ANCkV2LxT1AAAAAElFTkSuQmCC") no-repeat right 10px center; background-size: 14px; opacity: 0.75;}
+.TwitchStreamPanel .tsp-footer_wrapper {border-bottom: none; box-shadow: none;}
+.TwitchStreamPanel .tsp-time_text {padding-left: 0; display: inline-block; width: auto;}
+.TwitchStreamPanel .tsp-time_text span {margin: 0 2px;}
+.TwitchStreamPanel #tsp-timer:before {content: "(";}
+.TwitchStreamPanel #tsp-timer:after {content: ")";}
+.TwitchStreamPanel .tsp-edit_button {display: inline-block; float: right; padding-left: 0; width: auto;}
+.orriePluginModal .modal-3HOjGZ {padding: 0 20px; user-select: auto;}
+.orriePluginModal .tsp-menu .content-2mSKOj {height: auto;}
+.orriePluginModal .tsp-content .content-2mSKOj {display: table; width: 100%;}
+.orriePluginModal .tsp-content .content-2mSKOj img {height: 20px;}
+.orriePluginModal .input::-webkit-input-placeholder {font-size: 12px; color: rgba(255, 255, 255, 0.5) !important;}
+.orriePluginModal #tsp-stream_status {border-radius: 2px; display: inline-block; padding: 8px; }
+.orriePluginModal .tsp-stream_close svg {margin-top: 0; margin-right: 0 !important;}
+.orriePluginModal .tsp-stream_server {margin: 10px 0;}
+.orriePluginModal .tsp-stream_server tr:hover td {background-color: rgba(0,0,0,0.2);}
+.orriePluginModal .tsp-stream_server button {border-radius: 5px; color: #FFFFFF; padding: 1px 6px;}
 			`,
 			shared: `
 .orriePluginSettings .orriePluginHeader {border-bottom: 1px solid #3F4146; font-weight: 700; margin-bottom: 5px; padding-bottom: 2px; text-align: center;}
 .orriePluginSettings .orriePluginTable {margin: 0;}
 .orriePluginSettings .orriePluginTable table {width: 100%;}
 .orriePluginSettings .orriePluginTable td {vertical-align: middle;}
-.orriePluginSettings .orriePluginTable input[type=checkbox] {-webkit-appearance: none; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; cursor: pointer; height: 18px; width: 18px; position: relative; -webkit-transition: .15s;}
+.orriePluginSettings .orriePluginTable input[type=checkbox] {-webkit-appearance: none; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,0.2); border-radius: 3px; cursor: pointer; height: 18px; width: 18px; position: relative; -webkit-transition: .15s;}
 .orriePluginSettings .orriePluginTable input[type=checkbox]:checked {background-color: #7289DA; border: none;}
 .orriePluginSettings .orriePluginTable input[type=checkbox]:before, .orriePluginSettings .orriePluginTable input[type=checkbox]:checked:before {color: #FFFFFF; position: absolute; top: 0; left: 0; height: 100%; width: 100%; line-height: 100%; text-align: center;}
 .orriePluginSettings .orriePluginTable input[type=checkbox]:checked:before {content: '✔'; line-height: unset;}
@@ -94,10 +80,12 @@ const TwitchStreamPanel = (function() {
 .orriePluginSettings .orriePluginTable input[type=text] {box-sizing: border-box; color: #B0B6B9; background: inherit; border: 2px solid #CDCDCD; border-color: hsla(0,0%,100%,.2); border-radius: 3px; padding: 0 2px;}
 .orriePluginSettings .orriePluginFooter {border-top: 1px solid #3F4146; font-size: 12px; font-weight: 700; margin-bottom: 5px; padding-top: 5px;}
 .orriePluginSettings .orriePluginNotice {text-align: center;}
-.orriePluginSettings .orriePluginFlex {display: flex; justify-content: space-around;}
-.orriePluginSettings button {background: #7289DA; color: #FFFFFF; border-radius: 5px; padding: 2px 16px;}
-.orriePluginSettings button.warning {background: #F04747;}
-.orriePluginSettings button a {color: #FFFFFF;}
+.orriePluginFlex {display: flex; justify-content: space-around;}
+.orriePluginSettings .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
+.orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
+.orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
+.orrie-toggled {display: none;}
+.orrie-centerText {text-align: center;}
 .theme-dark .orriePluginSettings {color: #B0B6B9;}
 			`
 		}
@@ -117,6 +105,11 @@ const TwitchStreamPanel = (function() {
 		}
 		log("info", "Settings Loaded");
 	},
+	cleanDB = function() {
+		// clean database
+		script.streams = {};
+		bdPluginStorage.set(script.file, "streams", {});
+	},
 	log = function(method, title, data) {
 		// logging function
 		if (script.settings.debug) {
@@ -129,7 +122,7 @@ const TwitchStreamPanel = (function() {
 		parent.scrollTop += elemHeight;
 	},
 	streamTimer = function(length) {
-		const display = document.getElementById("stream-timer");
+		const display = document.getElementById("tsp-timer");
 		if (display) {
 			let min, sec;
 			script.check.timer = length;
@@ -168,28 +161,30 @@ const TwitchStreamPanel = (function() {
 		for (let _s_k = Object.keys(script.streamsActive), _s=0; _s<_s_k.length; _s++) {
 			const stream = script.streamsActive[_s_k[_s]];
 			streamString.push(stream[1]);
-			streamFragment.appendChild(_createElement("tr", {className: "channel-stream stream-offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='channel-stream_child channel-stream_icon' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='channel-stream_child channel-stream_anchor'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]}'` : ""}>${stream[0]}</a></td><td class='channel-stream_child channel-stream_status'></td>`}));
+			streamFragment.appendChild(_createElement("tr", {className: "tsp-stream_row tsp-stream_offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='tsp-stream_row_child tsp-stream_row_icon size14-1wjlWP' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='tsp-stream_row_child tsp-stream_row_anchor size14-1wjlWP overflowEllipsis-3Rxxjf'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]} !important'` : ""}>${stream[0]}</a></td><td class='size14-1wjlWP tsp-stream_row_child tsp-stream_row_status'></td>`}));
 		}
 		// insert stream table before requesting data
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
 			_createElement("div", {className: "containerDefault-1bbItS"}, [
-				_createElement("div", {className: "stream_collapse nameDefault-Lnjrwm", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85${!script.settings.state ? " closed-2Hef-I" : ""}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><span>Streams</span>`,
+				_createElement("div", {className: "flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStart-pnSyE6 noWrap-v6g9vO wrapperDefault-1Dl4SS cursorPointer-3oKATS"}, [
+					_createElement("div", {className: `nameDefault-Lnjrwm colorTransition-2iZaYd tsp-streams_button`, innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85${!script.settings.state ? " closed-2Hef-I" : ""}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg>Streams`, 
 					onclick() {
 						script.settings.state = !script.settings.state;
-						streamContainer.children[1].classList.toggle("toggled");
+						streamContainer.children[1].classList.toggle("orrie-toggled");
 						this.firstElementChild.classList.toggle("closed-2Hef-I");
-						this.nextElementSibling.classList.toggle("toggled");
+						this.nextElementSibling.classList.toggle("orrie-toggled");
+						streamContainer.lastElementChild.classList.toggle("orrie-toggled");
 						forceScrolling(streamContainer.scrollHeight, "scroller-NXV0-d");
-					}
-				}),
-				_createElement("span", {className: `nameDefault-Lnjrwm text-right${!script.settings.state ? " toggled" : ""}`, innerHTML: "Update", onclick() {streamsUpdate("click");}})
-			]),
-			_createElement("div", {className: `stream_container${!script.settings.state ? " toggled" : ""}`}, [
-				_createElement("table", {cellSpacing: 0}, streamFragment),
-				_createElement("div", {className: "stream_footer"}, [
-					_createElement("div", {className: "stream_time nameDefault-Lnjrwm", innerHTML: `<span id="stream-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="stream-timer">00:00</span>`}),
-					_createElement("span", {className: "stream_edit nameDefault-Lnjrwm text-right", innerHTML: "Edit", onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}}),
+					}}),
+					_createElement("div", {className: `nameDefault-Lnjrwm colorTransition-2iZaYd tsp-update_button${!script.settings.state ? " orrie-toggled" : ""}`, innerHTML: "Update", onclick() {streamsUpdate("click");}})
 				])
+			]),
+			_createElement("div", {className: `containerDefault-7RImuF${!script.settings.state ? " orrie-toggled" : ""}`}, [
+				_createElement("table", {className: "content-2mSKOj", id: "tsp-stream_table", cellSpacing: 0}, streamFragment)
+			]),
+			_createElement("div", {className: "wrapperDefault-1Dl4SS tsp-footer_wrapper"}, [
+				_createElement("div", {className: "nameDefault-Lnjrwm tsp-time_text", innerHTML: `<span id="tsp-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="tsp-timer">00:00</span>`}),
+				_createElement("div", {className: "nameDefault-Lnjrwm cursorPointer-3oKATS tsp-edit_button", innerHTML: "Edit", onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}}),
 			])
 		]);
 		channelContainer.appendChild(streamContainer);
@@ -221,17 +216,17 @@ const TwitchStreamPanel = (function() {
 				throw new Error(resp.statusText);
 			}).then(function(data) {
 				log("info", "streamsUpdate", [mode, data]);
-				const streamItems = document.getElementsByClassName("channel-stream"),
-				streamStamp = document.getElementById("stream-timestamp"),
+				const streamItems = document.getElementById("tsp-stream_table").getElementsByClassName("tsp-stream_row"),
+				streamStamp = document.getElementById("tsp-timestamp"),
 				onlineStreams = [];
 				for (let _o=0; _o<data.streams.length; _o++) {
 					const stream = data.streams[_o],
 					streamName = `stream_${stream.channel.name}`,
 					streamItem = document.getElementById(streamName);
 					if (streamItem) {
-						if (streamItem.classList.contains("stream-offline")) {
-							streamItem.classList.remove("stream-offline");
-							streamItem.classList.add("stream-online");
+						if (streamItem.classList.contains("tsp-stream_offline")) {
+							streamItem.classList.remove("tsp-stream_offline");
+							streamItem.classList.add("tsp-stream_online");
 							BDfunctionsDevilBro.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
 						}
 						streamItem.title = stream.game;
@@ -254,9 +249,9 @@ const TwitchStreamPanel = (function() {
 				}
 				for (let _s=0; _s<streamItems.length; _s++) {
 					const streamItem = streamItems[_s];
-					if (streamItem.classList.contains("stream-online") && !onlineStreams.includes(streamItem.id)) {
-						streamItem.classList.add("stream-offline");
-						streamItem.classList.remove("stream-online");
+					if (streamItem.classList.contains("tsp-stream_online") && !onlineStreams.includes(streamItem.id)) {
+						streamItem.classList.add("tsp-stream_offline");
+						streamItem.classList.remove("tsp-stream_online");
 						delete streamItem.title;
 					}
 				}
@@ -297,20 +292,27 @@ const TwitchStreamPanel = (function() {
 				_createElement("table", {cellSpacing: 0}, settingsFragment)
 			]),
 			_createElement("div", {className: "orriePluginFooter orriePluginFlex"}, [
-				_createElement("button", {type: "button", innerHTML: `<a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a>`}),
-				_createElement("button", {type: "button", innerHTML: `<a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a>`}),
-				_createElement("button", {type: "button", innerHTML: "Edit Streamlist", onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}}),
-				_createElement("button", {type: "button", className: "warning", innerHTML: "Clean Database (Irreversible!)", onclick() {BdApi.getPlugin(script.name).cleanDB(this);}})
+				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a>`}),
+				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a>`}),
+				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: "Edit Streamlist", onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}}),
+				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: "Clean Database (Irreversible!)", onclick() {cleanDB();}})
 			])
 		]);
 	},
 	createStreamModal = function() {
-		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal orriePluginSettings DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div><div class='modal-2LIEKY'><div class='inner-1_1f7b'><div class='modal-3HOjGZ sizeMedium-1-2BNS'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO marginBottom8-1mABJ4 orriePlugin-menu' style='flex: 0 0 auto;'></div><div class='scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW'><div class='scroller-fzNley inner-tqJwAU orriePlugin-content orriePluginStreamList orriePluginTable'></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontalReverse-2LanvO horizontalReverse-k5PqxT flex-3B1Tl4 directionRowReverse-2eZTxP justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO footer-1PYmcw'><div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'>Saves Automatically</div></div></div></div></div>"});
-		modal.getElementsByClassName("orriePlugin-menu")[0].appendChild(_createElement("div", {className: "orriePluginAddStream orriePluginTable inner-tqJwAU"}, [
-			_createElement("div", {className: "orrieAddStreamHeader", innerHTML: `<button type='button'>Add New Stream</button>`, onclick() {this.nextElementSibling.classList.toggle("toggled");}}),
-			_createElement("div", {className: "orriePluginStreamInput toggled", id: "saveStreamInput", innerHTML: `<table><tr><td>Display Name</td><td><input type="text" name="discord_name" placeholder="Optional &#8213; If left blank, plugin will use Twitch display name"></td></tr><tr><td>Twitch Username</td><td><input type="text" name="twitch_name" placeholder="Required"></td></tr><tr><td>Discord ID</td><td><input type="text" name="discord_id" placeholder="Optional &#8213; For coloring. Use dev mode; right click the user and copy ID"></td></tr><tr><td>Custom Icon</td><td><input type="text" name="icon" placeholder="Optional &#8213; If left blank, plugin will use Twitch profile image when possible"></td></tr><tr><td>Server to Hook (ID)</td><td><input type="text" name="server_id" placeholder="Required &#8213; Use dev mode; right click the server icon and copy ID"></td></tr></table><div class='orriePluginStreamFooter orriePluginFlex'><button type='button' onclick='BdApi.getPlugin("${script.name}").saveStream()'>Add to List</button><span id='saveStreamInfo'></span></div>`})
+		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div><div class='modal-2LIEKY'><div class='inner-1_1f7b'><div class='modal-3HOjGZ sizeMedium-1-2BNS'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO marginBottom8-1mABJ4 tsp-menu' style='flex: 0 0 auto;'></div><div class='scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW'><div class='scroller-fzNley inner-tqJwAU cardPrimary-ZVL9Jr tsp-content'></div></div><div class='flex-lFgbSz flex-3B1Tl4 horizontalReverse-2LanvO horizontalReverse-k5PqxT flex-3B1Tl4 directionRowReverse-2eZTxP justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO footer-1PYmcw'><div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'><h3 class='titleDefault-1CWM9y title-3i-5G_ marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;'>Saves Automatically</h3></div></div></div></div></div>"});
+		modal.getElementsByClassName("tsp-menu")[0].appendChild(_createElement("div", {className: "flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-bottom-8", style: "flex: 0 0 100%;"}, [
+			_createElement("div", {className: "tsp-stream_header", innerHTML: `<button class='buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC' type='button'>Add New Stream</button>`, onclick() {this.classList.toggle("orrie-toggled"); this.nextElementSibling.classList.toggle("orrie-toggled");}}),
+			_createElement("div", {className: "orrie-toggled", id: "tsp-stream_input", style: "flex: 0 1 100%;"}, [
+				_createElement("div", {className: "flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO margin-bottom-4 tsp-relative"}, [
+						_createElement("button", {className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Add to List", onclick() {saveStream();}}),
+						_createElement("div", {className: "orrie-centerText", innerHTML: "<div id='tsp-stream_status'></div>", style: "flex: 1 1 auto;"}),
+						_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {const stream_input = document.getElementById("tsp-stream_input"); stream_input.classList.toggle("orrie-toggled"); stream_input.previousElementSibling.classList.toggle("orrie-toggled");}})
+				]),
+				_createElement("div", {className: "content-2mSKOj flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-bottom-8", innerHTML: "<div class='ui-form-item flexChild-1KGW5q' style='flex: 1 0 auto;'><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='discord_name' placeholder='Display Name &#8213; Optional &#8213; If left blank, plugin will use Twitch display name' type='text'></div></div><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='twitch_name' placeholder='Twitch Username &#8213; Required' type='text'></div></div><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='discord_id' placeholder='Discord ID &#8213; Optional &#8213; For coloring. Use dev mode; right click the user and copy ID' type='text'></div></div><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='icon' placeholder='Custom Icon &#8213; Optional &#8213; If left blank, plugin will use Twitch profile image when possible' type='text'></div></div><div class='ui-input-button margin-bottom-4'><div class='flex-lFgbSz flex-3B1Tl4 horizontal-2BEEBe horizontal-2VE-Fw flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO layout'><input class='input' name='server_id' placeholder='Server to Hook (ID) &#8213; Required &#8213; Use dev mode; right click the server icon and copy ID' type='text'></div></div></div>"})
+			])
 		]));
-		modal.getElementsByClassName("orriePlugin-content")[0].appendChild(createServerList());
+		modal.getElementsByClassName("tsp-content")[0].appendChild(createServerList());
 		return modal;
 	},
 	createServerList = function () {
@@ -326,12 +328,12 @@ const TwitchStreamPanel = (function() {
 					for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
 						const streamer = streams[_b_k[_b]];
 						streamFragment.appendChild(_createElement("tr", "", [
-							_createElement("td", {innerHTML: streamer[0]}),
-							_createElement("td", {innerHTML: streamer[1]}),
-							_createElement("td", {innerHTML: streamer[2]}),
-							_createElement("td", {innerHTML: `<img src='${streamer[3]}'/>`}),
-							_createElement("td", "", [
-								_createElement("button", {className: "warning", innerHTML: "✘",
+							_createElement("td", {className: "size14-1wjlWP", innerHTML: streamer[0]}),
+							_createElement("td", {className: "size14-1wjlWP", innerHTML: streamer[1]}),
+							_createElement("td", {className: "size14-1wjlWP", innerHTML: streamer[2]}),
+							_createElement("td", {className: "size14-1wjlWP", innerHTML: `<img src='${streamer[3]}'/>`}),
+							_createElement("td", {className: "size14-1wjlWP"}, [
+								_createElement("button", {className: "orrie-buttonRed", innerHTML: "✘",
 									onclick() {
 										delete script.streams[data.id][streamer[1]];
 										this.parentNode.parentNode.remove();
@@ -349,14 +351,52 @@ const TwitchStreamPanel = (function() {
 							])
 						]));
 					}
-					serverFragment.appendChild(_createElement("div", {className: "orriePluginServer", id: `streamTable_${data.id}`}, [
-						_createElement("div", {className: "orriePluginHeader", innerHTML: `${data.name} &#8213; ID &#10151; ${data.id}`}),
-						_createElement("table", {innerHTML: "<thead><th>Display Name</th><th>Twitch Username</th><th>Discord ID</th><th>Icon</th><th>Remove</th></thead>", cellSpacing: 0}, streamFragment)
+					serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `streamTable_${data.id}`}, [
+						_createElement("div", {className: "defaultColor-v22dK1 orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>${data.name} &#8213; ID &#10151; ${data.id}</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`}),
+						_createElement("table", {className: "content-2mSKOj primary-2giqSn orrie-centerText", innerHTML: "<thead><th class='size16-3IvaX_'>Display Name</th><th class='size16-3IvaX_'>Twitch Username</th><th class='size16-3IvaX_'>Discord ID</th><th class='size16-3IvaX_'>Icon</th><th class='size16-3IvaX_'>Remove</th></thead>", cellSpacing: 0}, streamFragment)
 					]));
 				}
 			}
 		}
 		return serverFragment;
+	},
+	saveStream = function() {
+		// save stream
+		const inputs = document.getElementById("tsp-stream_input").getElementsByTagName("input"),
+		streamStatus = document.getElementById("tsp-stream_status"),
+		data = [];
+		for (let _i=0, _i_len = inputs.length; _i<_i_len; _i++) {
+			data.push(inputs[_i].value);
+		}
+		if (data[1] && data[4]) {
+			if (BDfunctionsDevilBro.getDivOfServer(data[4])) {
+				const twitchStreamList = document.getElementsByClassName("tsp-content")[0];
+				if (!script.streams[data[4]]) {
+					script.streams[data[4]] = {};
+				}
+				script.streams[data[4]][data[1]] = data.splice(0,4);
+				bdPluginStorage.set(script.file, "streams", script.streams);
+				twitchStreamList.innerHTML = "";
+				twitchStreamList.appendChild(createServerList());
+				streamStatus.classList.add("itemBrand-mC9YR4");
+				streamStatus.textContent = "Saved Successfully!";
+				// remake streamlist
+				streamsRemove();
+				streamsInsert();
+			}
+			else {
+				streamStatus.classList.add("itemDanger-3m3dwx");
+				streamStatus.textContent = "Server doesn't exist in your serverlist";
+			}
+		}
+		else {
+			streamStatus.classList.add("itemDanger-3m3dwx");
+			streamStatus.textContent = "Missing required data";
+		}
+		setTimeout(function() {
+			streamStatus.className = "";
+			streamStatus.textContent = "";
+		}, 2500);
 	},
 	_createElement = function(tag, attributes, children) {
 		// element creation
@@ -393,49 +433,6 @@ const TwitchStreamPanel = (function() {
 			script.settings[key] = value;
 			bdPluginStorage.set(script.file, "settings", script.settings);
 			log("info", "Settings Saved", [key, value]);
-		}
-		// save stream
-		saveStream() {
-			const inputs = document.getElementById("saveStreamInput").getElementsByTagName("input"),
-			streamStatus = document.getElementById("saveStreamInfo"),
-			data = [];
-			for (let _i=0, _i_len = inputs.length; _i<_i_len; _i++) {
-				data.push(inputs[_i].value);
-			}
-			if (data[1] && data[4]) {
-				if (BDfunctionsDevilBro.getDivOfServer(data[4])) {
-					const twitchStreamList = document.getElementsByClassName("orriePlugin-content")[0];
-					if (!script.streams[data[4]]) {
-						script.streams[data[4]] = {};
-					}
-					script.streams[data[4]][data[1]] = data.splice(0,4);
-					bdPluginStorage.set(script.file, "streams", script.streams);
-					twitchStreamList.innerHTML = "";
-					twitchStreamList.appendChild(createServerList());
-					streamStatus.classList.add("itemBrand-mC9YR4");
-					streamStatus.textContent = "Saved Successfully!";
-					// remake streamlist
-					streamsRemove();
-					streamsInsert();
-				}
-				else {
-					streamStatus.classList.add("itemDanger-3m3dwx");
-					streamStatus.textContent = "Server doesn't exist in your serverlist";
-				}
-			}
-			else {
-				streamStatus.classList.add("itemDanger-3m3dwx");
-				streamStatus.textContent = "Missing required data";
-			}
-			setTimeout(function() {
-				streamStatus.className = "";
-				streamStatus.textContent = "";
-			}, 2500);
-		}
-		// clean database
-		cleanDB(elem) {
-			script.streams = {};
-			bdPluginStorage.set(script.file, "streams", {});
 		}
 		// load, start and observer
 		load() {
