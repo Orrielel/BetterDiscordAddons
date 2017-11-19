@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.4",
+		version: "1.8.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -49,16 +49,16 @@ const CustomMediaSupport = (function() {
 		},
 		settings: {embedding: true, loop: true, volume: 0.25, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, debug: false},
 		settingsMenu: {
-			//          localized           type     description
-			embedding: ["Media Embedding",  "check", "Embeds supported elements"],
-			loop:      ["Loop",             "check", "Loops media, requires media embedding on"],
-			volume:    ["Volume",           "range", "Default volume -- 25%"],
-			autoplay:  ["Autoplay Media",   "check", "Not recommended"],
-			hoverPlay: ["Play on Hover",    "check", "Play media on mouse hover"],
-			board:     ["4chan",            "check", "Embed 4chan thread links"],
-			sadpanda:  ["Sadpanda",         "check", "Embed Sadpanda galleries"],
-			greentext: ["Greentext",        "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
-			debug:     ["Debug",            "check", "Displays verbose stuff into the console"]
+			//          localized          type     description
+			embedding: ["Media Embedding", "check", "Embeds supported elements"],
+			loop:      ["Loop",            "check", "Loops media"],
+			volume:    ["Volume",          "range", "Default volume &#8213; 25%"],
+			autoplay:  ["Autoplay Media",  "check", "Not recommended &#8213; RIP CPU"],
+			hoverPlay: ["Play on Hover",   "check", "Play media on mouse hover"],
+			board:     ["4chan",           "check", "Embed 4chan thread links"],
+			sadpanda:  ["Sadpanda",        "check", "Embed Sadpanda galleries"],
+			greentext: ["Greentext",       "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
+			debug:     ["Debug",           "check", "Displays verbose stuff into the console"]
 		},
 		css: {
 			script: `
@@ -326,7 +326,9 @@ const CustomMediaSupport = (function() {
 													this.pause();
 												};
 											}
-											this.parentNode.appendChild(_createElement("div", {className: "embed-zoom", innerHTML: "❐", onclick() {container.classList.toggle("media-large");}}));
+											this.parentNode.appendChild(_createElement("div", {className: "embed-zoom", innerHTML: "❐",
+												onclick() {container.classList.toggle("media-large");}
+											}));
 										}
 										this.volume = script.settings.volume;
 										forceScrolling(this.scrollHeight, "messages");
@@ -347,7 +349,12 @@ const CustomMediaSupport = (function() {
 						}
 					})(),
 					[
-						_createElement("source", {src: href, onerror() {container.classList.remove(`media-${fileMedia}`); this.parentNode.parentNode.innerHTML = "Error 403/404 - Media unavailable";}})
+						_createElement("source", {src: href,
+							onerror() {
+								container.classList.remove(`media-${fileMedia}`);
+								this.parentNode.parentNode.innerHTML = "Error 403/404 - Media unavailable";
+							}
+						})
 					])
 				])
 			])
@@ -551,17 +558,26 @@ const CustomMediaSupport = (function() {
 				case "check":
 					const checked = script.settings[key] ? "checked" : "";
 					return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
-						_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked, onchange() {settingsSave(key, this.checked); settingsAnimate(this.checked, "check", this);}}),
+						_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked,
+							onchange() {
+								settingsSave(key, this.checked);
+								settingsAnimate(this.checked, "check", this);
+							}
+						}),
 						_createElement("div", {className: `ui-switch ${checked}`})
 					]);
 				case "range":
 					const value = `${(script.settings[key]*100).toFixed(0)}%`;
-					return _createElement("div", {className: "plugin-setting-input-container"}, [
-						_createElement("span", {className: "plugin-setting-label", innerHTML: value}),
-						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`, oninput() {settingsSave(key, this.value); settingsAnimate(this.value, "range", this);}})
+					return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`}, [
+						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
+							onchange() {settingsSave(key, this.value);},
+							oninput() {settingsAnimate(this.value, "range", this);}
+						})
 					]);
 				case "text":
-					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key], onchange() {settingsSave(key, this.value);}});
+					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
+						onchange() {settingsSave(key, this.value);}
+					});
 				default:
 					return "";
 			}
@@ -569,8 +585,7 @@ const CustomMediaSupport = (function() {
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 			const setting = script.settingsMenu[_s_k[_s]];
 			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
-				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row"}, [
-					_createElement("h3", {className: "input-wrapper", innerHTML: setting[0]}),
+				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 margin-reset margin-reset ui-flex-child'>${setting[0]}</h3>`}, [
 					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
 				]),
 				_createElement("div", {className: "ui-form-text style-description margin-top-4", innerHTML: setting[2]})
