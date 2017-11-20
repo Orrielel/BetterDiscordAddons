@@ -13,7 +13,7 @@ class BetterImagePopups {
 	start(){
 		BdApi.injectCSS(this.getShortName(), `
 .modal-image img {max-width: calc(100vw - 160px); left: 50%; transform: translateX(-50%);}
-.modal-image img.bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px);}
+.modal-image img.bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px); top: 50%; transform: translateY(-50%) translateX(-50%);}
 .modal-image .download-button {display: block; position: absolute; right: 10px; bottom: -30px; pointer-events: auto; text-transform: capitalize;}
 .modal-image .image.image-loading {opacity: 0.9;}
 .modal-image .image.image-loading::before {background: transparent;}
