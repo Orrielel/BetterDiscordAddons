@@ -6,16 +6,15 @@ class BetterImagePopups {
 	getName() {return "Better Image Popups";}
 	getShortName() {return "BetterImagePopups";}
 	getDescription() {return "Show full sized images in image popup";}
-	getVersion() {return "1.0.2";}
+	getVersion() {return "1.0.3";}
 	getAuthor() {return "Orrie";}
 
 	load() {}
 	start(){
 		BdApi.injectCSS(this.getShortName(), `
-.modal-image.bip-scroller {margin: 0 5px; overflow: auto;}
 .modal-image img {max-width: calc(100vw - 160px); left: 50%; transform: translateX(-50%);}
 .modal-image img.bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px);}
-.modal-image .download-button {display: block; position: absolute; right: 10px; bottom: 6px; pointer-events: auto; text-transform: capitalize;}
+.modal-image .download-button {display: block; position: absolute; right: 10px; bottom: -30px; pointer-events: auto; text-transform: capitalize;}
 .modal-image .image.image-loading {opacity: 0.9;}
 .modal-image .image.image-loading::before {background: transparent;}
 /* ImageToClipboard Compatibility*/
@@ -28,10 +27,11 @@ class BetterImagePopups {
 	}
 
 	observer({target}) {
-		if (target.classList.contains("modal-image") && !target.classList.contains("bip-scroller")) {
+		if (target.classList.contains("modal-image") && !target.classList.contains("bip-active")) {
 			const img = target.firstElementChild;
 			if (img.tagName == "IMG" && img.src) {
-				target.classList.add("bip-scroller");
+				target.classList.add("scroller-fzNley", "bip-active");
+				target.parentNode.classList.add("scrollerWrap-2uBjct"); 
 				img.classList.add("bip-center");
 				img.src = img.src.split("?")[0];
 				img.removeAttribute("width");
