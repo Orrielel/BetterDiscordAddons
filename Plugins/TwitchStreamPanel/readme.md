@@ -12,5 +12,5 @@ Obviously requires [BetterDiscord](https://github.com/jiiks/betterdiscordapp) in
 
 ## Previews
 ![Panel](https://orrie.s-ul.eu/preview/I6zb9vzH)
-![Settings](https://orrie.s-ul.eu/preview/Dy5qKRGO)
-![Streamlist](https://orrie.s-ul.eu/preview/M2rpvG2i)
+![Settings](https://orrie.s-ul.eu/preview/v8FMlsYR)
+![Streamlist](https://orrie.s-ul.eu/preview/UFNkY2V9)
