@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.5",
+		version: "1.8.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -122,7 +122,6 @@ const CustomMediaSupport = (function() {
 .greentext {color: #709900;}
 			`,
 			shared: `
-.orrie-flex {display: flex; justify-content: space-around;}
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
@@ -596,12 +595,12 @@ const CustomMediaSupport = (function() {
 				_createElement("h2", {className: "h5-3KssQU title-1pmpPr marginReset-3hwONl height16-1qXrGy weightSemiBold-T8sxWH defaultMarginh5-2UwwFY marginBottom8-1mABJ4", innerHTML: "Settings"}),
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
-			_createElement("div", {className: "orrie-flex"}, [
+			_createElement("div", {className: "flex-3B1Tl4 justifyAround-1CVbTI"}, [
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a>`}),
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a>`}),
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db).length || 0})`, onclick() {cleanDB(this);}})
 			]),
-			_createElement("div", {className: "orrie-centerText", innerHTML: "It's recommended to clean the database on a regular basis"}),
+			_createElement("div", {className: "orrie-centerText margin-top-8", innerHTML: "It's recommended to clean the database on a regular basis"}),
 		]);
 	},
 	_createElement = function(tag, attributes, children) {
