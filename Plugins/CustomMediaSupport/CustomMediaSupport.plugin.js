@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.7",
+		version: "1.8.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -47,24 +47,26 @@ const CustomMediaSupport = (function() {
 				"https://archived.moe": ["3","a","aco","adv","an","asp","b","biz","c","cgl","ck","cm","co","con","d","diy","e","f","fa","fit","g","gd","gif","h","hc","his","hm","hr","i","ic","int","jp","k","lgbt","lit","m","mlp","mu","n","news","o","out","p","po","pol","q","qa","qst","r","r9k","s","s4s","sci","soc","sp","t","tg","toy","trash","trv","tv","u","v","vg","vip","vp","vr","w","wg","wsg","wsr","x","y"]
 			}
 		},
-		settings: {embedding: true, loop: true, volume: 0.25, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, debug: false},
+		settings: {embedding: true, loop: true, volume: 0.25, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, imagePop: true, debug: false},
 		settingsMenu: {
-			//          localized          type     description
-			embedding: ["Media Embedding", "check", "Embeds supported elements"],
-			loop:      ["Loop",            "check", "Loops media"],
-			volume:    ["Volume",          "range", "Default volume &#8213; 25%"],
-			autoplay:  ["Autoplay Media",  "check", "Not recommended &#8213; RIP CPU"],
-			hoverPlay: ["Play on Hover",   "check", "Play media on mouse hover"],
-			board:     ["4chan",           "check", "Embed 4chan thread links"],
-			sadpanda:  ["Sadpanda",        "check", "Embed Sadpanda galleries"],
-			greentext: ["Greentext",       "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
-			debug:     ["Debug",           "check", "Displays verbose stuff into the console"]
+			//          localized                 type     description
+			embedding: ["Media Embedding",        "check", "Embeds supported elements"],
+			loop:      ["Loop",                   "check", "Loops media"],
+			volume:    ["Volume",                 "range", "Default volume &#8213; 25%"],
+			autoplay:  ["Autoplay Media",         "check", "Not recommended &#8213; RIP CPU"],
+			hoverPlay: ["Play on Hover",          "check", "Play media on mouse hover"],
+			board:     ["4chan",                  "check", "Embed 4chan thread links"],
+			sadpanda:  ["Sadpanda",               "check", "Embed Sadpanda galleries"],
+			greentext: ["Greentext",              "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
+			imagePop:  ["Full Resolution Images", "check", "Replaces images with full resolution ones whilst in popup mode.<br>Images larger than the visible screen will be clickable for pure native previews with scrolling"],
+			debug:     ["Debug",                  "check", "Displays verbose stuff into the console"]
 		},
 		css: {
 			script: `
+/* custom embeds */
 .customMedia .embed-wrapper {max-width: unset;}
-.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 400px; max-height: 576px;}
-.customMedia.media-video.media-large video {width: 1024px; max-height: 720px;}
+.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; max-height: 25vh;}
+.customMedia.media-video.media-large video {width: 50vw; max-height: 50vh;}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.media-video video::-webkit-media-controls-panel {display: flex !important; opacity: 1 !important;}
 .customMedia.media-video .embed-zoom {color: #202225; cursor: pointer; font-size: 30px; font-weight: bold; opacity: 0.15; position: absolute; right: 11px;}
@@ -73,6 +75,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-audio audio {width: 400px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto;}
 .customMedia table td {font-size: 0.875rem; padding: 0 2px; vertical-align: top;}
+/* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
 .customMedia.sadpanda .gallery_info .desc {color: hsla(0,0%,100%,.7);}
 .customMedia.sadpanda .gallery_info .tags span {display: inline-block; margin: 0 3px;}
@@ -99,6 +102,7 @@ const CustomMediaSupport = (function() {
 .customMedia.sadpanda .gallery_info .cat-Cosplay {color: #652594;}
 .customMedia.sadpanda .gallery_info .cat-Asianporn {color: #F2A7F2;}
 .customMedia.sadpanda .gallery_info .cat-Misc {color: #D3D3D3;}
+/* 4chan previews */
 .customMedia.knittingboard {color: #AAAAAA;}
 .customMedia.knittingboard .embed-wrapper {max-width: 600px; min-width: 520px;}
 .customMedia.knittingboard .embed-wrapper .board-sfw {background-color: #9099D0;}
@@ -120,6 +124,16 @@ const CustomMediaSupport = (function() {
 .customMedia.knittingboard .thread_foot {padding: 10px 2px 0;}
 .custom_warning {color: #F32323;}
 .greentext {color: #709900;}
+/* BetterImagePopups */
+.modal-image img {max-width: calc(100vw - 160px); left: 50%; transform: translateX(-50%);}
+.modal-image img.bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px);}
+.modal-image:not(.scroller-fzNley) {position: relative;}
+.modal-image .download-button {display: block; position: absolute; right: 10px; bottom: -30px; pointer-events: auto; text-transform: capitalize;}
+.modal-image .image.image-loading {opacity: 0.9;}
+.modal-image .image.image-loading::before {background: transparent;}
+/* ImageToClipboard Compatibility */
+.modal-image span.download-button {right: 100px;}
+.modal-image a:nth-of-type(2) {right: 115px;}
 			`,
 			shared: `
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
@@ -666,6 +680,25 @@ const CustomMediaSupport = (function() {
 						setTimeout(function() {
 							textParser();
 						}, 250);
+						break;
+					case "modal-image":
+						const img = target.firstElementChild;
+						if (script.settings.imagePop && img.tagName == "IMG" && img.src) {
+							target.classList.add("bip-active");
+							img.classList.add("bip-center");
+							img.src = img.src.split("?")[0];
+							img.removeAttribute("width");
+							img.removeAttribute("height");
+							img.onload = function(){
+								if (this.naturalHeight > window.innerHeight*1.35) {
+									this.addEventListener("click", function() {
+										this.classList.toggle("bip-center");
+										target.classList.toggle("scroller-fzNley");
+										target.parentNode.classList.toggle("scrollerWrap-2uBjct");
+									}, false);
+								}
+							};
+						}
 						break;
 					default:
 				}
