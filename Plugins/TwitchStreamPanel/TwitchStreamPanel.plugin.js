@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.3.9",
+		version: "1.4.0",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -113,11 +113,6 @@ const TwitchStreamPanel = (function() {
 				break;
 		}
 	},
-	cleanDB = function() {
-		// clean database
-		script.streams = {};
-		bdPluginStorage.set(script.file, "streams", {});
-	},
 	log = function(method, title, data) {
 		// logging function
 		if (script.settings.debug) {
@@ -204,6 +199,7 @@ const TwitchStreamPanel = (function() {
 
 		// store streams
 		script.streamAPI = `https://api.twitch.tv/kraken/streams/?channel=${streamString.join(",")}`;
+		// `https://api.twitch.tv/helix/streams?user_login=${streamString.join("&user_login=")}`;
 
 		// update streams and set update interval to 2mins
 		streamsUpdate("initial");
@@ -336,7 +332,11 @@ const TwitchStreamPanel = (function() {
 					onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}
 				}),
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: "Clean Database (Irreversible!)",
-					onclick() {cleanDB();}
+					onclick() {
+						bdPluginStorage.set(`${script.file}_backup`, "streams", script.streams);
+						script.streams = {};
+						bdPluginStorage.set(script.file, "streams", {});
+					}
 				})
 			])
 		]);
@@ -451,23 +451,25 @@ const TwitchStreamPanel = (function() {
 							_createElement("td", {className: "size14-1wjlWP"}, [
 								_createElement("button", {className: "orrie-buttonRed", innerHTML: "✘",
 									onclick() {
-										delete script.streams[data.id][streamer[1]];
-										this.parentNode.parentNode.remove();
+										delete streams[streamer[1]];
 										streamsRemove();
-										if (Object.keys(script.streams[data.id]).length === 0) {
-											delete script.streams[data.id];
-											document.getElementById(`streamTable_${data.id}`).remove();
+										const streams_count = Object.keys(streams).length;
+										document.getElementById(`tsp_${data.id}_count`).innerHTML = streams_count;
+										if (streams_count === 0) {
+											delete streams;
+											document.getElementById(`tsp_${data.id}`).remove();
 										}
 										else {
 											streamsInsert();
 										}
 										bdPluginStorage.set(script.file, "streams", script.streams);
+										this.parentNode.parentNode.remove();
 									}
 								})
 							])
 						]));
 					}
-					serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `streamTable_${data.id}`, innerHTML: `<div class='defaultColor-v22dK1 orrie-centerText'><div class='size18-ZM4Qv-'>${data.name} &#8213; ID &#10151; ${data.id}</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div></div>`}, [
+					serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `tsp_${data.id}`, innerHTML: `<div class='defaultColor-v22dK1 orrie-centerText'><div class='size18-ZM4Qv-'>${data.name} &#8213; ID &#10151; ${data.id} &#8213; (<span id='tsp_${data.id}_count'>${streamFragment.childElementCount}</span>)</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div></div>`}, [
 						_createElement("table", {className: "content-2mSKOj primary-2giqSn orrie-centerText", innerHTML: "<thead><th class='size16-3IvaX_'>Display Name</th><th class='size16-3IvaX_'>Twitch Username</th><th class='size16-3IvaX_'>Discord ID</th><th class='size16-3IvaX_'>Icon</th><th class='size16-3IvaX_'>Remove</th></thead>", cellSpacing: 0}, streamFragment)
 					]));
 				}
@@ -485,20 +487,28 @@ const TwitchStreamPanel = (function() {
 		}
 		if (data[1] && data[4]) {
 			if (BDfunctionsDevilBro.getDivOfServer(data[4])) {
-				const twitchStreamList = document.getElementsByClassName("tsp-content")[0];
-				if (!script.streams[data[4]]) {
-					script.streams[data[4]] = {};
+				const streams = script.streams[data[4]];
+				if (!streams) {
+					streams = {};
 				}
-				script.streams[data[4]][data[1]] = data.splice(0,4);
-				bdPluginStorage.set(script.file, "streams", script.streams);
-				twitchStreamList.innerHTML = "";
-				twitchStreamList.appendChild(createServerList());
-				streamStatus.classList.remove("buttonBrandLink-3csEAP");
-				streamStatus.classList.add("buttonGreenLink-211wfK");
-				streamStatus.textContent = "Saved Successfully!";
-				// remake streamlist
-				streamsRemove();
-				streamsInsert();
+				if (Object.keys(streams).length >= 100) {
+					streamStatus.classList.remove("buttonBrandLink-3csEAP");
+					streamStatus.classList.add("buttonRedLink-3HNCDW");
+					streamStatus.textContent = "Maximum amount of streamers reached, API supports maximum 100 streamers";
+				}
+				else {
+					const twitchStreamList = document.getElementsByClassName("tsp-content")[0];
+					streams[data[1]] = data.splice(0,4);
+					bdPluginStorage.set(script.file, "streams", script.streams);
+					twitchStreamList.innerHTML = "";
+					twitchStreamList.appendChild(createServerList());
+					streamStatus.classList.remove("buttonBrandLink-3csEAP");
+					streamStatus.classList.add("buttonGreenLink-211wfK");
+					streamStatus.textContent = "Saved Successfully!";
+					// remake streamlist
+					streamsRemove();
+					streamsInsert();
+				}
 			}
 			else {
 				streamStatus.classList.remove("buttonBrandLink-3csEAP");
