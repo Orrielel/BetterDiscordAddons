@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.4.0",
+		version: "1.4.1",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -20,6 +20,7 @@ const TwitchStreamPanel = (function() {
 		},
 		streamAPI: false,
 		streams: {},
+		streamsCache: {},
 		streamsActive: false,
 		settings: {colors: true, state: true, update: true, freq: 300, debug: false},
 		settingsMenu: {
@@ -84,10 +85,7 @@ const TwitchStreamPanel = (function() {
 		else {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
-		script.streams = bdPluginStorage.get(script.file, "streams");
-		if (script.streams === null) {
-			script.streams = {};
-		}
+		script.streams = bdPluginStorage.get(script.file, "streams") || {};
 		log("info", "Settings Loaded");
 	},
 	settingsSave = function(key, data) {
@@ -164,7 +162,7 @@ const TwitchStreamPanel = (function() {
 		for (let _s_k = Object.keys(script.streamsActive), _s=0; _s<_s_k.length; _s++) {
 			const stream = script.streamsActive[_s_k[_s]];
 			streamString.push(stream[1]);
-			streamFragment.appendChild(_createElement("tr", {className: "tsp-stream_row tsp-stream_offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='tsp-stream_row_child tsp-stream_row_icon size14-1wjlWP' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='tsp-stream_row_child tsp-stream_row_anchor size14-1wjlWP overflowEllipsis-3Rxxjf'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]} !important'` : ""}>${stream[0]}</a></td><td class='size14-1wjlWP tsp-stream_row_child tsp-stream_row_status'></td>`}));
+			streamFragment.appendChild(_createElement("tr", {className: "tsp-stream_row tsp-stream_offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='tsp-stream_row_child tsp-stream_row_icon size14-1wjlWP' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='tsp-stream_row_child tsp-stream_row_anchor size14-1wjlWP overflowEllipsis-3Rxxjf'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData && colorData[stream[2]] ? `style='color:${colorData[stream[2]]} !important'` : ""}>${stream[0] ? stream[0] : stream[1]}</a></td><td class='size14-1wjlWP tsp-stream_row_child tsp-stream_row_status'></td>`}));
 		}
 		// insert stream table before requesting data
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
@@ -185,7 +183,7 @@ const TwitchStreamPanel = (function() {
 				])
 			]),
 			_createElement("div", {className: `containerDefault-7RImuF${!script.settings.state ? " orrie-toggled" : ""}`}, [
-				_createElement("table", {className: "content-2mSKOj", id: "tsp-stream_table", cellSpacing: 0}, streamFragment)
+				_createElement("table", {className: "content-2mSKOj", id: "tsp-stream_table", cellSpacing: 0, server: serverID}, streamFragment)
 			]),
 			_createElement("div", {className: "wrapperDefault-1Dl4SS tsp-footer_wrapper", innerHTML: `<div class='nameDefault-Lnjrwm tsp-time_text'><span id="tsp-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="tsp-timer">00:00</span></div>`}, [
 				_createElement("div", {className: "nameDefault-Lnjrwm cursorPointer-3oKATS tsp-edit_button", innerHTML: "Edit",
@@ -202,9 +200,18 @@ const TwitchStreamPanel = (function() {
 		// `https://api.twitch.tv/helix/streams?user_login=${streamString.join("&user_login=")}`;
 
 		// update streams and set update interval to 2mins
-		streamsUpdate("initial");
+		const updateFreq = !Number.isNaN(script.settings.freq) && script.settings.freq >= 120 ? script.settings.freq*1000 : 120000,
+		streamsCache = script.streamsCache[serverID];
+		if (streamsCache && streamsCache.time+updateFreq > Date.now()) {
+			log("info", "streamsCache", streamsCache);
+			document.getElementById("tsp-stream_table").innerHTML = streamsCache.html;
+			clearInterval(window.streamUpdateCounter);
+			streamTimer(script.settings.freq);
+		}
+		else {
+			streamsUpdate("initial");
+		}
 		if (script.settings.update) {
-			const updateFreq = !Number.isNaN(script.settings.freq) && script.settings.freq >= 120 ? script.settings.freq*1000 : 120000;
 			clearInterval(window.streamUpdateInterval);
 			window.streamUpdateInterval = setInterval(function() {streamsUpdate("interval");}, updateFreq);
 		}
@@ -225,7 +232,8 @@ const TwitchStreamPanel = (function() {
 				throw new Error(resp.statusText);
 			}).then(function(data) {
 				log("info", "streamsUpdate", [mode, data]);
-				const streamItems = document.getElementById("tsp-stream_table").getElementsByClassName("tsp-stream_row"),
+				const streamTable = document.getElementById("tsp-stream_table"),
+				streamItems = streamTable.getElementsByClassName("tsp-stream_row"),
 				streamStamp = document.getElementById("tsp-timestamp"),
 				onlineStreams = [];
 				for (let _o=0; _o<data.streams.length; _o++) {
@@ -243,7 +251,7 @@ const TwitchStreamPanel = (function() {
 						onlineStreams.push(streamName);
 						if (!script.streamsActive[stream.channel.name][0]) {
 							script.streamsActive[stream.channel.name][0] = stream.channel.display_name;
-							streamItem.cells[1].innerHTML = stream.channel.display_name;
+							streamItem.cells[1].firstElementChild.innerHTML = stream.channel.display_name;
 							bdPluginStorage.set(script.file, "streams", script.streams);
 						}
 						if (!script.streamsActive[stream.channel.name][3]) {
@@ -268,6 +276,10 @@ const TwitchStreamPanel = (function() {
 				if (streamStamp) {
 					streamStamp.innerHTML = new Date().toLocaleTimeString("en-GB");
 				}
+				script.streamsCache[streamTable.server] = {
+					time: Date.now(),
+					html: streamTable.innerHTML
+				};
 				script.check.updating = false;
 			});
 			if (script.settings.update) {
@@ -408,6 +420,7 @@ const TwitchStreamPanel = (function() {
 								streamStatus.classList.add("buttonGreenLink-211wfK");
 								streamStatus.textContent = "Imported Successfully!";
 								// remake streamlist
+								script.streamsCache = {};
 								streamsRemove();
 								streamsInsert();
 							} catch (e) {
@@ -441,25 +454,26 @@ const TwitchStreamPanel = (function() {
 		for (let _a=0, _a_len = servers.length; _a<_a_len; _a++) {
 			const server = servers[_a];
 			if (server.offsetParent) {
-				const data = BDfunctionsDevilBro.getKeyInformation({"node":server, "key":"guild"}),
-				streams = script.streams[data.id];
+				const data = BDfunctionsDevilBro.getKeyInformation({"node":server, "key":"guild"});
+				let streams = script.streams[data.id];
 				if (streams) {
 					const streamFragment = document.createDocumentFragment();
 					for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
 						const streamer = streams[_b_k[_b]];
-						streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-1wjlWP'>${streamer[0]}</td><td class='size14-1wjlWP'>${streamer[1]}</td><td class='size14-1wjlWP'>${streamer[2]}</td><td class='size14-1wjlWP'><img src='${streamer[3]}'/></td>`}, [
+						streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-1wjlWP'>${streamer[0]}</td><td class='size14-1wjlWP'>${streamer[1]}</td><td class='size14-1wjlWP'>${streamer[2]}</td><td class='size14-1wjlWP'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td>`}, [
 							_createElement("td", {className: "size14-1wjlWP"}, [
 								_createElement("button", {className: "orrie-buttonRed", innerHTML: "✘",
 									onclick() {
 										delete streams[streamer[1]];
+										script.streamsCache[data.id] = {};
 										streamsRemove();
 										const streams_count = Object.keys(streams).length;
-										document.getElementById(`tsp_${data.id}_count`).innerHTML = streams_count;
 										if (streams_count === 0) {
-											delete streams;
+											streams = null;
 											document.getElementById(`tsp_${data.id}`).remove();
 										}
 										else {
+											document.getElementById(`tsp_${data.id}_count`).innerHTML = streams_count;
 											streamsInsert();
 										}
 										bdPluginStorage.set(script.file, "streams", script.streams);
@@ -483,11 +497,11 @@ const TwitchStreamPanel = (function() {
 		streamStatus = document.getElementById("tsp-stream_status"),
 		data = [];
 		for (let _i=0, _i_len = inputs.length; _i<_i_len; _i++) {
-			data.push(inputs[_i].value);
+			data.push(inputs[_i].value.replace(/\s/g,""));
 		}
 		if (data[1] && data[4]) {
 			if (BDfunctionsDevilBro.getDivOfServer(data[4])) {
-				const streams = script.streams[data[4]];
+				let streams = script.streams[data[4]]
 				if (!streams) {
 					streams = {};
 				}
@@ -506,6 +520,7 @@ const TwitchStreamPanel = (function() {
 					streamStatus.classList.add("buttonGreenLink-211wfK");
 					streamStatus.textContent = "Saved Successfully!";
 					// remake streamlist
+					script.streamsCache[data[0]] = {};
 					streamsRemove();
 					streamsInsert();
 				}
@@ -574,7 +589,7 @@ const TwitchStreamPanel = (function() {
 				BDfunctionsDevilBro.checkUpdate(script.name, script.raw);
 				BDfunctionsDevilBro.showToast(`${script.name} ${script.version} has started.`);
 				const serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer());
-				if (script.streams[serverID] && document.getElementsByClassName("scroller-NXV0-d")[0]) {
+				if (Object.keys(script.streams[serverID]).length && document.getElementsByClassName("scroller-NXV0-d")[0]) {
 					streamsInsert();
 				}
 			}
@@ -585,7 +600,7 @@ const TwitchStreamPanel = (function() {
 		observer({addedNodes, target}) {
 			if (addedNodes.length > 0 && target.className == "flex-spacer flex-vertical" && BDfunctionsDevilBro && document.getElementsByClassName("messages")) {
 				const serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer());
-				if (script.streams[serverID]) {
+				if (Object.keys(script.streams[serverID]).length) {
 					if (!document.getElementById(`streams_${serverID}`)) {
 						streamsRemove();
 						streamsInsert();
