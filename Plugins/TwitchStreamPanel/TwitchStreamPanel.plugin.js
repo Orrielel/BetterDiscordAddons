@@ -501,7 +501,7 @@ const TwitchStreamPanel = (function() {
 		}
 		if (data[1] && data[4]) {
 			if (BDfunctionsDevilBro.getDivOfServer(data[4])) {
-				let streams = script.streams[data[4]]
+				let streams = script.streams[data[4]];
 				if (!streams) {
 					streams = {};
 				}
