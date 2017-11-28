@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.4.1",
+		version: "1.4.3",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -456,7 +456,7 @@ const TwitchStreamPanel = (function() {
 			if (server.offsetParent) {
 				const data = BDfunctionsDevilBro.getKeyInformation({"node":server, "key":"guild"});
 				let streams = script.streams[data.id];
-				if (streams) {
+				if (Object.keys(streams).length) {
 					const streamFragment = document.createDocumentFragment();
 					for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
 						const streamer = streams[_b_k[_b]];
@@ -589,7 +589,7 @@ const TwitchStreamPanel = (function() {
 				BDfunctionsDevilBro.checkUpdate(script.name, script.raw);
 				BDfunctionsDevilBro.showToast(`${script.name} ${script.version} has started.`);
 				const serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer());
-				if (Object.keys(script.streams[serverID]).length && document.getElementsByClassName("scroller-NXV0-d")[0]) {
+				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length && document.getElementsByClassName("scroller-NXV0-d")[0]) {
 					streamsInsert();
 				}
 			}
@@ -600,7 +600,7 @@ const TwitchStreamPanel = (function() {
 		observer({addedNodes, target}) {
 			if (addedNodes.length > 0 && target.className == "flex-spacer flex-vertical" && BDfunctionsDevilBro && document.getElementsByClassName("messages")) {
 				const serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer());
-				if (Object.keys(script.streams[serverID]).length) {
+				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
 					if (!document.getElementById(`streams_${serverID}`)) {
 						streamsRemove();
 						streamsInsert();
