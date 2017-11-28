@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.8",
+		version: "1.8.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -280,7 +280,20 @@ const CustomMediaSupport = (function() {
 									}
 									else {
 										link.classList.add("fetchingMedia");
-										chanFetch(`/_/api/chan/thread/?board=${hrefSplit[3]}&num=${hrefSplit[5]}`, href, hrefSplit, message, message_body, link);
+										if (!script.check.chan) {
+											script.check.chan = true;
+											const archive = (function(archives) {
+												for (let _a_k = Object.keys(archives), _a=0, _a_len=_a_k.length; _a<_a_len; _a++) {
+													if (archives[_a_k[_a]].includes(hrefSplit[3])) {
+														return _a_k[_a];
+													}
+												}
+												return false;
+											})(script.chan.archives);
+											if (archive) {
+												request("4chan", `https://cors-anywhere.herokuapp.com/${archive}/_/api/chan/thread/?board=${hrefSplit[3]}&num=${hrefSplit[5]}`, chanHandler, "GET", {href, hrefSplit, archive});
+											}
+										}
 									}
 								}
 								break;
@@ -309,8 +322,9 @@ const CustomMediaSupport = (function() {
 				link.classList.add("linkIgnore");
 			}
 			// fetch Sadpanda data if gallery links where found
-			if (gallery.gidlist.length > 0) {
-				sadpandaFetch(gallery);
+			if (gallery.gidlist.length > 0 && !script.check.sadpanda) {
+				script.check.sadpanda = true;
+				request("sadpanda", "https://e-hentai.org/api.php", sadpandaHandler, "POST", gallery);
 			}
 			script.check.media = false;
 		}
@@ -318,7 +332,7 @@ const CustomMediaSupport = (function() {
 	mediaEmbedding = function(fileMedia, fileSite, href, hrefSplit, message, message_body) {
 		// embed supported media
 		log("info", "mediaEmbedding", {fileMedia, fileSite, href, hrefSplit, message, message_body});
-		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, "check": href}, [
+		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
 			_createElement("div", {className: "embed-wrapper"}, [
 				_createElement("div", {className: "embed-color-pill", style: `background-color:#${Math.random().toString(16).substr(2,6)};`}),
 				_createElement("div", {className: "embed"}, [
@@ -398,133 +412,89 @@ const CustomMediaSupport = (function() {
 			return true;
 		}
 	},
-	sadpandaFetch = function(data) {
+	sadpandaHandler = function(resp) {
 		// fetch sadpanda gallery information
-		if (!script.check.sadpanda) {
-			script.check.sadpanda = true;
-			fetch('https://e-hentai.org/api.php', {
-				method: "POST",
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data)
-			}).then(function(resp) {
-				if (resp.status >= 200 && resp.status < 300) {
-					return resp.json();
-				}
-				throw new Error(resp.statusText);
-			}).then(function(resp) {
-				log("info", "sadpandaFetch", [data, resp]);
-				const galleries = resp.gmetadata;
-				if (galleries) {
-					const messages = document.getElementsByClassName("messages")[0];
-					for (let _g=0, _g_len=galleries.length; _g<_g_len; _g++) {
-						const gallery = galleries[_g],
-						gallery_id = `${gallery.gid}_${gallery.token}`,
-						gallery_anchors = messages.getElementsByClassName(`anchor_${gallery_id}`);
-						for (let _a=0, _a_len=gallery_anchors.length; _a<_a_len; _a++) {
-							const element_message = gallery_anchors[_a].closest(".message");
-							if (element_message.querySelectorAll(`#gallery_${gallery_id}`).length === 0) {
-								const gallery_tags = (function(tags) {
-									let tagsString = "";
-									for (let _t=0, _t_len=tags.length; _t<_t_len; _t++) {
-										tagsString += `<span><a class='linkIgnore' href='https://exhentai.org/tag/${tags[_t].replace(/\s/g, "+")}' target='_blank' rel='noreferrer'>${tags[_t]}</a></span>`;
-									}
-									return tagsString;
-								})(gallery.tags),
-								gallery_size = (function(filesize) {
-									let l = 0;
-									while(filesize >= 1024) {
-										filesize = filesize/1024;
-										l++;
-									}
-									return `${filesize.toFixed(3)} ${["Bytes","KB","MB","GB"][l]}`;
-								})(gallery.filesize),
-								container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-wrapper'><div class='embed-color-pill cat-${gallery.category}'></div><div class='embed'><table><tr><td colspan='2'><div><a class='embed-provider linkIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div><a class='embed-title linkIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td class='tags'>${gallery_tags}</td></tr><tr><td>Size:</td><td class='desc'>${gallery_size}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='linkIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
-								element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
-								forceScrolling(container.scrollHeight, "messages");
-								// cache embed html in database and remove fetching tag
-								script.db[gallery_id] = container.innerHTML;
-								bdPluginStorage.set(script.file, "db", script.db);
-								gallery_anchors[_a].classList.remove("fetchingMedia");
-							}
-						}
+		const galleries = resp.gmetadata;
+		if (galleries) {
+			const messages = document.getElementsByClassName("messages")[0];
+			for (let _g=0, _g_len=galleries.length; _g<_g_len; _g++) {
+				let container;
+				const gallery = galleries[_g],
+				gallery_id = `${gallery.gid}_${gallery.token}`,
+				gallery_tags = (function(tags) {
+					let tagsString = "";
+					for (let _t=0, _t_len=tags.length; _t<_t_len; _t++) {
+						tagsString += `<span><a class='linkIgnore' href='https://exhentai.org/tag/${tags[_t].replace(/\s/g, "+")}' target='_blank' rel='noreferrer'>${tags[_t]}</a></span>`;
 					}
-					// remove sadpanda images
-					const sadpandas = messages.querySelectorAll("img[href*='exhentai.org']");
-					if (sadpandas[0]) {
-						while(sadpandas[0]) {
-							sadpandas[0].remove();
-						}
+					return tagsString;
+				})(gallery.tags),
+				gallery_size = (function(filesize) {
+					let l = 0;
+					while(filesize >= 1024) {
+						filesize = filesize/1024;
+						l++;
+					}
+					return `${filesize.toFixed(3)} ${["Bytes","KB","MB","GB"][l]}`;
+				})(gallery.filesize),
+				gallery_anchors = messages.getElementsByClassName(`anchor_${gallery_id}`);
+				for (let _a=0, _a_len=gallery_anchors.length; _a<_a_len; _a++) {
+					const element_message = gallery_anchors[_a].closest(".message");
+					if (element_message.querySelectorAll(`#gallery_${gallery_id}`).length === 0) {
+						container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-wrapper'><div class='embed-color-pill cat-${gallery.category}'></div><div class='embed'><table><tr><td colspan='2'><div><a class='embed-provider linkIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div><a class='embed-title linkIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td class='tags'>${gallery_tags}</td></tr><tr><td>Size:</td><td class='desc'>${gallery_size}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='linkIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+						element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
+						forceScrolling(container.scrollHeight, "messages");
+						gallery_anchors[_a].classList.remove("fetchingMedia");
 					}
 				}
-				else {
-					log("error", "sadpandaFetch - galleries returns empty?", resp);
+				// cache embed html in database and remove fetching tag
+				script.db[gallery_id] = container.innerHTML;
+				bdPluginStorage.set(script.file, "db", script.db);
+			}
+			// remove sadpanda images
+			const sadpandas = messages.querySelectorAll("img[href*='exhentai.org']");
+			if (sadpandas[0]) {
+				while(sadpandas[0]) {
+					sadpandas[0].remove();
 				}
-			});
-			script.check.sadpanda = false;
+			}
 		}
+		else {
+			log("error", "sadpandaFetch - galleries returns empty?", resp);
+		}
+		script.check.sadpanda = false;
 	},
-	chanFetch = function(api, href, hrefSplit, message, message_body, link) {
+	chanHandler = function(resp, {href, hrefSplit, archive}) {
 		// fetch knitting image board information
-		log("info", "chanFetch", {api, href, hrefSplit, message, message_body, link});
-		if (!script.check.chan) {
-			script.check.chan = true;
-			const archive = (function(archives) {
-				for (let _a_k = Object.keys(archives), _a=0, _a_len=_a_k.length; _a<_a_len; _a++) {
-					if (archives[_a_k[_a]].includes(hrefSplit[3])) {
-						return _a_k[_a];
-					}
+		let container;
+		const postnumber = hrefSplit[5].match(/\d+/g),
+		thread = resp[postnumber[0]],
+		post = thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
+		thread_id = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
+		is_reply = thread.posts[postnumber[1]] ? true : false,
+		counts = (function(posts) {
+			let reply = 0, media = 0;
+			for (let _p_k = Object.keys(posts), _p=0, _p_len=_p_k.length; _p<_p_len; _p++) {
+				reply++;
+				if (posts[_p_k[_p]].media) {
+					media++;
 				}
-				return false;
-			})(script.chan.archives);
-			if (archive) {
-				const container = _createElement("div", {className: "accessory customMedia knittingboard", innerHTML: `<div class='embed-wrapper'><div class='embed-color-pill'></div><div class='embed'>Fetching Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a>...</div></div>`});
-				message_body.parentNode.insertBefore(container, message_body.nextSibling);
+			}
+			return [reply, media];
+		})(thread.posts),
+		chan_anchors = document.getElementsByClassName("messages")[0].getElementsByClassName(`anchor_${thread_id}`);
+		for (let _a=0, _a_len=chan_anchors.length; _a<_a_len; _a++) {
+			const element_message = chan_anchors[_a].closest(".message");
+			if (element_message.querySelectorAll(`#post_${thread_id}`).length === 0) {
+				container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: `<div class='embed-wrapper'><div class='embed-color-pill ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embed'><table cellspacing='0'><tr><td colspan='4'><div class='thread_head'><a class='embed-provider linkIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link'>Thread: <a class='linkIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='embed-title custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info'><span class='thread_title' title='${post.title_processed ? post.title_processed : ""}'>${post.title_processed ? post.title_processed : ""}</span> <span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='linkIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='linkIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+				element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 				forceScrolling(container.scrollHeight, "messages");
-				fetch(`https://cors-anywhere.herokuapp.com/${archive}${api}`, {
-					method: "GET",
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					}
-				}).then(function(resp) {
-					if (resp.status >= 200 && resp.status < 300) {
-						return resp.json();
-					}
-					throw new Error(resp.statusText);
-				}).then(function(resp) {
-					log("info", "chanFetch_resp", [href, resp]);
-					const postnumber = hrefSplit[5].match(/\d+/g),
-					thread = resp[postnumber[0]],
-					post = thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
-					thread_id = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
-					is_reply = thread.posts[postnumber[1]] ? true : false,
-					counts = (function(posts) {
-						let reply = 0, media = 0;
-						for (let _p_k = Object.keys(posts), _p=0, _p_len=_p_k.length; _p<_p_len; _p++) {
-							reply++;
-							if (posts[_p_k[_p]].media) {
-								media++;
-							}
-						}
-						return [reply, media];
-					})(thread.posts);
-					container.id = `post_${thread_id}`;
-					container.innerHTML = `<div class='embed-wrapper'><div class='embed-color-pill ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embed'><table cellspacing='0'><tr><td colspan='4'><div class='thread_head'><a class='embed-provider linkIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link'>Thread: <a class='linkIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='embed-title custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info'><span class='thread_title' title='${post.title_processed ? post.title_processed : ""}'>${post.title_processed ? post.title_processed : ""}</span> <span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='linkIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='linkIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`;
-					forceScrolling(container.scrollHeight, "messages");
-					// cache embed html in database and remove fetching tag
-					script.db[thread_id] = container.innerHTML;
-					bdPluginStorage.set(script.file, "db", script.db);
-					link.classList.remove("fetchingMedia");
-				});
+				chan_anchors[_a].classList.remove("fetchingMedia");
 			}
-			else {
-				log("error", "chanFetch - no archives support this board", [href, archive]);
-			}
-			script.check.chan = false;
 		}
+		// cache embed html in database and remove fetching tag
+		script.db[thread_id] = container.innerHTML;
+		bdPluginStorage.set(script.file, "db", script.db);
+		script.check.chan = false;
 	},
 	textParser = function() {
 		// parse messages for text conversion
@@ -637,6 +607,25 @@ const CustomMediaSupport = (function() {
 			}
 		}
 		return element;
+	},
+	request = function (name, api, handler, method, data) {
+		// request handler
+		fetch(api, {
+			method,
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json"
+			},
+			body: (name == "sadpanda") ? JSON.stringify(data) : null
+		}).then(function(resp) {
+			if (resp.status >= 200 && resp.status < 300) {
+				return resp.json();
+			}
+			throw new Error(resp.statusText);
+		}).then(function(resp) {
+			log("info", name, [api, resp, data]);
+			handler(resp, data);
+		});
 	};
 	// return class construction
 	return class CustomMediaSupport {
