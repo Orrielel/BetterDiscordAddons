@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.4.3",
+		version: "1.4.4",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -456,7 +456,7 @@ const TwitchStreamPanel = (function() {
 			if (server.offsetParent) {
 				const data = BDfunctionsDevilBro.getKeyInformation({"node":server, "key":"guild"});
 				let streams = script.streams[data.id];
-				if (Object.keys(streams).length) {
+				if (streams && Object.keys(streams).length) {
 					const streamFragment = document.createDocumentFragment();
 					for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
 						const streamer = streams[_b_k[_b]];
