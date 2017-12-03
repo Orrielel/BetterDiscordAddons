@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.4.4",
+		version: "1.4.5",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -26,7 +26,7 @@ const TwitchStreamPanel = (function() {
 		settingsMenu: {
 			//       localized         type     description
 			colors: ["Colorize Names", "check", "Uses <a href='https://github.com/rauenzi/BetterDiscordAddons/tree/master/Plugins/BetterRoleColors' target='_blank'>BetterRoleColors</a> to colorize names"],
-			state:  ["Visibility",     "check", "Display streamlist at startup, or hide it"],
+			state:  ["Visibility",     "check", "Display streamlist at startup, or hide it (Hiding the list directly also changes this)"],
 			update: ["Auto Update",    "check", "Update the streamlist depending on frequency setting"],
 			freq:   ["Frequency",      "text",  "Time between updating, in seconds &#8213; Minimum 120 secs"],
 			debug:  ["Debug",          "check", "Displays verbose stuff into the console"]
@@ -55,8 +55,9 @@ const TwitchStreamPanel = (function() {
 .TwitchStreamPanel .tsp-edit_button {display: inline-block; float: right; padding-left: 0; width: auto;}
 .orriePluginModal .modal-3HOjGZ {padding: 0 20px; user-select: auto;}
 .orriePluginModal .tsp-menu .content-2mSKOj {height: auto;}
-.orriePluginModal .tsp-content .content-2mSKOj {display: table; width: 100%;}
-.orriePluginModal .tsp-content .content-2mSKOj img {height: 20px; vertical-align: text-bottom;}
+.orriePluginModal .tsp-content svg {top: 0; left: 0;}
+.orriePluginModal .tsp-content .cardPrimary-ZVL9Jr {border-radius: 5px; display: table; width: 100%;}
+.orriePluginModal .tsp-content .cardPrimary-ZVL9Jr img {height: 20px; vertical-align: text-bottom;}
 .orriePluginModal .input::-webkit-input-placeholder {font-size: 12px; color: rgba(255, 255, 255, 0.5) !important;}
 .orriePluginModal #tsp-stream_status {border-radius: 2px; display: inline-block; padding: 8px; }
 .orriePluginModal .tsp-stream_close svg {margin-top: 0; margin-right: 0 !important;}
@@ -338,12 +339,12 @@ const TwitchStreamPanel = (function() {
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
 			_createElement("div", {className: "flex-3B1Tl4 justifyAround-1CVbTI"}, [
-				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a>`}),
-				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a>`}),
+				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra'>Support (Discord)</button>"}),
+				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra'>Updates</button>"}),
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: "Edit Streamlist",
 					onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}
 				}),
-				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: "Clean Database (Irreversible!)",
+				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: "Clean Database (Creates Backup)",
 					onclick() {
 						bdPluginStorage.set(`${script.file}_backup`, "streams", script.streams);
 						script.streams = {};
@@ -354,99 +355,110 @@ const TwitchStreamPanel = (function() {
 		]);
 	},
 	createStreamModal = function() {
-		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div><div class='modal-2LIEKY'><div class='inner-1_1f7b'><div class='modal-3HOjGZ sizeMedium-1-2BNS'><div class='flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div><div class='scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW'><div class='scroller-fzNley inner-tqJwAU cardPrimary-ZVL9Jr border-39Cu-M tsp-content'></div></div><div class='flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO inner-tqJwAU cardPrimary-ZVL9Jr border-39Cu-M tsp-menu' style='flex: 0 0 auto;'></div><div class='flex-3B1Tl4 horizontalReverse-2LanvO horizontalReverse-k5PqxT flex-3B1Tl4 directionRowReverse-2eZTxP justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO footer-1PYmcw'><div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'><h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;' id='tsp-stream_status'>Saves Automatically</h3></div></div></div></div></div>"});
-		modal.getElementsByClassName("tsp-content")[0].appendChild(createServerList());
-		modal.getElementsByClassName("tsp-menu")[0].appendChild(_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-top-8 margin-bottom-8", style: "flex: 0 0 100%;"}, [
-			_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyAround-1CVbTI", id: "tsp-stream_menu", style: "flex: 1 0 auto;"}, [
-				_createElement("button", {type: "button", className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Add New Stream",
-					onclick() {
-						document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
-						document.getElementById("tsp-stream_input").classList.toggle("orrie-toggled");
-					}
-				}),
-				_createElement("button", {type: "button", className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Import List",
-					onclick() {
-						document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
-						document.getElementById("tsp-stream_import").classList.toggle("orrie-toggled");
-					}
-				}),
-				_createElement("button", {type: "button", className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Export List",
-					onclick() {
-						const element = _createElement("textarea", {value: JSON.stringify(script.streams)}),
-						streamStatus = document.getElementById("tsp-stream_status");
-						document.body.appendChild(element);
-						element.focus();
-						element.setSelectionRange(0, element.value.length);
-						document.execCommand("copy");
-						document.body.removeChild(element);
-						streamStatus.classList.remove("buttonBrandLink-3csEAP");
-						streamStatus.classList.add("buttonGreenLink-211wfK");
-						streamStatus.textContent = "Exported Successfully!";
-						setTimeout(function() {
-							streamStatus.classList.remove("buttonGreenLink-211wfK");
-							streamStatus.classList.add("buttonBrandLink-3csEAP");
-							streamStatus.textContent = "Saves Automatically";
-						}, 2500);
-					}
-				})
-			]),
-			_createElement("div", {className: "orrie-toggled", id: "tsp-stream_input", style: "flex: 0 1 100%;"}, [
-				_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyBetween-1d1Hto alignStart-pnSyE6 noWrap-v6g9vO margin-bottom-4"}, [
-					_createElement("button", {className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Add Stream",
-						onclick() {saveStream();}
-					}),
-					_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
-						onclick() {
-							document.getElementById("tsp-stream_input").classList.toggle("orrie-toggled");
-							document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
-						}
-					})
-				]),
-				_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-bottom-8", innerHTML: "<div class='' style='flex: 1 0 auto;'><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='discord_name' placeholder='Display Name  &#8213; If left blank, plugin will use Twitch display name' type='text'></div><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT orrie-inputRequired'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='twitch_name' placeholder='Twitch Username' type='text'></div><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='discord_id' placeholder='Discord ID  &#8213; For coloring. Use dev mode; right click the user and copy ID' type='text'></div><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='icon' placeholder='Custom Icon  &#8213; If left blank, plugin will use Twitch profile image when possible' type='text'></div><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT orrie-inputRequired'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='server_id' placeholder='Server to Hook (ID) &#8213; Use dev mode; right click the server icon and copy ID' type='text'></div></div>"})
-			]),
-			_createElement("div", {className: "orrie-toggled", id: "tsp-stream_import", style: "flex: 0 1 100%;"}, [
-				_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyBetween-1d1Hto alignStart-pnSyE6 noWrap-v6g9vO margin-bottom-4"}, [
-					_createElement("button", {className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Import List",
-						onclick() {
-							const streamStatus = document.getElementById("tsp-stream_status"),
-							twitchStreamList = document.getElementsByClassName("tsp-content")[0],
-							streamsBackup = script.streams;
-							try {
-								script.streams = Object.assign(script.streams, JSON.parse(document.getElementById("tsp-stream_import-content").value));
-								bdPluginStorage.set(script.file, "streams", script.streams);
-								twitchStreamList.innerHTML = "";
-								twitchStreamList.appendChild(createServerList());
-								streamStatus.classList.remove("buttonBrandLink-3csEAP");
-								streamStatus.classList.add("buttonGreenLink-211wfK");
-								streamStatus.textContent = "Imported Successfully!";
-								// remake streamlist
-								script.streamsCache = {};
-								streamsRemove();
-								streamsInsert();
-							} catch (e) {
-								streamStatus.classList.remove("buttonBrandLink-3csEAP");
-								streamStatus.classList.add("buttonRedLink-3HNCDW");
-								streamStatus.textContent = "Input not JSON string";
-								script.streams = streamsBackup;
-							}
-							setTimeout(function() {
-								streamStatus.classList.remove("buttonGreenLink-211wfK", "buttonRedLink-3HNCDW");
-								streamStatus.classList.add("buttonBrandLink-3csEAP");
-								streamStatus.textContent = "Saves Automatically";
-							}, 2500);
-						}
-					}),
-					_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
-						onclick() {
-							document.getElementById("tsp-stream_import").classList.toggle("orrie-toggled");
-							document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
-						}
-					})
-				]),
-				_createElement("div", {className: "inner-3if5cm flex-3B1Tl4 innerNoAutocomplete-kaUXJZ", innerHTML: "<textarea id='tsp-stream_import-content' class='textArea-20yzAH textArea-20yzAH card-3DriLT scrollbarGhostHairline-D_btXm scrollbar-11WJwo' style='flex: 1 1 auto; width: calc(100% - 25px); resize: vertical;'></textarea>"})
-			]),
-		]));
-		return modal;
+		return _createElement("span", {className: `${script.file}Modal orriePluginModal DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div>"}, [
+			_createElement("div", {className: "modal-2LIEKY"}, [
+				_createElement("div", {className: "inner-1_1f7b"}, [
+					_createElement("div", {className: "modal-3HOjGZ sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist</h4></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
+						_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW"}, [
+							_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ border-39Cu-M tsp-content"}, createServerList())
+						]),
+						_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO inner-tqJwAU container-RYiLUQ border-39Cu-M tsp-menu", style: "flex: 0 0 auto;"}, [
+							_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-top-8 margin-bottom-8", style: "flex: 0 0 100%;"}, [
+								_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyAround-1CVbTI", id: "tsp-stream_menu", style: "flex: 1 0 auto;"}, [
+									_createElement("button", {type: "button", className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Add New Stream",
+										onclick() {
+											document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
+											document.getElementById("tsp-stream_input").classList.toggle("orrie-toggled");
+										}
+									}),
+									_createElement("button", {type: "button", className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Import List",
+										onclick() {
+											document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
+											document.getElementById("tsp-stream_import").classList.toggle("orrie-toggled");
+										}
+									}),
+									_createElement("button", {type: "button", className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Export List",
+										onclick() {
+											const element = _createElement("textarea", {value: JSON.stringify(script.streams)}),
+											streamStatus = document.getElementById("tsp-stream_status");
+											document.body.appendChild(element);
+											element.focus();
+											element.setSelectionRange(0, element.value.length);
+											document.execCommand("copy");
+											element.remove();
+											streamStatus.classList.remove("buttonBrandLink-3csEAP");
+											streamStatus.classList.add("buttonGreenLink-211wfK");
+											streamStatus.textContent = "Exported Successfully!";
+											setTimeout(function() {
+												streamStatus.classList.remove("buttonGreenLink-211wfK");
+												streamStatus.classList.add("buttonBrandLink-3csEAP");
+												streamStatus.textContent = "Saves Automatically";
+											}, 2500);
+										}
+									})
+								]),
+								_createElement("div", {className: "orrie-toggled", id: "tsp-stream_input", style: "flex: 0 1 100%;"}, [
+									_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyBetween-1d1Hto alignStart-pnSyE6 noWrap-v6g9vO margin-bottom-4"}, [
+										_createElement("button", {className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Add Stream",
+											onclick() {saveStream();}
+										}),
+										_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
+											onclick() {
+												document.getElementById("tsp-stream_input").classList.toggle("orrie-toggled");
+												document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
+											}
+										})
+									]),
+									_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO margin-bottom-8", innerHTML: "<div class='' style='flex: 1 0 auto;'><div class='flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='discord_name' placeholder='Display Name  &#8213; If left blank, plugin will use Twitch display name' type='text'></div><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT orrie-inputRequired'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='twitch_name' placeholder='Twitch Username' type='text'></div><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='discord_id' placeholder='Discord ID  &#8213; For coloring. Use dev mode; right click the user and copy ID' type='text'></div><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='icon' placeholder='Custom Icon  &#8213; If left blank, plugin will use Twitch profile image when possible' type='text'></div><div class=' flex-3B1Tl4 directionColumn-2h-LPR input-2N4DTT orrie-inputRequired'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='server_id' placeholder='Server to Hook (ID) &#8213; Use dev mode; right click the server icon and copy ID' type='text'></div></div>"})
+								]),
+								_createElement("div", {className: "orrie-toggled", id: "tsp-stream_import", style: "flex: 0 1 100%;"}, [
+									_createElement("div", {className: "flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyBetween-1d1Hto alignStart-pnSyE6 noWrap-v6g9vO margin-bottom-4"}, [
+										_createElement("button", {className: "buttonBrandFilledDefault-2Rs6u5 buttonFilledDefault-AELjWf buttonDefault-2OLW-v button-2t3of8 buttonFilled-29g7b5 buttonBrandFilled-3Mv0Ra smallGrow-2_7ZaC", innerHTML: "Import List",
+											onclick() {
+												const streamStatus = document.getElementById("tsp-stream_status"),
+												twitchStreamList = document.getElementsByClassName("tsp-content")[0],
+												streamsBackup = script.streams;
+												try {
+													script.streams = Object.assign(script.streams, JSON.parse(document.getElementById("tsp-stream_import-content").value));
+													bdPluginStorage.set(script.file, "streams", script.streams);
+													twitchStreamList.innerHTML = "";
+													twitchStreamList.appendChild(createServerList());
+													streamStatus.classList.remove("buttonBrandLink-3csEAP");
+													streamStatus.classList.add("buttonGreenLink-211wfK");
+													streamStatus.textContent = "Imported Successfully!";
+													// remake streamlist
+													script.streamsCache = {};
+													streamsRemove();
+													streamsInsert();
+												} catch (e) {
+													streamStatus.classList.remove("buttonBrandLink-3csEAP");
+													streamStatus.classList.add("buttonRedLink-3HNCDW");
+													streamStatus.textContent = "Input not JSON string";
+													script.streams = streamsBackup;
+												}
+												setTimeout(function() {
+													streamStatus.classList.remove("buttonGreenLink-211wfK", "buttonRedLink-3HNCDW");
+													streamStatus.classList.add("buttonBrandLink-3csEAP");
+													streamStatus.textContent = "Saves Automatically";
+												}, 2500);
+											}
+										}),
+										_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
+											onclick() {
+												document.getElementById("tsp-stream_import").classList.toggle("orrie-toggled");
+												document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
+											}
+										})
+									]),
+									_createElement("div", {className: "inner-3if5cm flex-3B1Tl4 innerNoAutocomplete-kaUXJZ", innerHTML: "<textarea id='tsp-stream_import-content' class='textArea-20yzAH textArea-20yzAH card-3DriLT scrollbarGhostHairline-D_btXm scrollbar-11WJwo' style='flex: 1 1 auto; width: calc(100% - 25px); resize: vertical;'></textarea>"})
+								]),
+							])
+						]),
+						_createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'><h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;' id='tsp-stream_status'>Saves Automatically</h3></div>", style: "flex: 0 0 auto;"})
+					])
+				])
+			])
+		]);
 	},
 	createServerList = function () {
 		const serverFragment = document.createDocumentFragment(),
@@ -454,13 +466,14 @@ const TwitchStreamPanel = (function() {
 		for (let _a=0, _a_len = servers.length; _a<_a_len; _a++) {
 			const server = servers[_a];
 			if (server.offsetParent) {
-				const data = BDfunctionsDevilBro.getKeyInformation({"node":server, "key":"guild"});
+				const data = BDfunctionsDevilBro.getKeyInformation({"node":server, "key":"guild"}),
+				colorData = script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? BdApi.getPlugin('BetterRoleColors').colorData[data.id] : false;
 				let streams = script.streams[data.id];
 				if (streams && Object.keys(streams).length) {
 					const streamFragment = document.createDocumentFragment();
 					for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
 						const streamer = streams[_b_k[_b]];
-						streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-1wjlWP'>${streamer[0]}</td><td class='size14-1wjlWP'>${streamer[1]}</td><td class='size14-1wjlWP'>${streamer[2]}</td><td class='size14-1wjlWP'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td>`}, [
+						streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-1wjlWP' ${colorData && colorData[streamer[2]] ? `style='color:${colorData[streamer[2]]} !important'` : ""}>${streamer[0]}</td><td class='size14-1wjlWP'>${streamer[1]}</td><td class='size14-1wjlWP'>${streamer[2]}</td><td class='size14-1wjlWP'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td>`}, [
 							_createElement("td", {className: "size14-1wjlWP"}, [
 								_createElement("button", {className: "orrie-buttonRed", innerHTML: "✘",
 									onclick() {
@@ -483,8 +496,13 @@ const TwitchStreamPanel = (function() {
 							])
 						]));
 					}
-					serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `tsp_${data.id}`, innerHTML: `<div class='defaultColor-v22dK1 orrie-centerText'><div class='size18-ZM4Qv-'>${data.name} &#8213; ID &#10151; ${data.id} &#8213; (<span id='tsp_${data.id}_count'>${streamFragment.childElementCount}</span>)</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div></div>`}, [
-						_createElement("table", {className: "content-2mSKOj primary-2giqSn orrie-centerText", innerHTML: "<thead><th class='size16-3IvaX_'>Display Name</th><th class='size16-3IvaX_'>Twitch Username</th><th class='size16-3IvaX_'>Discord ID</th><th class='size16-3IvaX_'>Icon</th><th class='size16-3IvaX_'>Remove</th></thead>", cellSpacing: 0}, streamFragment)
+					serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `tsp_${data.id}`}, [
+						_createElement("div", {className: "defaultColor-v22dK1 app-XZYfmp orrie-centerText", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85$ closed-2Hef-I' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-ZM4Qv-'>${data.name}</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");}}),
+						_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR"}, [
+							_createElement("table", {className: "cardPrimary-ZVL9Jr primary-2giqSn orrie-centerText", innerHTML: `<tr><td class='weightSemiBold-T8sxWH'>Server ID</td><td>${data.id}</td></tr><tr><td class='weightSemiBold-T8sxWH'>Streams</td><td id='tsp_${data.id}_count'>${streamFragment.childElementCount}</td></tr>`, cellSpacing: 0}),
+							_createElement("div", {className: "divider-2JwdCF"}),
+							_createElement("table", {className: "cardPrimary-ZVL9Jr primary-2giqSn orrie-centerText", innerHTML: "<thead><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Display Name</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Twitch Username</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Discord ID</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Icon</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Remove</th></thead>", cellSpacing: 0}, streamFragment)
+						])
 					]));
 				}
 			}
@@ -514,12 +532,13 @@ const TwitchStreamPanel = (function() {
 					const twitchStreamList = document.getElementsByClassName("tsp-content")[0];
 					streams[data[1]] = data.splice(0,4);
 					bdPluginStorage.set(script.file, "streams", script.streams);
-					twitchStreamList.innerHTML = "";
-					twitchStreamList.appendChild(createServerList());
 					streamStatus.classList.remove("buttonBrandLink-3csEAP");
 					streamStatus.classList.add("buttonGreenLink-211wfK");
 					streamStatus.textContent = "Saved Successfully!";
 					// remake streamlist
+					twitchStreamList.innerHTML = "";
+					twitchStreamList.appendChild(createServerList());
+					document.getElementById(`tsp_${data[0]}`).firstElementChild.click();
 					script.streamsCache[data[0]] = {};
 					streamsRemove();
 					streamsInsert();
