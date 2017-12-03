@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.4.5",
+		version: "1.4.6",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -519,18 +519,17 @@ const TwitchStreamPanel = (function() {
 		}
 		if (data[1] && data[4]) {
 			if (BDfunctionsDevilBro.getDivOfServer(data[4])) {
-				let streams = script.streams[data[4]];
-				if (!streams) {
-					streams = {};
+				if (!script.streams[data[4]]) {
+					script.streams[data[4]] = {};
 				}
-				if (Object.keys(streams).length >= 100) {
+				if (Object.keys(script.streams[data[4]]).length >= 100) {
 					streamStatus.classList.remove("buttonBrandLink-3csEAP");
 					streamStatus.classList.add("buttonRedLink-3HNCDW");
 					streamStatus.textContent = "Maximum amount of streamers reached, API supports maximum 100 streamers";
 				}
 				else {
 					const twitchStreamList = document.getElementsByClassName("tsp-content")[0];
-					streams[data[1]] = data.splice(0,4);
+					script.streams[data[4]][data[1]] = data.splice(0,4);
 					bdPluginStorage.set(script.file, "streams", script.streams);
 					streamStatus.classList.remove("buttonBrandLink-3csEAP");
 					streamStatus.classList.add("buttonGreenLink-211wfK");
