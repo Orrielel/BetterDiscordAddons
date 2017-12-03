@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.4.6",
+		version: "1.4.7",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -392,7 +392,7 @@ const TwitchStreamPanel = (function() {
 											setTimeout(function() {
 												streamStatus.classList.remove("buttonGreenLink-211wfK");
 												streamStatus.classList.add("buttonBrandLink-3csEAP");
-												streamStatus.textContent = "Saves Automatically";
+												streamStatus.textContent = "";
 											}, 2500);
 										}
 									})
@@ -439,7 +439,7 @@ const TwitchStreamPanel = (function() {
 												setTimeout(function() {
 													streamStatus.classList.remove("buttonGreenLink-211wfK", "buttonRedLink-3HNCDW");
 													streamStatus.classList.add("buttonBrandLink-3csEAP");
-													streamStatus.textContent = "Saves Automatically";
+													streamStatus.textContent = "";
 												}, 2500);
 											}
 										}),
@@ -454,7 +454,7 @@ const TwitchStreamPanel = (function() {
 								]),
 							])
 						]),
-						_createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'><h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;' id='tsp-stream_status'>Saves Automatically</h3></div>", style: "flex: 0 0 auto;"})
+						_createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'><h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;' id='tsp-stream_status'></h3></div>", style: "flex: 0 0 auto;"})
 					])
 				])
 			])
@@ -497,7 +497,7 @@ const TwitchStreamPanel = (function() {
 						]));
 					}
 					serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `tsp_${data.id}`}, [
-						_createElement("div", {className: "defaultColor-v22dK1 app-XZYfmp orrie-centerText", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85$ closed-2Hef-I' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-ZM4Qv-'>${data.name}</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");}}),
+						_createElement("div", {className: "defaultColor-v22dK1 app-XZYfmp cursorPointer-3oKATS orrie-centerText", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85$ closed-2Hef-I' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-ZM4Qv-'>${data.name}</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");}}),
 						_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR"}, [
 							_createElement("table", {className: "cardPrimary-ZVL9Jr primary-2giqSn orrie-centerText", innerHTML: `<tr><td class='weightSemiBold-T8sxWH'>Server ID</td><td>${data.id}</td></tr><tr><td class='weightSemiBold-T8sxWH'>Streams</td><td id='tsp_${data.id}_count'>${streamFragment.childElementCount}</td></tr>`, cellSpacing: 0}),
 							_createElement("div", {className: "divider-2JwdCF"}),
@@ -557,7 +557,7 @@ const TwitchStreamPanel = (function() {
 		setTimeout(function() {
 			streamStatus.classList.remove("buttonGreenLink-211wfK", "buttonRedLink-3HNCDW");
 			streamStatus.classList.add("buttonBrandLink-3csEAP");
-			streamStatus.textContent = "Saves Automatically";
+			streamStatus.textContent = "";
 		}, 2500);
 	},
 	_createElement = function(tag, attributes, children) {
