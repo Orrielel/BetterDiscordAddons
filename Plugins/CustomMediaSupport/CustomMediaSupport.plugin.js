@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.8.9",
+		version: "1.9.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -23,8 +23,7 @@ const CustomMediaSupport = (function() {
 		media: {
 			types: {
 				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", mov: "video",
-				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio",
-				svg: "iframe"
+				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio"
 			},
 			sites: {
 				"vocaroo.com":      ["audio",  4, "https://vocaroo.com/media_command.php?media=*ID*&command=download_webm", "\/i\/",        false],
@@ -164,7 +163,7 @@ const CustomMediaSupport = (function() {
 		bdPluginStorage.set(script.file, "settings", script.settings);
 		log("info", "Settings Saved", [key, data]);
 	},
-	settingsAnimate = function(data, type, elem) {
+	settingsAnimate = function(elem, type, data) {
 		// animate settings changes
 		switch(type) {
 			case "check":
@@ -545,7 +544,7 @@ const CustomMediaSupport = (function() {
 						_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked,
 							onchange() {
 								settingsSave(key, this.checked);
-								settingsAnimate(this.checked, "check", this);
+								settingsAnimate(this, "check", this.checked);
 							}
 						}),
 						_createElement("div", {className: `ui-switch ${checked}`})
@@ -555,7 +554,7 @@ const CustomMediaSupport = (function() {
 					return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`}, [
 						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
 							onchange() {settingsSave(key, this.value);},
-							oninput() {settingsAnimate(this.value, "range", this);}
+							oninput() {settingsAnimate(this, "range", this.value);}
 						})
 					]);
 				case "text":
@@ -581,8 +580,8 @@ const CustomMediaSupport = (function() {
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
 			_createElement("div", {className: "flex-3B1Tl4 justifyAround-1CVbTI"}, [
-				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.discord}' target='_blank' rel='noreferrer'>Support (Discord)</a>`}),
-				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra", innerHTML: `<a href='${script.url}' target='_blank' rel='noreferrer'>Updates</a>`}),
+				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra'>Support (Discord)</button>"}),
+				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra'>Updates</button>"}),
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db).length || 0})`, onclick() {cleanDB(this);}})
 			]),
 			_createElement("div", {className: "orrie-centerText margin-top-8", innerHTML: "It's recommended to clean the database on a regular basis"}),
