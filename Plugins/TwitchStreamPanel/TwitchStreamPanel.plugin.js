@@ -153,7 +153,7 @@ const TwitchStreamPanel = (function() {
 		script.streamsActive = false;
 		clearInterval(window.nopanStreamsInterval);
 		clearInterval(window.streamUpdateCounter);
-	},	
+	},
 	streamsInsert = function() {
 		// prepare static stream list data
 		const channelContainer = document.getElementsByClassName("scroller-NXV0-d")[0],
@@ -464,11 +464,9 @@ const TwitchStreamPanel = (function() {
 	createServerList = function () {
 		const serverFragment = document.createDocumentFragment(),
 		servers = BDfunctionsDevilBro.readServerList();
-		console.log(servers);
 		for (let _a=0, _a_len = servers.length; _a<_a_len; _a++) {
 			const server = servers[_a].info;
 			let streams = script.streams[server.id];
-			console.log(streams);
 			if (streams && Object.keys(streams).length) {
 				const streamFragment = document.createDocumentFragment();
 				for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
