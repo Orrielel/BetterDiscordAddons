@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.4.8",
+		version: "1.4.9",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -20,6 +20,7 @@ const TwitchStreamPanel = (function() {
 		},
 		streamAPI: false,
 		streams: {},
+		streamsColors: {},
 		streamsCache: {},
 		streamsActive: false,
 		settings: {colors: true, state: true, update: true, freq: 300, debug: false},
@@ -87,6 +88,7 @@ const TwitchStreamPanel = (function() {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
 		script.streams = bdPluginStorage.get(script.file, "streams") || {};
+		script.streamsColors = script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? bdPluginStorage.get("BRC", "color-data") : false;
 		log("info", "Settings Loaded");
 	},
 	settingsSave = function(key, data) {
@@ -151,20 +153,18 @@ const TwitchStreamPanel = (function() {
 		script.streamsActive = false;
 		clearInterval(window.nopanStreamsInterval);
 		clearInterval(window.streamUpdateCounter);
-	},
+	},	
 	streamsInsert = function() {
 		// prepare static stream list data
-
 		const channelContainer = document.getElementsByClassName("scroller-NXV0-d")[0],
-		serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer()),
+		serverID = BDfunctionsDevilBro.getSelectedServer().info.id || null,
 		streamFragment = document.createDocumentFragment(),
-		streamString = [],
-		colorData = script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? BdApi.getPlugin('BetterRoleColors') : false;
+		streamString = [];
 		script.streamsActive = script.streams[serverID];
 		for (let _s_k = Object.keys(script.streamsActive), _s=0; _s<_s_k.length; _s++) {
 			const stream = script.streamsActive[_s_k[_s]];
 			streamString.push(stream[1]);
-			streamFragment.appendChild(_createElement("tr", {className: "tsp-stream_row tsp-stream_offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='tsp-stream_row_child tsp-stream_row_icon size14-1wjlWP' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='tsp-stream_row_child tsp-stream_row_anchor size14-1wjlWP overflowEllipsis-3Rxxjf'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${colorData ? `style='color:${colorData.getColorData(serverID,stream[2])} !important'` : ""}>${stream[0] ? stream[0] : stream[1]}</a></td><td class='size14-1wjlWP tsp-stream_row_child tsp-stream_row_status'></td>`}));
+			streamFragment.appendChild(_createElement("tr", {className: "tsp-stream_row tsp-stream_offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='tsp-stream_row_child tsp-stream_row_icon size14-1wjlWP' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='tsp-stream_row_child tsp-stream_row_anchor size14-1wjlWP overflowEllipsis-3Rxxjf'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${script.streamsColors && stream[2] ? `style='color:${script.streamsColors[serverID][stream[2]]} !important'` : ""}>${stream[0] ? stream[0] : stream[1]}</a></td><td class='size14-1wjlWP tsp-stream_row_child tsp-stream_row_status'></td>`}));
 		}
 		// insert stream table before requesting data
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
@@ -464,48 +464,46 @@ const TwitchStreamPanel = (function() {
 	createServerList = function () {
 		const serverFragment = document.createDocumentFragment(),
 		servers = BDfunctionsDevilBro.readServerList();
+		console.log(servers);
 		for (let _a=0, _a_len = servers.length; _a<_a_len; _a++) {
-			const server = servers[_a];
-			if (server.offsetParent) {
-				const data = BDfunctionsDevilBro.getKeyInformation({"node":server, "key":"guild"}),
-				colorData = script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? BdApi.getPlugin('BetterRoleColors') : false;
-				let streams = script.streams[data.id];
-				if (streams && Object.keys(streams).length) {
-					const streamFragment = document.createDocumentFragment();
-					for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
-						const streamer = streams[_b_k[_b]];
-						streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-1wjlWP' ${colorData ? `style='color:${colorData.getColorData(data.id,streamer[2])} !important'` : ""}>${streamer[0]}</td><td class='size14-1wjlWP'>${streamer[1]}</td><td class='size14-1wjlWP'>${streamer[2]}</td><td class='size14-1wjlWP'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td>`}, [
-							_createElement("td", {className: "size14-1wjlWP"}, [
-								_createElement("button", {className: "orrie-buttonRed", innerHTML: "✘",
-									onclick() {
-										delete streams[streamer[1]];
-										script.streamsCache[data.id] = {};
-										streamsRemove();
-										const streams_count = Object.keys(streams).length;
-										if (streams_count === 0) {
-											streams = null;
-											document.getElementById(`tsp_${data.id}`).remove();
-										}
-										else {
-											document.getElementById(`tsp_${data.id}_count`).innerHTML = streams_count;
-											streamsInsert();
-										}
-										bdPluginStorage.set(script.file, "streams", script.streams);
-										this.parentNode.parentNode.remove();
+			const server = servers[_a].info;
+			let streams = script.streams[server.id];
+			console.log(streams);
+			if (streams && Object.keys(streams).length) {
+				const streamFragment = document.createDocumentFragment();
+				for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
+					const streamer = streams[_b_k[_b]];
+					streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-1wjlWP' ${script.streamsColors && streamer[2] ? `style='color:${script.streamsColors[server.id][streamer[2]]} !important'` : ""}>${streamer[0]}</td><td class='size14-1wjlWP'>${streamer[1]}</td><td class='size14-1wjlWP'>${streamer[2]}</td><td class='size14-1wjlWP'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td>`}, [
+						_createElement("td", {className: "size14-1wjlWP"}, [
+							_createElement("button", {className: "orrie-buttonRed", innerHTML: "✘",
+								onclick() {
+									delete streams[streamer[1]];
+									script.streamsCache[server.id] = {};
+									streamsRemove();
+									const streams_count = Object.keys(streams).length;
+									if (streams_count === 0) {
+										streams = null;
+										document.getElementById(`tsp_${server.id}`).remove();
 									}
-								})
-							])
-						]));
-					}
-					serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `tsp_${data.id}`}, [
-						_createElement("div", {className: "defaultColor-v22dK1 app-XZYfmp cursorPointer-3oKATS orrie-centerText", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85$ closed-2Hef-I' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-ZM4Qv-'>${data.name}</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");}}),
-						_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR"}, [
-							_createElement("table", {className: "cardPrimary-ZVL9Jr primary-2giqSn orrie-centerText", innerHTML: `<tr><td class='weightSemiBold-T8sxWH'>Server ID</td><td>${data.id}</td></tr><tr><td class='weightSemiBold-T8sxWH'>Streams</td><td id='tsp_${data.id}_count'>${streamFragment.childElementCount}</td></tr>`, cellSpacing: 0}),
-							_createElement("div", {className: "divider-2JwdCF"}),
-							_createElement("table", {className: "cardPrimary-ZVL9Jr primary-2giqSn orrie-centerText", innerHTML: "<thead><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Display Name</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Twitch Username</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Discord ID</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Icon</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Remove</th></thead>", cellSpacing: 0}, streamFragment)
+									else {
+										document.getElementById(`tsp_${server.id}_count`).innerHTML = streams_count;
+										streamsInsert();
+									}
+									bdPluginStorage.set(script.file, "streams", script.streams);
+									this.parentNode.parentNode.remove();
+								}
+							})
 						])
 					]));
 				}
+				serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `tsp_${server.id}`}, [
+					_createElement("div", {className: "defaultColor-v22dK1 app-XZYfmp cursorPointer-3oKATS orrie-centerText", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85$ closed-2Hef-I' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-ZM4Qv-'>${server.name}</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");}}),
+					_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR"}, [
+						_createElement("table", {className: "cardPrimary-ZVL9Jr primary-2giqSn orrie-centerText", innerHTML: `<tr><td class='weightSemiBold-T8sxWH'>Server ID</td><td>${server.id}</td></tr><tr><td class='weightSemiBold-T8sxWH'>Streams</td><td id='tsp_${server.id}_count'>${streamFragment.childElementCount}</td></tr>`, cellSpacing: 0}),
+						_createElement("div", {className: "divider-2JwdCF"}),
+						_createElement("table", {className: "cardPrimary-ZVL9Jr primary-2giqSn orrie-centerText", innerHTML: "<thead><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Display Name</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Twitch Username</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Discord ID</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Icon</th><th class='size16-3IvaX_ weightSemiBold-T8sxWH height30-9l_TZO'>Remove</th></thead>", cellSpacing: 0}, streamFragment)
+					])
+				]));
 			}
 		}
 		return serverFragment;
@@ -604,10 +602,8 @@ const TwitchStreamPanel = (function() {
 				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDfunctionsDevilBro.js"}));
 			}
 			if (typeof BDfunctionsDevilBro === "object") {
-				PluginUpdates.plugins[script.raw] = {name:script.name, raw:script.raw, version:script.version};
-				BDfunctionsDevilBro.checkUpdate(script.name, script.raw);
 				BDfunctionsDevilBro.showToast(`${script.name} ${script.version} has started.`);
-				const serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer());
+				const serverID = BDfunctionsDevilBro.getSelectedServer().info.id || null;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length && document.getElementsByClassName("scroller-NXV0-d")[0]) {
 					streamsInsert();
 				}
@@ -618,7 +614,7 @@ const TwitchStreamPanel = (function() {
 		}
 		observer({addedNodes, target}) {
 			if (addedNodes.length > 0 && target.className == "flex-spacer flex-vertical" && BDfunctionsDevilBro && document.getElementsByClassName("messages")) {
-				const serverID = BDfunctionsDevilBro.getIdOfServer(BDfunctionsDevilBro.getSelectedServer());
+				const serverID = BDfunctionsDevilBro.getSelectedServer().info.id || null;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
 					if (!document.getElementById(`streams_${serverID}`)) {
 						streamsRemove();
