@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.5.0",
+		version: "1.5.1",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -21,6 +21,7 @@ const TwitchStreamPanel = (function() {
 		streamAPI: false,
 		streams: {},
 		streamsCache: {},
+		streamFreq: 120000,
 		streamsActive: false,
 		settings: {colors: true, state: true, update: true, freq: 300, debug: false},
 		settingsMenu: {
@@ -149,13 +150,13 @@ const TwitchStreamPanel = (function() {
 			streamContainer.remove();
 		}
 		script.streamsActive = false;
-		clearInterval(window.nopanStreamsInterval);
+		clearTimeout(window.nopanStreamsInterval);
 		clearInterval(window.streamUpdateCounter);
 	},
 	streamsInsert = function() {
 		// prepare static stream list data
 		const channelContainer = document.getElementsByClassName("scroller-NXV0-d")[0],
-		serverID = BDfunctionsDevilBro.getSelectedServer().info.id || null,
+		serverID = BDfunctionsDevilBro.getSelectedServer().id || null,
 		streamFragment = document.createDocumentFragment(),
 		streamString = [];
 		script.streamsActive = script.streams[serverID];
@@ -199,10 +200,10 @@ const TwitchStreamPanel = (function() {
 		script.streamAPI = `https://api.twitch.tv/kraken/streams/?channel=${streamString.join(",")}`;
 		// `https://api.twitch.tv/helix/streams?user_login=${streamString.join("&user_login=")}`;
 
-		// update streams and set update interval to 2mins
-		const updateFreq = !Number.isNaN(script.settings.freq) && script.settings.freq >= 120 ? script.settings.freq*1000 : 120000,
-		streamsCache = script.streamsCache[serverID];
-		if (streamsCache && streamsCache.time+updateFreq > Date.now()) {
+		// update streams
+		const streamsCache = script.streamsCache[serverID];
+		script.streamFreq = !Number.isNaN(script.settings.freq) && script.settings.freq >= 120 ? script.settings.freq*1000 : 120000;
+		if (streamsCache && streamsCache.time+script.streamFreq > Date.now()) {
 			log("info", "streamsCache", streamsCache);
 			document.getElementById("tsp-stream_table").innerHTML = streamsCache.html;
 			clearInterval(window.streamUpdateCounter);
@@ -210,10 +211,6 @@ const TwitchStreamPanel = (function() {
 		}
 		else {
 			streamsUpdate("initial");
-		}
-		if (script.settings.update) {
-			clearInterval(window.streamUpdateInterval);
-			window.streamUpdateInterval = setInterval(function() {streamsUpdate("interval");}, updateFreq);
 		}
 	},
 	streamsUpdate = function(mode) {
@@ -283,11 +280,12 @@ const TwitchStreamPanel = (function() {
 				script.check.updating = false;
 			});
 			if (script.settings.update) {
+				window.streamUpdateInterval = setTimeout(function() {streamsUpdate("interval");}, script.streamFreq);
 				clearInterval(window.streamUpdateCounter);
 				streamTimer(script.settings.freq);
 			}
 			else {
-				clearInterval(window.streamUpdateInterval);
+				clearTimeout(window.streamUpdateInterval);
 			}
 		}
 	},
@@ -642,7 +640,8 @@ const TwitchStreamPanel = (function() {
 			}
 			if (typeof BDfunctionsDevilBro === "object") {
 				BDfunctionsDevilBro.showToast(`${script.name} ${script.version} has started.`);
-				const serverID = BDfunctionsDevilBro.getSelectedServer().info.id || null;
+				console.log(BDfunctionsDevilBro.getSelectedServer());
+				const serverID = BDfunctionsDevilBro.getSelectedServer().id || null;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length && document.getElementsByClassName("scroller-NXV0-d")[0]) {
 					streamsInsert();
 				}
@@ -653,7 +652,7 @@ const TwitchStreamPanel = (function() {
 		}
 		observer({addedNodes, target}) {
 			if (addedNodes.length > 0 && target.className == "flex-spacer flex-vertical" && BDfunctionsDevilBro && document.getElementsByClassName("messages")) {
-				const serverID = BDfunctionsDevilBro.getSelectedServer().info.id || null;
+				const serverID = BDfunctionsDevilBro.getSelectedServer().id || null;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
 					if (!document.getElementById(`streams_${serverID}`)) {
 						streamsRemove();
