@@ -640,7 +640,6 @@ const TwitchStreamPanel = (function() {
 			}
 			if (typeof BDfunctionsDevilBro === "object") {
 				BDfunctionsDevilBro.showToast(`${script.name} ${script.version} has started.`);
-				console.log(BDfunctionsDevilBro.getSelectedServer());
 				const serverID = BDfunctionsDevilBro.getSelectedServer().id || null;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length && document.getElementsByClassName("scroller-NXV0-d")[0]) {
 					streamsInsert();
