@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.5.2",
+		version: "1.5.3",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -638,19 +638,17 @@ const TwitchStreamPanel = (function() {
 			if (typeof BDfunctionsDevilBro !== "object") {
 				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDfunctionsDevilBro.js"}));
 			}
-			if (typeof BDfunctionsDevilBro === "object") {
+			if (typeof BDfunctionsDevilBro === "object" && document.getElementsByClassName("messages")[0]) {
 				BDfunctionsDevilBro.showToast(`${script.name} ${script.version} has started.`);
 				const serverID = BDfunctionsDevilBro.getSelectedServer().id || null;
-				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length && document.getElementsByClassName("scroller-NXV0-d")[0]) {
+				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
 					streamsInsert();
 				}
 			}
-			else {
-				log("error", "BDfunctionsDevilBro not loaded?");
-			}
 		}
 		observer({addedNodes, target}) {
-			if (addedNodes.length > 0 && target.className == "flex-spacer flex-vertical" && BDfunctionsDevilBro && document.getElementsByClassName("messages")) {
+			if (addedNodes.length > 0 && target.className == "flex-spacer flex-vertical" && BDfunctionsDevilBro && document.getElementsByClassName("messages")[0]) {
+				console.log(BDfunctionsDevilBro.getSelectedServer());
 				const serverID = BDfunctionsDevilBro.getSelectedServer().id || null;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
 					if (!document.getElementById(`streams_${serverID}`)) {
