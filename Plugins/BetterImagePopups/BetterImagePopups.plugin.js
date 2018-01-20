@@ -6,20 +6,20 @@ class BetterImagePopups {
 	getName() {return "Better Image Popups";}
 	getShortName() {return "BetterImagePopups";}
 	getDescription() {return "Show full sized images in image popup";}
-	getVersion() {return "1.0.5";}
+	getVersion() {return "1.0.6";}
 	getAuthor() {return "Orrie";}
 
 	load() {}
 	start(){
 		BdApi.injectCSS(this.getShortName(), `
-.modal-2LIEKY .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
-.modal-2LIEKY .bip-scroller {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px); overflow-y: scroll; margin-bottom: 3px;}
-.modal-2LIEKY .bip-scroller img {margin-bottom: -5px;}
-.modal-2LIEKY .bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px);}
-.modal-2LIEKY .bip-actions {display: table; margin: 0 auto;}
-.modal-2LIEKY .downloadLink-wANcd8 {text-transform: capitalize;}
-.modal-2LIEKY .image.image-loading {opacity: 0.9;}
-.modal-2LIEKY .image.image-loading::before {background: transparent;}
+.bip-container .scroller-fzNley {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
+.bip-container .bip-scroller {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px); overflow-y: scroll; margin-bottom: 3px;}
+.bip-container .bip-scroller img {margin-bottom: -5px;}
+.bip-container .bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px);}
+.bip-container .bip-actions {display: table; margin: 0 auto;}
+.bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
+.bip-container .image.image-loading {opacity: 0.9;}
+.bip-container .image.image-loading::before {background: transparent;}
 		`);
 	}
 	stop(){
@@ -32,6 +32,7 @@ class BetterImagePopups {
 			if (img.src) {
 				const fullSrc = img.src.split("?")[0],
 				wrapper = img.parentNode;
+				addedNodes[0].classList.add("bip-container");
 				wrapper.href = fullSrc;
 				wrapper.style.cssText = "";
 				wrapper.removeAttribute("target");
