@@ -5,21 +5,20 @@
 class BetterImagePopups {
 	getName() {return "Better Image Popups";}
 	getShortName() {return "BetterImagePopups";}
-	getDescription() {return "Show full sized images in image popup";}
-	getVersion() {return "1.0.7";}
+	getDescription() {return "Show full sized images in image popup. Zooming is possible if the image is bigger than the size of Discord";}
+	getVersion() {return "1.0.8";}
 	getAuthor() {return "Orrie";}
 
 	load() {}
 	start(){
 		BdApi.injectCSS(this.getShortName(), `
 .bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
-.bip-container .bip-scroller {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px); overflow-y: scroll; margin-bottom: 3px;}
+.bip-container .imageWrapper-38T7d9 {display: table; margin: 0 auto;}
+.bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow-y: scroll;}
 .bip-container .bip-scroller img {margin-bottom: -5px;}
-.bip-container .bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px);}
-.bip-container .bip-actions {display: table; margin: 0 auto;}
+.bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
+.bip-container .bip-actions {display: table; margin: 0 auto; user-select: auto;}
 .bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
-.bip-container .image.image-loading {opacity: 0.9;}
-.bip-container .image.image-loading::before {background: transparent;}
 		`);
 	}
 	stop(){
@@ -27,29 +26,38 @@ class BetterImagePopups {
 	}
 
 	observer({addedNodes}) {
-		if (addedNodes.length > 0 && addedNodes[0].className == "modal-2LIEKY") {
-			const img = addedNodes[0].getElementsByTagName("IMG")[0];
-			if (img.src) {
-				const fullSrc = img.src.split("?")[0],
-				wrapper = img.parentNode;
-				addedNodes[0].classList.add("bip-container");
-				wrapper.href = fullSrc;
-				wrapper.style.cssText = "";
-				wrapper.removeAttribute("target");
-				wrapper.nextElementSibling.classList.add("bip-actions");
-				img.classList.add("bip-center");
-				img.src = fullSrc;
-				img.style.cssText = "";
-				img.onload = function(){
-					if (this.naturalHeight > window.innerHeight*1.35) {
-						this.addEventListener("click", function() {
-							this.classList.toggle("bip-center");
-							wrapper.classList.toggle("bip-scroller");
-							wrapper.classList.toggle("scroller-fzNley");
-							wrapper.parentNode.classList.toggle("scrollerWrap-2uBjct");
-						}, false);
+		if (addedNodes.length > 0 && document.getElementsByClassName("messages")) {
+			const node = addedNodes[0];
+			if (node.classList && (node.classList.contains("modal-2LIEKY") || node.classList.contains("imageWrapper-38T7d9"))) {
+				const img = node.getElementsByTagName("IMG")[0];
+				if (!img.classList.contains("imagePlaceholder-jWw28v") && img.src) {
+					const fullSrc = img.src.split("?")[0],
+					wrapper = img.parentNode;
+					wrapper.href = fullSrc;
+					wrapper.style.cssText = "";
+					wrapper.removeAttribute("target");
+					wrapper.nextElementSibling.classList.add("bip-actions");
+					img.classList.add("bip-center");
+					img.src = fullSrc;
+					img.style.cssText = "";
+					img.onload = function(){
+						wrapper.insertAdjacentHTML("afterend", `<div class='bip-actions description-3MVziF'>${img.naturalWidth}px × ${img.naturalHeight}px ${this.naturalHeight > window.innerHeight*1.25 ? `(scaled to ${img.width}px × ${img.height}px)</div>` : ""}`);
+						if (this.naturalHeight > window.innerHeight*1.25) {
+							this.addEventListener("click", function() {
+								this.classList.toggle("bip-center");
+								wrapper.classList.toggle("bip-scroller");
+								wrapper.classList.toggle("scroller-fzNley");
+								wrapper.parentNode.classList.toggle("scrollerWrap-2uBjct");
+							}, false);
+						}
+					};
+					if (node.className == "imageWrapper-38T7d9") {
+						node.closest(".modal-2LIEKY").classList.add("bip-container");
 					}
-				};
+					else {
+						node.classList.add("bip-container");
+					}
+				}
 			}
 		}
 	}
