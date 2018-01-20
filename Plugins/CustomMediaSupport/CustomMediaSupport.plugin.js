@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.9.0",
+		version: "1.9.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -37,13 +37,13 @@ const CustomMediaSupport = (function() {
 		chan: {
 			nsfw: ["aco","b","bant","d","e","gif","h","hc","hm","hr","pol","r","r9k","s","s4s","soc","t","u","y"],
 			archives: {
+				"https://archived.moe": ["3","a","aco","adv","an","asp","b","biz","c","cgl","ck","cm","co","con","d","diy","e","f","fa","fit","g","gd","gif","h","hc","his","hm","hr","i","ic","int","jp","k","lgbt","lit","m","mlp","mu","n","news","o","out","p","po","pol","q","qa","qst","r","r9k","s","s4s","sci","soc","sp","t","tg","toy","trash","trv","tv","u","v","vg","vip","vp","vr","w","wg","wsg","wsr","x","y"],
 				"https://archive.4plebs.org": ["adv","f","hr","o","pol","s4s","sp","tg","trv","tv","x"],
 				"https://desuarchive.org": ["a","aco","an","c","co","d","fit","gif","his","int","k","m","mlp","qa","r9k","tg","trash","vr","wsg"],
 				"https://boards.fireden.net": ["a","cm","ic","sci","tg","v","vg","y"],
 				"https://archiveofsins.com": ["h","hc","hm","r","s","soc"],
 				"https://archive.nyafuu.org": ["bant","asp","c","e","n","news","out","p","toy","vip","vp","w","wg","wsr"],
-				"https://archive.loveisover.me": ["c","d","e","i","lgbt","t","u"],
-				"https://archived.moe": ["3","a","aco","adv","an","asp","b","biz","c","cgl","ck","cm","co","con","d","diy","e","f","fa","fit","g","gd","gif","h","hc","his","hm","hr","i","ic","int","jp","k","lgbt","lit","m","mlp","mu","n","news","o","out","p","po","pol","q","qa","qst","r","r9k","s","s4s","sci","soc","sp","t","tg","toy","trash","trv","tv","u","v","vg","vip","vp","vr","w","wg","wsg","wsr","x","y"]
+				"https://archive.loveisover.me": ["c","d","e","i","lgbt","t","u"]
 			}
 		},
 		settings: {embedding: true, loop: true, volume: 0.25, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, imagePop: true, debug: false},
@@ -63,12 +63,12 @@ const CustomMediaSupport = (function() {
 		css: {
 			script: `
 /* custom embeds */
-.customMedia .embed-wrapper {max-width: unset;}
+.customMedia .embed-2diOCQ {max-width: unset;}
 .customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; max-height: 25vh;}
 .customMedia.media-video.media-large video {width: 50vw; max-height: 50vh;}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.media-video video::-webkit-media-controls-panel {display: flex !important; opacity: 1 !important;}
-.customMedia.media-video .embed-zoom {color: #202225; cursor: pointer; font-size: 30px; font-weight: bold; opacity: 0.15; position: absolute; right: 11px;}
+.customMedia.media-video .embed-zoom {color: #202225; cursor: pointer; font-size: 30px; font-weight: bold; mix-blend-mode: difference; opacity: 0.15; position: absolute; right: 11px; top: 0;}
 .customMedia.media-video:hover .embed-zoom {opacity: 0.80;}
 .customMedia.media-video .embed-zoom:hover {opacity: 1;}
 .customMedia.media-audio audio {width: 400px;}
@@ -80,17 +80,17 @@ const CustomMediaSupport = (function() {
 .customMedia.sadpanda .gallery_info .tags span {display: inline-block; margin: 0 3px;}
 .customMedia.sadpanda .gallery_preview {padding: 0;}
 .customMedia.sadpanda .gallery_preview img {max-height: 250px;}
-.customMedia.sadpanda .embed-wrapper {max-width: 600px;}
-.customMedia.sadpanda .embed-color-pill.cat-Doujinshi {background-color: #FF2525;}
-.customMedia.sadpanda .embed-color-pill.cat-Manga {background-color: #FFB225;}
-.customMedia.sadpanda .embed-color-pill.cat-Artistcg {background-color: #E8D825;}
-.customMedia.sadpanda .embed-color-pill.cat-Gamecg {background-color: #259225;}
-.customMedia.sadpanda .embed-color-pill.cat-Western {background-color: #9AFF38;}
-.customMedia.sadpanda .embed-color-pill.cat-Non-H {background-color: #38ACFF;}
-.customMedia.sadpanda .embed-color-pill.cat-Imageset {background-color: #2525FF;}
-.customMedia.sadpanda .embed-color-pill.cat-Cosplay {background-color: #652594;}
-.customMedia.sadpanda .embed-color-pill.cat-Asianporn {background-color: #F2A7F2;}
-.customMedia.sadpanda .embed-color-pill.cat-Misc {background-colorcolor: #D3D3D3;}
+.customMedia.sadpanda .embed-2diOCQ {max-width: 600px;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Doujinshi {background-color: #FF2525;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Manga {background-color: #FFB225;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Artistcg {background-color: #E8D825;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Gamecg {background-color: #259225;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Western {background-color: #9AFF38;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Non-H {background-color: #38ACFF;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Imageset {background-color: #2525FF;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Cosplay {background-color: #652594;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Asianporn {background-color: #F2A7F2;}
+.customMedia.sadpanda .embedPill-3sYS1X.cat-Misc {background-colorcolor: #D3D3D3;}
 .customMedia.sadpanda .gallery_info .cat-Doujinshi {color: #FF2525;}
 .customMedia.sadpanda .gallery_info .cat-Manga {color: #FFB225;}
 .customMedia.sadpanda .gallery_info .cat-Artistcg {color: #E8D825;}
@@ -103,18 +103,18 @@ const CustomMediaSupport = (function() {
 .customMedia.sadpanda .gallery_info .cat-Misc {color: #D3D3D3;}
 /* 4chan previews */
 .customMedia.knittingboard {color: #AAAAAA;}
-.customMedia.knittingboard .embed-wrapper {max-width: 600px; min-width: 520px;}
-.customMedia.knittingboard .embed-wrapper .board-sfw {background-color: #9099D0;}
-.customMedia.knittingboard .embed-wrapper .board-nsfw {background-color: #FFBEAF;}
-.customMedia.knittingboard .embed {width: 100%;}
-.customMedia.knittingboard .embed > table {width: 100%;}
+.customMedia.knittingboard .embed-2diOCQ {max-width: 600px; min-width: 520px;}
+.customMedia.knittingboard .embed-2diOCQ .board-sfw {background-color: #9099D0;}
+.customMedia.knittingboard .embed-2diOCQ .board-nsfw {background-color: #FFBEAF;}
+.customMedia.knittingboard .embedInner-t4ag7g {width: 100%;}
+.customMedia.knittingboard .embedInner-t4ag7g > table {width: 100%;}
 .customMedia.knittingboard .thread_head {position: relative;}
 .customMedia.knittingboard .thread_head .thread_posttype {font-weight: bold; line-height: 30px;}
 .customMedia.knittingboard .thread_head .thread_data {display: inline; position: absolute; right: -5px;}
 .customMedia.knittingboard .thread_head .thread_data td:last-of-type {text-align: right;}
-.customMedia.knittingboard .thread_link {font-weight: 500; margin-bottom: 5px; white-space: nowrap;}
+.customMedia.knittingboard .thread_link {font-weight: 500; white-space: nowrap;}
 .customMedia.knittingboard .thread_link span {display: inline; margin: 0 5px;}
-.customMedia.knittingboard .thread_info {margin-bottom: 5px; white-space: nowrap;}
+.customMedia.knittingboard .thread_info {white-space: nowrap;}
 .customMedia.knittingboard .thread_info .thread_title {display: inline-block; font-weight: bold; max-width: 278px; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom;}
 .customMedia.knittingboard .thread_info .thread_creator {color: #30A75C;}
 .customMedia.knittingboard .thread_preview {padding: 0; width: 1px;}
@@ -124,15 +124,14 @@ const CustomMediaSupport = (function() {
 .custom_warning {color: #F32323;}
 .greentext {color: #709900;}
 /* BetterImagePopups */
-.modal-image img {max-width: calc(100vw - 160px); left: 50%; transform: translateX(-50%);}
-.modal-image img.bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px);}
-.modal-image:not(.scroller-fzNley) {position: relative;}
-.modal-image .download-button {display: block; position: absolute; right: 10px; bottom: -30px; pointer-events: auto; text-transform: capitalize;}
-.modal-image .image.image-loading {opacity: 0.9;}
-.modal-image .image.image-loading::before {background: transparent;}
-/* ImageToClipboard Compatibility */
-.modal-image span.download-button {right: 100px;}
-.modal-image a:nth-of-type(2) {right: 115px;}
+.bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
+.bip-container .bip-scroller {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px); overflow-y: scroll; margin-bottom: 3px;}
+.bip-container .bip-scroller img {margin-bottom: -5px;}
+.bip-container .bip-center {max-height: calc(100vh - 120px); max-width: calc(100vw - 160px);}
+.bip-container .bip-actions {display: table; margin: 0 auto;}
+.bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
+.bip-container .image.image-loading {opacity: 0.9;}
+.bip-container .image.image-loading::before {background: transparent;}
 			`,
 			shared: `
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
@@ -269,7 +268,8 @@ const CustomMediaSupport = (function() {
 								if (!hrefSplit[5]) {
 									break;
 								}
-								const thread_id = `${hrefSplit[3]}_${/#/.test(hrefSplit[5]) ? hrefSplit[5].replace("#","_") : hrefSplit[5]}`;
+								const postnumber = hrefSplit[5].match(/\d+/g),
+								thread_id = `${hrefSplit[3]}_${postnumber[1] ? hrefSplit[5].replace("#","_") : hrefSplit[5]}`;
 								if (script.settings.board && !link.classList.contains("fetchingMedia") && message.querySelectorAll(`#post_${thread_id}`).length === 0) {
 									link.classList.add("customMediaLink",`anchor_${thread_id}`);
 									if (script.db[thread_id]) {
@@ -290,7 +290,7 @@ const CustomMediaSupport = (function() {
 												return false;
 											})(script.chan.archives);
 											if (archive) {
-												request("4chan", `https://cors-anywhere.herokuapp.com/${archive}/_/api/chan/thread/?board=${hrefSplit[3]}&num=${hrefSplit[5]}`, chanHandler, "GET", {href, hrefSplit, archive});
+												request("4chan", `https://cors-anywhere.herokuapp.com/${archive}/_/api/chan/thread/?board=${hrefSplit[3]}&num=${postnumber[0]}`, chanHandler, "GET", {href, hrefSplit, archive});
 											}
 										}
 									}
@@ -332,9 +332,9 @@ const CustomMediaSupport = (function() {
 		// embed supported media
 		log("info", "mediaEmbedding", {fileMedia, fileSite, href, hrefSplit, message, message_body});
 		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
-			_createElement("div", {className: "embed-wrapper"}, [
-				_createElement("div", {className: "embed-color-pill", style: `background-color:#${Math.random().toString(16).substr(2,6)};`}),
-				_createElement("div", {className: "embed"}, [
+			_createElement("div", {className: "embed-2diOCQ flex-3B1Tl4 embed"}, [
+				_createElement("div", {className: "embedPill-3sYS1X", style: `background-color:#${Math.random().toString(16).substr(2,6)};`}),
+				_createElement("div", {className: "embedInner-t4ag7g"}, [
 					_createElement(fileMedia, (function() {
 						switch(fileMedia) {
 							case "video":
@@ -439,7 +439,7 @@ const CustomMediaSupport = (function() {
 				for (let _a=0, _a_len=gallery_anchors.length; _a<_a_len; _a++) {
 					const element_message = gallery_anchors[_a].closest(".message");
 					if (element_message.querySelectorAll(`#gallery_${gallery_id}`).length === 0) {
-						container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-wrapper'><div class='embed-color-pill cat-${gallery.category}'></div><div class='embed'><table><tr><td colspan='2'><div><a class='embed-provider linkIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div><a class='embed-title linkIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td class='tags'>${gallery_tags}</td></tr><tr><td>Size:</td><td class='desc'>${gallery_size}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='linkIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+						container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X cat-${gallery.category}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='2'><div class='marginTop4-2rEBfJ'><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm linkIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2rEBfJ marginBottom4-_yArcI'><a class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 linkIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td class='tags'>${gallery_tags}</td></tr><tr><td>Size:</td><td class='desc'>${gallery_size}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='linkIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
 						element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 						forceScrolling(container.scrollHeight, "messages");
 						gallery_anchors[_a].classList.remove("fetchingMedia");
@@ -484,7 +484,7 @@ const CustomMediaSupport = (function() {
 		for (let _a=0, _a_len=chan_anchors.length; _a<_a_len; _a++) {
 			const element_message = chan_anchors[_a].closest(".message");
 			if (element_message.querySelectorAll(`#post_${thread_id}`).length === 0) {
-				container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: `<div class='embed-wrapper'><div class='embed-color-pill ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embed'><table cellspacing='0'><tr><td colspan='4'><div class='thread_head'><a class='embed-provider linkIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link'>Thread: <a class='linkIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='embed-title custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info'><span class='thread_title' title='${post.title_processed ? post.title_processed : ""}'>${post.title_processed ? post.title_processed : ""}</span> <span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='linkIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='linkIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+				container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-t4ag7g'><table cellspacing='0'><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm linkIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2rEBfJ '>Thread: <a class='linkIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2rEBfJ marginBottom4-_yArcI'><span class='thread_title' title='${post.title_processed ? post.title_processed : ""}'>${post.title_processed ? post.title_processed : ""}</span> <span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='linkIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='linkIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
 				element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 				forceScrolling(container.scrollHeight, "messages");
 				chan_anchors[_a].classList.remove("fetchingMedia");
@@ -568,10 +568,10 @@ const CustomMediaSupport = (function() {
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 			const setting = script.settingsMenu[_s_k[_s]];
 			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
-				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 margin-reset margin-reset ui-flex-child'>${setting[0]}</h3>`}, [
+				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-3hwONl ui-flex-child'>${setting[0]}</h3>`}, [
 					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
 				]),
-				_createElement("div", {className: "ui-form-text style-description margin-top-4", innerHTML: setting[2]})
+				_createElement("div", {className: "ui-form-text style-description marginTop4-2rEBfJ", innerHTML: setting[2]})
 			]));
 		}
 		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
@@ -584,7 +584,7 @@ const CustomMediaSupport = (function() {
 				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra'>Updates</button>"}),
 				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db).length || 0})`, onclick() {cleanDB(this);}})
 			]),
-			_createElement("div", {className: "orrie-centerText margin-top-8", innerHTML: "It's recommended to clean the database on a regular basis"}),
+			_createElement("div", {className: "orrie-centerText marginTop8-2gOa2N", innerHTML: "It's recommended to clean the database on a regular basis"}),
 		]);
 	},
 	_createElement = function(tag, attributes, children) {
@@ -652,40 +652,48 @@ const CustomMediaSupport = (function() {
 				textParser();
 			}
 		}
-		observer({addedNodes, target}) {
+		observer({addedNodes}) {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages")) {
-				switch(target.className) {
-					case "flex-spacer flex-vertical":
+				switch(addedNodes[0].className) {
+					case "messages-wrapper":
 						mediaConvert(true);
 						textParser();
 						break;
-					case "messages scroller":
-					case "comment":
+					case "message-group hide-overflow":
+					case "message":
 						mediaConvert(false);
 						textParser();
 						break;
-					case "body":
+					case "message-text":
 						setTimeout(function() {
 							textParser();
 						}, 250);
 						break;
-					case "modal-image":
-						const img = target.firstElementChild;
-						if (script.settings.imagePop && img.tagName == "IMG" && img.src) {
-							target.classList.add("bip-active");
-							img.classList.add("bip-center");
-							img.src = img.src.split("?")[0];
-							img.removeAttribute("width");
-							img.removeAttribute("height");
-							img.onload = function(){
-								if (this.naturalHeight > window.innerHeight*1.35) {
-									this.addEventListener("click", function() {
-										this.classList.toggle("bip-center");
-										target.classList.toggle("scroller-fzNley");
-										target.parentNode.classList.toggle("scrollerWrap-2uBjct");
-									}, false);
-								}
-							};
+					case "modal-2LIEKY":
+						if (script.settings.imagePop) {
+							const img = addedNodes[0].getElementsByTagName("IMG")[0];
+							if (img.src) {
+								const fullSrc = img.src.split("?")[0],
+								wrapper = img.parentNode;
+								addedNodes[0].classList.add("bip-container");
+								wrapper.href = fullSrc;
+								wrapper.style.cssText = "";
+								wrapper.removeAttribute("target");
+								wrapper.nextElementSibling.classList.add("bip-actions");
+								img.classList.add("bip-center");
+								img.src = fullSrc;
+								img.style.cssText = "";
+								img.onload = function(){
+									if (this.naturalHeight > window.innerHeight*1.35) {
+										this.addEventListener("click", function() {
+											this.classList.toggle("bip-center");
+											wrapper.classList.toggle("bip-scroller");
+											wrapper.classList.toggle("scroller-fzNley");
+											wrapper.parentNode.classList.toggle("scrollerWrap-2uBjct");
+										}, false);
+									}
+								};
+							}
 						}
 						break;
 					default:
