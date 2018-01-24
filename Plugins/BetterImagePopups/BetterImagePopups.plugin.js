@@ -6,7 +6,7 @@ class BetterImagePopups {
 	getName() {return "Better Image Popups";}
 	getShortName() {return "BetterImagePopups";}
 	getDescription() {return "Show full sized images in image popup. Zooming is possible if the image is bigger than the size of Discord";}
-	getVersion() {return "1.0.9";}
+	getVersion() {return "1.1.0";}
 	getAuthor() {return "Orrie";}
 
 	load() {}
@@ -30,7 +30,7 @@ class BetterImagePopups {
 		if (addedNodes.length > 0 && document.getElementsByClassName("messages")) {
 			const node = addedNodes[0];
 			if (node.classList && (node.classList.contains("modal-2LIEKY") || node.classList.contains("imageWrapper-38T7d9"))) {
-				const img = node.getElementsByTagName("IMG")[0];
+				const img = node.getElementsByClassName("imageWrapper-38T7d9")[0] ? node.getElementsByClassName("imageWrapper-38T7d9")[0].lastElementChild : (node.className == "imageWrapper-38T7d9" ? node.lastElementChild : false);
 				if (!img.classList.contains("imagePlaceholder-jWw28v") && img.src) {
 					const fullSrc = img.src.split("?")[0],
 					wrapper = img.parentNode;
