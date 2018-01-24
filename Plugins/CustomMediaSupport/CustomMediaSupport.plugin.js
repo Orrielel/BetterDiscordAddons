@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.9.2",
+		version: "1.9.3",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -126,8 +126,9 @@ const CustomMediaSupport = (function() {
 /* BetterImagePopups */
 .bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
 .bip-container .imageWrapper-38T7d9 {display: table; margin: 0 auto;}
-.bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow-y: scroll;}
+.bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow: auto;}
 .bip-container .bip-scroller img {margin-bottom: -5px;}
+.bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
 .bip-container .bip-actions {display: table; margin: 0 auto; user-select: auto;}
 .bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
@@ -651,7 +652,7 @@ const CustomMediaSupport = (function() {
 				textParser();
 			}
 		}
-		observer({addedNodes, target}) {
+		observer({addedNodes}) {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages")) {
 				const node = addedNodes[0];
 				switch(node.className) {
@@ -672,7 +673,8 @@ const CustomMediaSupport = (function() {
 					case "modal-2LIEKY":
 					case "imageWrapper-38T7d9":
 						if (script.settings.imagePop) {
-							const img = node.getElementsByTagName("IMG")[0];
+							log("info", "imagePop", node);
+							const img = node.getElementsByClassName("imageWrapper-38T7d9")[0] ? node.getElementsByClassName("imageWrapper-38T7d9")[0].lastElementChild : (node.className == "imageWrapper-38T7d9" ? node.lastElementChild : false);
 							if (!img.classList.contains("imagePlaceholder-jWw28v") && img.src) {
 								const fullSrc = img.src.split("?")[0],
 								wrapper = img.parentNode;
@@ -684,7 +686,7 @@ const CustomMediaSupport = (function() {
 								img.src = fullSrc;
 								img.style.cssText = "";
 								img.onload = function(){
-									wrapper.insertAdjacentHTML("afterend", `<div class='bip-actions description-3MVziF'>${img.naturalWidth}px × ${img.naturalHeight}px ${this.naturalHeight > window.innerHeight*1.25 ? `(scaled to ${img.width}px × ${img.height}px)</div>` : ""}`);
+									wrapper.insertAdjacentHTML("afterend", `<div class='bip-actions description-3MVziF'>${img.naturalWidth}px × ${img.naturalHeight}px${this.naturalHeight > window.innerHeight*1.25 ? ` (scaled to ${img.width}px × ${img.height}px)</div>` : ""}`);
 									if (this.naturalHeight > window.innerHeight*1.25) {
 										this.addEventListener("click", function() {
 											this.classList.toggle("bip-center");
