@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.9.3",
+		version: "1.9.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -673,9 +673,9 @@ const CustomMediaSupport = (function() {
 					case "modal-2LIEKY":
 					case "imageWrapper-38T7d9":
 						if (script.settings.imagePop) {
-							log("info", "imagePop", node);
-							const img = node.getElementsByClassName("imageWrapper-38T7d9")[0] ? node.getElementsByClassName("imageWrapper-38T7d9")[0].lastElementChild : (node.className == "imageWrapper-38T7d9" ? node.lastElementChild : false);
-							if (!img.classList.contains("imagePlaceholder-jWw28v") && img.src) {
+							const img = node.getElementsByClassName("imageWrapper-38T7d9")[0] && !node.getElementsByClassName("uploadModal-2KN6Mm")[0] ? node.getElementsByClassName("imageWrapper-38T7d9")[0].lastElementChild : (node.className == "imageWrapper-38T7d9" ? node.lastElementChild : false);
+							if (img.src && !img.classList.contains("imagePlaceholder-jWw28v")) {
+								log("info", "imagePop", node);
 								const fullSrc = img.src.split("?")[0],
 								wrapper = img.parentNode;
 								wrapper.href = fullSrc;
