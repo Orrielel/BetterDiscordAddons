@@ -1,13 +1,13 @@
 //META{"name":"CustomMediaSupport", "pname":"Custom Media Support"}*//
 
-/* global bdPluginStorage, BdApi, PluginUtilities */
+/* global bdPluginStorage, BdApi, BDfunctionsDevilBro */
 
 const CustomMediaSupport = (function() {
 	// plugin settings
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.9.4",
+		version: "1.9.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -73,12 +73,12 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video .embed-zoom:hover {opacity: 1;}
 .customMedia.media-audio audio {width: 400px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto;}
-.customMedia table td {font-size: 0.875rem; padding: 0 2px; vertical-align: top;}
+.customMedia table td {color: #FFFFFF; font-size: 0.875rem; padding: 0 2px; vertical-align: top;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
 .customMedia.sadpanda .gallery_info .desc {color: hsla(0,0%,100%,.7);}
 .customMedia.sadpanda .gallery_info .tags span {display: inline-block; margin: 0 3px;}
-.customMedia.sadpanda .gallery_preview {padding: 0;}
+.customMedia.sadpanda .gallery_preview {padding: 0; width: 1px;}
 .customMedia.sadpanda .gallery_preview img {max-height: 250px;}
 .customMedia.sadpanda .embed-2diOCQ {max-width: 600px;}
 .customMedia.sadpanda .embedPill-3sYS1X.cat-Doujinshi {background-color: #FF2525;}
@@ -132,6 +132,13 @@ const CustomMediaSupport = (function() {
 .bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
 .bip-container .bip-actions {display: table; margin: 0 auto; user-select: auto;}
 .bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
+/* Archive */
+.cms-menuIcon {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAASCAYAAABrXO8xAAABfElEQVR42rWSu4rCQBiF51n2VVJsZSVEkWjjXQOCooUajeJdtLNR8QJaKYiCl85SEDvxCbb3BbY4y5nCDSiSxoGTGf7/fJOTnwguj8fz5XK5rtFoFKFQ6KXYc7vdV3olpKrqdzwevw8GA3S7XXQ6nZdibzgcQtf1OxkRDAZ/1+s1NpsNuL/Rw0NGRCIRtNttZLNZGIbxVrlcDq1WS8aWYLPZRLlcZqS3qlQqqNfrHwALhcIjHs+feSOHw8Z0OkWv1+P5Sfl8/h/ko9FoIBAIyOJiscB+v8dut8N4PJZJEokEwuHwwxOLxSBY5G2KomA0GklwuVxiu93ifD7jdrvJfT6fw+fzoVQqgYxIp9MoFotwOp0S7Pf7mEwmmM1mWK1WOBwOOB6PuFwujCoHRkbw21KpFGFbopc/gjBNE5lMhlOzJXoZV9RqNSvI349Ttoo1KygHJFhk9mq1SslzMpm06qnPC4SmaSe/3//Dm+yIXjKCy+FwmF6vF3ZEL5k/rZRshi+9vygAAAAASUVORK5CYII=) no-repeat center; opacity: 0.6;}
+.cms-menuIcon:hover {opacity: 1;}
+.cms-archive_container {margin: 10px 0;}
+.cms-archive_container .customMedia {margin: 5px;}
+.cms-archive_container .customMedia.sadpanda .embed-2diOCQ, .cms-archive_container .customMedia.knittingboard .embed-2diOCQ {max-width: unset;}
+.cms-archive_container .embedInner-t4ag7g, .cms-archive_container .embedInner-t4ag7g > table {width: 100%;}
 			`,
 			shared: `
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
@@ -154,6 +161,10 @@ const CustomMediaSupport = (function() {
 		else {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
+		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
+			window.PluginUpdates = {plugins:{}};
+		}
+		window.PluginUpdates.plugins[script.raw] = {name:script.name, raw:script.raw, version:script.version};
 		log("info", "Settings Loaded");
 	},
 	settingsSave = function(key, data) {
@@ -184,23 +195,6 @@ const CustomMediaSupport = (function() {
 		script.db = {};
 		bdPluginStorage.set(script.file, "db", {});
 		elem.innerHTML = "Clean Database (0)";
-	},
-	checkForUpdate = function() {
-		let libraryScript = document.getElementById('zeresLibraryScript');
-		if (!libraryScript) {
-			libraryScript = _createElement("script", {id: "zeresLibraryScript", type: "text/javascript", src: "https://rauenzi.github.io/BetterDiscordAddons/Plugins/PluginLibrary.js"});
-			document.head.appendChild(libraryScript);
-		}
-		if (typeof window.ZeresLibrary !== "undefined") {
-			PluginUtilities.checkForUpdate(script.name, script.version, script.raw);
-			PluginUtilities.showToast(`${script.name} ${script.version} has started.`);
-		}
-		else {
-			libraryScript.addEventListener("load", function() {
-				PluginUtilities.checkForUpdate(script.name, script.version, script.raw);
-				PluginUtilities.showToast(`${script.name} ${script.version} has started.`);
-			});
-		}
 	},
 	log = function(method, title, data) {
 		// logging function
@@ -495,6 +489,43 @@ const CustomMediaSupport = (function() {
 		bdPluginStorage.set(script.file, "db", script.db);
 		script.check.chan = false;
 	},
+	archiveHandler = function() {
+		// displays the archived links in a modal
+		return _createElement("span", {className: `${script.file}Modal orriePluginModal DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div>"}, [
+			_createElement("div", {className: "modal-2LIEKY"}, [
+				_createElement("div", {className: "inner-1_1f7b"}, [
+					_createElement("div", {className: "modal-3HOjGZ sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Archive</h4></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
+						_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW"}, [
+							_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ border-39Cu-M cms-content"}, (function(database) {
+								const sadpandaFragment = document.createDocumentFragment(),
+								chanFragment = document.createDocumentFragment();
+								for (let _db_k = Object.keys(database), _db=0, _db_len = _db_k.length; _db<_db_len; _db++) {
+									const key = _db_k[_db];
+									if (Number.isInteger(parseFloat(key[0]))) {
+										sadpandaFragment.appendChild(_createElement("div", {className: "customMedia sadpanda", innerHTML: database[key]}));
+									}
+									else {
+										chanFragment.appendChild(_createElement("div", {className: "customMedia knittingboard", innerHTML: database[key]}));
+									}
+								}
+								return [
+									_createElement("div", {className: "cms-archive_container"}, [
+										_createElement("div", {className: "defaultColor-v22dK1 app-XZYfmp cursorPointer-3oKATS orrie-centerText", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85$ closed-2Hef-I' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-ZM4Qv-'>ExHentai</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");}}),
+										_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR"}, sadpandaFragment)
+									]),
+									_createElement("div", {className: "cms-archive_container"}, [
+										_createElement("div", {className: "defaultColor-v22dK1 app-XZYfmp cursorPointer-3oKATS orrie-centerText", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85$ closed-2Hef-I' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-ZM4Qv-'>4chan</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");}}),
+										_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR"}, chanFragment)
+									])
+								];
+							})(script.db))
+						]),
+						_createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<div class='contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM'><h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;' id='cms-stream_status'></h3></div>", style: "flex: 0 0 auto;"})
+					])
+				])
+			])
+		]);
+	},
 	textParser = function() {
 		// parse messages for text conversion
 		if (!script.check.textParser) {
@@ -643,13 +674,23 @@ const CustomMediaSupport = (function() {
 			BdApi.injectCSS("orrie-plugin", script.css.shared);
 		}
 		start() {
-			checkForUpdate();
 			settingsLoad();
 			script.db = bdPluginStorage.get(script.file, "db") || {};
 			BdApi.injectCSS(script.file, script.css.script);
+			if (typeof BDfunctionsDevilBro !== "object") {
+				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDfunctionsDevilBro.js"}));
+			}
 			if (document.getElementsByClassName("messages")[0]) {
 				mediaConvert(true);
 				textParser();
+				const archiveIcon = document.getElementsByClassName("cms-menuIcon")[0],
+				menuAnchor = document.getElementsByClassName("topic-1KFf6J")[0].nextElementSibling;
+				if (archiveIcon) {
+					archiveIcon.remove(); 
+				}
+				menuAnchor.insertBefore(_createElement("div", {className: "cms-menuIcon iconMargin-2Js7V9 icon-mr9wAc", title: "Custom Media Support Archive",
+					onclick() {BDfunctionsDevilBro.appendModal(archiveHandler());}
+				}), menuAnchor.firstChild);
 			}
 		}
 		observer({addedNodes}) {
@@ -657,6 +698,13 @@ const CustomMediaSupport = (function() {
 				const node = addedNodes[0];
 				switch(node.className) {
 					case "messages-wrapper":
+						const archiveIcon = document.getElementsByClassName("cms-menuIcon")[0];
+						if (!archiveIcon) {
+							const menuAnchor = document.getElementsByClassName("topic-1KFf6J")[0].nextElementSibling;
+							menuAnchor.insertBefore(_createElement("div", {className: "cms-menuIcon iconMargin-2Js7V9 icon-mr9wAc", title: "Custom Media Support Archive",
+								onclick() {BDfunctionsDevilBro.appendModal(archiveHandler());}
+							}), menuAnchor.firstChild);
+						}
 						mediaConvert(false);
 						textParser();
 						break;
