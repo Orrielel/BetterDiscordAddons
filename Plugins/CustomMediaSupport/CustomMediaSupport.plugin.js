@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.9.8",
+		version: "1.9.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -73,14 +73,17 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video .embed-zoom:hover {opacity: 1;}
 .customMedia.media-audio audio {width: 400px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto;}
-.customMedia table td {color: #FFFFFF; font-size: 0.875rem; padding: 0 2px; vertical-align: top;}
+.customMedia table td {color: #FFFFFF; font-size: 0.875rem; vertical-align: top;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
 .customMedia.sadpanda .gallery_info .desc {color: hsla(0,0%,100%,.7);}
 .customMedia.sadpanda .gallery_info .tags span {display: inline-block; margin: 0 3px;}
+.customMedia.sadpanda .gallery_info .tag {display: inline-block; margin: 0 3px;}
+.customMedia.sadpanda .gallery_info .tag:after{content: ',';}
+.customMedia.sadpanda .gallery_info .tag:last-child:after {content: '';}
 .customMedia.sadpanda .gallery_preview {padding: 0; width: 1px;}
 .customMedia.sadpanda .gallery_preview img {max-height: 250px;}
-.customMedia.sadpanda .embed-2diOCQ {max-width: 600px;}
+.customMedia.sadpanda .embed-2diOCQ {max-width: 750px;}
 .customMedia.sadpanda .embedPill-3sYS1X.cat-Doujinshi {background-color: #FF2525;}
 .customMedia.sadpanda .embedPill-3sYS1X.cat-Manga {background-color: #FFB225;}
 .customMedia.sadpanda .embedPill-3sYS1X.cat-Artistcg {background-color: #E8D825;}
@@ -109,7 +112,7 @@ const CustomMediaSupport = (function() {
 .customMedia.knittingboard .embedInner-t4ag7g {width: 100%;}
 .customMedia.knittingboard .embedInner-t4ag7g > table {width: 100%;}
 .customMedia.knittingboard .thread_head {position: relative;}
-.customMedia.knittingboard .thread_head .thread_posttype {font-weight: bold; line-height: 30px;}
+.customMedia.knittingboard .thread_head .thread_posttype {font-weight: bold; line-height: 30px; margin: 0 5px;}
 .customMedia.knittingboard .thread_head .thread_data {display: inline; position: absolute; right: -5px;}
 .customMedia.knittingboard .thread_head .thread_data td:last-of-type {text-align: right;}
 .customMedia.knittingboard .thread_link {font-weight: 500; white-space: nowrap;}
@@ -132,9 +135,10 @@ const CustomMediaSupport = (function() {
 .bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
 .bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto; user-select: auto;}
 .bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
-/* Archive */
+/* archive manager */
 .cms-menuIcon {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAASCAYAAABrXO8xAAABfElEQVR42rWSu4rCQBiF51n2VVJsZSVEkWjjXQOCooUajeJdtLNR8QJaKYiCl85SEDvxCbb3BbY4y5nCDSiSxoGTGf7/fJOTnwguj8fz5XK5rtFoFKFQ6KXYc7vdV3olpKrqdzwevw8GA3S7XXQ6nZdibzgcQtf1OxkRDAZ/1+s1NpsNuL/Rw0NGRCIRtNttZLNZGIbxVrlcDq1WS8aWYLPZRLlcZqS3qlQqqNfrHwALhcIjHs+feSOHw8Z0OkWv1+P5Sfl8/h/ko9FoIBAIyOJiscB+v8dut8N4PJZJEokEwuHwwxOLxSBY5G2KomA0GklwuVxiu93ifD7jdrvJfT6fw+fzoVQqgYxIp9MoFotwOp0S7Pf7mEwmmM1mWK1WOBwOOB6PuFwujCoHRkbw21KpFGFbopc/gjBNE5lMhlOzJXoZV9RqNSvI349Ttoo1KygHJFhk9mq1SslzMpm06qnPC4SmaSe/3//Dm+yIXjKCy+FwmF6vF3ZEL5k/rZRshi+9vygAAAAASUVORK5CYII=) no-repeat center; opacity: 0.6;}
 .cms-menuIcon:hover {opacity: 1;}
+.cms-content {background-color: unset;}
 .cms-archive_header > div {margin: 0 5px; width: 195px;}
 .cms-archive_active .divider-1G01Z9 {background-color: #a5a5a5;}
 .cms-archive_container {margin: 10px 0;}
@@ -234,7 +238,16 @@ const CustomMediaSupport = (function() {
 			script.check.media = true;
 			const gallery = {
 				"method":"gdata",
-				"gidlist":[]
+				"gidlist":[],
+				"namespace": 1
+			},
+			archiveCheck = function(archive) {
+				for (let _a_k = Object.keys(script.chan.archives), _a=0, _a_len=_a_k.length; _a<_a_len; _a++) {
+					if (script.chan.archives[_a_k[_a]].includes(archive)) {
+						return _a_k[_a];
+					}
+				}
+				return false;
 			},
 			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll("a:not(.linkIgnore)");
 			log("info", "mediaConvert", links);
@@ -281,14 +294,7 @@ const CustomMediaSupport = (function() {
 										link.classList.add("fetchingMedia");
 										if (!script.check.chan) {
 											script.check.chan = true;
-											const archive = (function(archives) {
-												for (let _a_k = Object.keys(archives), _a=0, _a_len=_a_k.length; _a<_a_len; _a++) {
-													if (archives[_a_k[_a]].includes(hrefSplit[3])) {
-														return _a_k[_a];
-													}
-												}
-												return false;
-											})(script.chan.archives);
+											const archive = archiveCheck(hrefSplit[3]);
 											if (archive) {
 												request("4chan", `https://cors-anywhere.herokuapp.com/${archive}/_/api/chan/thread/?board=${hrefSplit[3]}&num=${postnumber[0]}`, chanHandler, "GET", {href, hrefSplit, archive});
 											}
@@ -415,31 +421,54 @@ const CustomMediaSupport = (function() {
 		// fetch sadpanda gallery information
 		const galleries = resp.gmetadata;
 		if (galleries) {
-			const messages = document.getElementsByClassName("messages")[0];
+			const messages = document.getElementsByClassName("messages")[0],
+			tagsParser = function(tags) {
+				const tagsOutput = {
+					language: "",
+					parody: "",
+					character: "",
+					artist: "",
+					male: "",
+					female: "",
+					misc: ""
+				};
+				let tagsString = "";
+				for (let _t=0, _t_len=tags.length; _t<_t_len; _t++) {
+					const tag = tags[_t].match(/([\w\s\.]+)/g),
+					tagOutput = `<div class='tag'><a class='linkIgnore' href='https://exhentai.org/tag/${tag.length == 2? `${tag[0]}:${tag[1].replace(/\s/g, "+")}` : tag[0].replace(/\s/g, "+")}' target='_blank' rel='noreferrer'>${tag[tag.length-1]}</a></div>`;
+					if (tag.length == 2) {
+						tagsOutput[tag[0]] += tagOutput;
+					}
+					else {
+						tagsOutput.misc += tagOutput;
+					}
+				}
+				for (let _to_k = Object.keys(tagsOutput), _to=0, _to_len=_to_k.length; _to<_to_len; _to++) {
+					const key = _to_k[_to],
+					tagOutput = tagsOutput[key];
+					if (tagOutput) {
+						tagsString += `<tr><td>${key}:</td><td>${tagOutput}</td></tr>`;
+					}
+				}
+				return tagsString;
+			},
+			sizeParser = function(filesize) {
+				let l = 0;
+				while(filesize >= 1024) {
+					filesize = filesize/1024;
+					l++;
+				}
+				return `${filesize.toFixed(3)} ${["Bytes","KB","MB","GB"][l]}`;
+			};
 			for (let _g=0, _g_len=galleries.length; _g<_g_len; _g++) {
 				let container;
 				const gallery = galleries[_g],
 				gallery_id = `${gallery.gid}_${gallery.token}`,
-				gallery_tags = (function(tags) {
-					let tagsString = "";
-					for (let _t=0, _t_len=tags.length; _t<_t_len; _t++) {
-						tagsString += `<span><a class='linkIgnore' href='https://exhentai.org/tag/${tags[_t].replace(/\s/g, "+")}' target='_blank' rel='noreferrer'>${tags[_t]}</a></span>`;
-					}
-					return tagsString;
-				})(gallery.tags),
-				gallery_size = (function(filesize) {
-					let l = 0;
-					while(filesize >= 1024) {
-						filesize = filesize/1024;
-						l++;
-					}
-					return `${filesize.toFixed(3)} ${["Bytes","KB","MB","GB"][l]}`;
-				})(gallery.filesize),
 				gallery_anchors = messages.getElementsByClassName(`anchor_${gallery_id}`);
 				for (let _a=0, _a_len=gallery_anchors.length; _a<_a_len; _a++) {
 					const element_message = gallery_anchors[_a].closest(".message");
 					if (element_message.querySelectorAll(`#gallery_${gallery_id}`).length === 0) {
-						container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X cat-${gallery.category}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='2'><div class='marginTop4-2rEBfJ'><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm linkIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2rEBfJ marginBottom4-_yArcI'><a class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 linkIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td class='tags'>${gallery_tags}</td></tr><tr><td>Size:</td><td class='desc'>${gallery_size}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='linkIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+						container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X cat-${gallery.category}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='2'><div class='marginTop4-2rEBfJ'><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm linkIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2rEBfJ marginBottom4-_yArcI'><a class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 linkIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${sizeParser(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='linkIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
 						element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 						forceScrolling(container.scrollHeight, "messages");
 						gallery_anchors[_a].classList.remove("fetchingMedia");
@@ -484,7 +513,7 @@ const CustomMediaSupport = (function() {
 		for (let _a=0, _a_len=chan_anchors.length; _a<_a_len; _a++) {
 			const element_message = chan_anchors[_a].closest(".message");
 			if (element_message.querySelectorAll(`#post_${thread_id}`).length === 0) {
-				container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-t4ag7g'><table cellspacing='0'><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm linkIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2rEBfJ '>Thread: <a class='linkIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2rEBfJ marginBottom4-_yArcI'><span class='thread_title' title='${post.title_processed ? post.title_processed : ""}'>${post.title_processed ? post.title_processed : ""}</span> <span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='linkIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='linkIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+				container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-t4ag7g'><table cellspacing='0'><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm linkIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2rEBfJ '>Thread: <a class='linkIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2rEBfJ marginBottom4-_yArcI'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='linkIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='linkIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='linkIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
 				element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 				forceScrolling(container.scrollHeight, "messages");
 				chan_anchors[_a].classList.remove("fetchingMedia");
@@ -502,7 +531,7 @@ const CustomMediaSupport = (function() {
 				_createElement("div", {className: "inner-1_1f7b"}, [
 					_createElement("div", {className: "modal-3HOjGZ sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Archive Manager</h4></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
 						_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w marginBottom8-1mABJ4 inner-tqJwAU cms-archive_header", style: "flex: 0 0 auto;"}, [
-							_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>ExHentai</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`,
+							_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>ExHentai</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div><div id='cms-archive_sadpanda_counter'></div>`,
 								onclick() {
 									document.getElementById("cms-archive_sadpanda").classList.toggle("orrie-toggled");
 									document.getElementById("cms-archive_chan").classList.add("orrie-toggled");
@@ -510,7 +539,7 @@ const CustomMediaSupport = (function() {
 									this.nextElementSibling.classList.remove("cms-archive_active");
 								}
 							}),
-							_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>4chan</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`,
+							_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>4chan</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div><div id='cms-archive_chan_counter'></div>`,
 								onclick() {
 									document.getElementById("cms-archive_sadpanda").classList.add("orrie-toggled");
 									document.getElementById("cms-archive_chan").classList.toggle("orrie-toggled");
@@ -522,25 +551,24 @@ const CustomMediaSupport = (function() {
 						_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW"}, [
 							_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ border-39Cu-M cms-content"}, (function(database) {
 								const sadpandaFragment = document.createDocumentFragment(),
-								chanFragment = document.createDocumentFragment();
+								chanFragment = document.createDocumentFragment(),
+								deletePreview = function(elem, key) {
+									if (elem && key) {
+										delete script.db[key];
+										bdPluginStorage.set(script.file, "db", script.db);
+										elem.parentNode.remove();
+									}
+								};
 								for (let _db_k = Object.keys(database), _db=0, _db_len = _db_k.length; _db<_db_len; _db++) {
 									const key = _db_k[_db];
 									if (Number.isInteger(parseFloat(key[0]))) {
-										sadpandaFragment.appendChild(_createElement("div", {className: "customMedia sadpanda", innerHTML: database[key], onclick}, [
-											_createElement("div", {className: "csm-archive_delete", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {
-												delete script.db[key];
-												bdPluginStorage.set(script.file, "db", script.db);
-												this.parentNode.remove();
-											}})
+										sadpandaFragment.appendChild(_createElement("div", {className: "customMedia sadpanda", innerHTML: database[key]}, [
+											_createElement("div", {className: "csm-archive_delete", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {deletePreview(this, key);}})
 										]));
 									}
 									else {
 										chanFragment.appendChild(_createElement("div", {className: "customMedia knittingboard", innerHTML: database[key]}, [
-											_createElement("div", {className: "csm-archive_delete", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {
-												delete script.db[key];
-												bdPluginStorage.set(script.file, "db", script.db);
-												this.parentNode.remove();
-											}})
+											_createElement("div", {className: "csm-archive_delete", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {deletePreview(this, key);}})
 										]));
 									}
 								}
@@ -552,7 +580,7 @@ const CustomMediaSupport = (function() {
 								];
 							})(script.db))
 						]),
-						_createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Better styling will come soon :^)</h3>", style: "flex: 0 0 auto;"})
+						_createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'></h3>", style: "flex: 0 0 auto;"})
 					])
 				])
 			])
