@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.5.5",
+		version: "1.5.6",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -23,11 +23,12 @@ const TwitchStreamPanel = (function() {
 		streamsCache: {},
 		streamFreq: 120000,
 		streamsActive: false,
-		settings: {colors: true, state: true, update: true, freq: 300, debug: false},
+		settings: {colors: true, state: true, pos: false, update: true, freq: 300, debug: false},
 		settingsMenu: {
 			//       localized         type     description
 			colors: ["Colorize Names", "check", "Adds custom color for names, either self defined, or through <a href='https://github.com/rauenzi/BetterDiscordAddons/tree/master/Plugins/BetterRoleColors' target='_blank'>BetterRoleColors</a> if installed"],
 			state:  ["Visibility",     "check", "Display streamlist at startup, or hide it (Hiding the list directly also changes this)"],
+			pos:    ["Position",       "check", "Place panel above or below text/voice channels (Above if activated)"],
 			update: ["Auto Update",    "check", "Update the streamlist depending on frequency setting"],
 			freq:   ["Frequency",      "text",  "Time between updating, in seconds &#8213; Minimum 120 secs"],
 			debug:  ["Debug",          "check", "Displays verbose stuff into the console"]
@@ -200,7 +201,12 @@ const TwitchStreamPanel = (function() {
 				})
 			])
 		]);
-		channelContainer.appendChild(streamContainer);
+		if (script.settings.pos) {
+			channelContainer.insertBefore(streamContainer, channelContainer.firstChild);
+		}
+		else {
+			channelContainer.appendChild(streamContainer);
+		}
 
 		// store streams
 		script.streamAPI = `https://api.twitch.tv/kraken/streams/?channel=${streamString.join(",")}`;
