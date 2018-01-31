@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "1.9.7",
+		version: "1.9.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -138,10 +138,13 @@ const CustomMediaSupport = (function() {
 .cms-archive_header > div {margin: 0 5px; width: 195px;}
 .cms-archive_active .divider-1G01Z9 {background-color: #a5a5a5;}
 .cms-archive_container {margin: 10px 0;}
-.cms-archive_container .customMedia {margin: 5px;}
+.cms-archive_container .customMedia {margin: 5px; position: relative;}
 .cms-archive_container .customMedia.sadpanda .embed-2diOCQ, .cms-archive_container .customMedia.knittingboard .embed-2diOCQ {max-width: unset;}
 .cms-archive_container .embedInner-t4ag7g, .cms-archive_container .embedInner-t4ag7g > table {width: 100%;}
-.cms-bottom-header {height: 24px; padding: 8px;}
+.csm-archive_delete {display: flex; position: absolute; top: 3px; right: 3px;}
+.csm-archive_delete .close-3ejNTg:hover {background-color: rgba(240, 71, 71, 0.5);}
+.cms-info-header {height: 24px; padding: 8px;}
+.cms-archive_container .customMedia.knittingboard .thread_head .thread_data {right: 30px;}
 			`,
 			shared: `
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
@@ -523,21 +526,31 @@ const CustomMediaSupport = (function() {
 								for (let _db_k = Object.keys(database), _db=0, _db_len = _db_k.length; _db<_db_len; _db++) {
 									const key = _db_k[_db];
 									if (Number.isInteger(parseFloat(key[0]))) {
-										sadpandaFragment.appendChild(_createElement("div", {className: "customMedia sadpanda", innerHTML: database[key]}));
+										sadpandaFragment.appendChild(_createElement("div", {className: "customMedia sadpanda", innerHTML: database[key], onclick}, [
+											_createElement("div", {className: "csm-archive_delete", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {
+												delete script.db[key];
+												this.parentNode.remove();
+											}})
+										]));
 									}
 									else {
-										chanFragment.appendChild(_createElement("div", {className: "customMedia knittingboard", innerHTML: database[key]}));
+										chanFragment.appendChild(_createElement("div", {className: "customMedia knittingboard", innerHTML: database[key]}, [
+											_createElement("div", {className: "csm-archive_delete", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {
+												delete script.db[key];
+												this.parentNode.remove();
+											}})
+										]));
 									}
 								}
 								return [
 									_createElement("div", {className: "cms-archive_container"}, [
-										_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_sadpanda"}, sadpandaFragment),
-										_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_chan"}, chanFragment)
+										_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_sadpanda"}, sadpandaFragment.children.length ? sadpandaFragment : _createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
+										_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_chan"}, chanFragment.children.length ? chanFragment : _createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
 									])
 								];
 							})(script.db))
 						]),
-						_createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-bottom-header' style='flex: 1 1 auto;'>Delete buttons and better styling will come soon :^)</h3>", style: "flex: 0 0 auto;"})
+						_createElement("div", {className: "contentsDefault-nt2Ym5 contents-4L4hQM contentsFilled-3M8HCx contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Better styling will come soon :^)</h3>", style: "flex: 0 0 auto;"})
 					])
 				])
 			])
@@ -756,7 +769,7 @@ const CustomMediaSupport = (function() {
 										wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF'>${img.naturalWidth}px × ${img.naturalHeight}px${this.naturalHeight > window.innerHeight*1.25 ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}</div>`);
 									}
 									else {
-										desc.innerHTML = `${img.naturalWidth}px × ${img.naturalHeight}px${this.naturalHeight > window.innerHeight*1.25 ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`
+										desc.innerHTML = `${img.naturalWidth}px × ${img.naturalHeight}px${this.naturalHeight > window.innerHeight*1.25 ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`;
 									}
 									if (this.naturalHeight > window.innerHeight*1.25) {
 										this.addEventListener("click", function() {
