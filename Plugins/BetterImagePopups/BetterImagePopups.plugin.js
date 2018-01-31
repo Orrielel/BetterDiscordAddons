@@ -18,7 +18,7 @@ class BetterImagePopups {
 .bip-container .bip-scroller img {margin-bottom: -5px;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
-.bip-container .bip-actions {display: table; margin: 0 auto; user-select: auto;}
+.bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto; user-select: auto;}
 .bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
 		`);
 	}
