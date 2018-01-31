@@ -6,7 +6,7 @@ class BetterImagePopups {
 	getName() {return "Better Image Popups";}
 	getShortName() {return "BetterImagePopups";}
 	getDescription() {return "Show full sized images in image popup. Zooming is possible if the image is bigger than the size of Discord";}
-	getVersion() {return "1.1.1";}
+	getVersion() {return "1.1.2";}
 	getAuthor() {return "Orrie";}
 
 	load() {}
@@ -31,7 +31,7 @@ class BetterImagePopups {
 			const node = addedNodes[0];
 			if (node.classList && (node.classList.contains("modal-2LIEKY") || node.classList.contains("imageWrapper-38T7d9"))) {
 				const img = node.getElementsByClassName("imageWrapper-38T7d9")[0] && !node.getElementsByClassName("uploadModal-2KN6Mm")[0] ? node.getElementsByClassName("imageWrapper-38T7d9")[0].lastElementChild : (node.className == "imageWrapper-38T7d9" ? node.lastElementChild : false);
-				if (!img.classList.contains("imagePlaceholder-jWw28v") && img.src) {
+				if (img.src && !img.classList.contains("imagePlaceholder-jWw28v")) {
 					const fullSrc = img.src.split("?")[0],
 					wrapper = img.parentNode;
 					wrapper.href = fullSrc;
@@ -42,7 +42,13 @@ class BetterImagePopups {
 					img.src = fullSrc;
 					img.style.cssText = "";
 					img.onload = function(){
-						wrapper.insertAdjacentHTML("afterend", `<div class='bip-actions description-3MVziF'>${img.naturalWidth}px × ${img.naturalHeight}px${this.naturalHeight > window.innerHeight*1.25 ? ` (scaled to ${img.width}px × ${img.height}px)</div>` : ""}`);
+						const desc = node.getElementsByClassName("bip-description")[0];
+						if (!desc) {
+							wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF'>${img.naturalWidth}px × ${img.naturalHeight}px${this.naturalHeight > window.innerHeight*1.25 ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}</div>`);
+						}
+						else {
+							desc.innerHTML = `${img.naturalWidth}px × ${img.naturalHeight}px${this.naturalHeight > window.innerHeight*1.25 ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`
+						}
 						if (this.naturalHeight > window.innerHeight*1.25) {
 							this.addEventListener("click", function() {
 								this.classList.toggle("bip-center");
