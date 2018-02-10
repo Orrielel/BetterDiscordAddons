@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.0.2",
+		version: "2.0.3",	
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -66,8 +66,8 @@ const CustomMediaSupport = (function() {
 .customMedia {color: hsla(0,0%,100%,.7);}
 .customMedia .embed-2diOCQ {max-width: unset;}
 .customMedia .embedInner-t4ag7g, .customMedia .embedInner-t4ag7g > table {width: 100%;}
-.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; max-height: 25vh;}
-.customMedia.media-video.media-large video {width: 50vw; max-height: 50vh;}
+.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; min-width: 400px; max-height: 50vh;}
+.customMedia.media-video.media-large video {width: calc(100vw - 720px);}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.media-video video::-webkit-media-controls-panel {display: flex !important; opacity: 1 !important;}
 .customMedia.media-video .embed-zoom {color: #202225; cursor: pointer; font-size: 30px; font-weight: bold; mix-blend-mode: difference; opacity: 0.15; position: absolute; right: 11px; top: 0;}
