@@ -30,7 +30,7 @@ class BetterImagePopups {
 		const img = wrapper.lastElementChild;
 		if (img.src) {
 			const fullSrc = img.src.split("?")[0];
-			if (!/\.gif$/.test(img.src.split("?")[0])) {
+			if (!/\.gif$/.test(fullSrc)) {
 				wrapper.href = fullSrc;
 				wrapper.style.cssText = "";
 				wrapper.removeAttribute("target");
