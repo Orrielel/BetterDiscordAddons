@@ -6,11 +6,11 @@ class BetterImagePopups {
 	getName() {return "Better Image Popups";}
 	getShortName() {return "BetterImagePopups";}
 	getDescription() {return "Show full sized images in image popup. Zooming is possible if the image is bigger than Discord window size";}
-	getVersion() {return "1.2.0";}
+	getVersion() {return "1.2.1";}
 	getAuthor() {return "Orrie";}
 
 	load() {}
-	start(){
+	start() {
 		BdApi.injectCSS(this.getShortName(), `
 .bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
 .bip-container .imageWrapper-38T7d9 {display: table; margin: 0 auto;}
@@ -22,38 +22,41 @@ class BetterImagePopups {
 .bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
 		`);
 	}
-	stop(){
+	stop() {
 		BdApi.clearCSS(this.getShortName());
 	}
 
 	imagePopHandler(wrapper, desc) {
-		const img = wrapper.firstElementChild;
+		const img = wrapper.lastElementChild;
 		if (img.src) {
 			const fullSrc = img.src.split("?")[0];
-			wrapper.href = fullSrc;
-			wrapper.style.cssText = "";
-			wrapper.removeAttribute("target");
-			wrapper.nextElementSibling.classList.add("bip-actions");
-			img.classList.add("bip-center");
-			img.src = fullSrc;
-			img.style.cssText = "";
-			img.onload = function() {
-				const html = `${img.naturalWidth}px × ${img.naturalHeight}px${this.naturalHeight > window.innerHeight*1.25 ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`;
-				if (!desc) {
-					wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF'>${html}</div>`);
-				}
-				else {
-					desc.innerHTML = html;
-				}
-				if (this.naturalHeight > window.innerHeight*1.25) {
-					this.addEventListener("click", function() {
-						this.classList.toggle("bip-center");
-						wrapper.classList.toggle("bip-scroller");
-						wrapper.classList.toggle("scroller-fzNley");
-						wrapper.parentNode.classList.toggle("scrollerWrap-2uBjct");
-					}, false);
-				}
-			};
+			if (!/\.gif$/.test(img.src.split("?")[0])) {
+				wrapper.href = fullSrc;
+				wrapper.style.cssText = "";
+				wrapper.removeAttribute("target");
+				wrapper.nextElementSibling.classList.add("bip-actions");
+				img.classList.add("bip-center");
+				img.src = fullSrc;
+				img.style.cssText = "";
+				img.onload = function() {
+					const overflow = this.naturalHeight > window.innerHeight*1.25,
+					html = `${img.naturalWidth}px × ${img.naturalHeight}px${overflow ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`;
+					if (!desc) {
+						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF'>${html}</div>`);
+					}
+					else {
+						desc.innerHTML = html;
+					}
+					if (overflow) {
+						this.addEventListener("click", function() {
+							this.classList.toggle("bip-center");
+							wrapper.classList.toggle("bip-scroller");
+							wrapper.classList.toggle("scroller-fzNley");
+							wrapper.parentNode.classList.toggle("scrollerWrap-2uBjct");
+						}, false);
+					}
+				};
+			}
 		}
 	}
 
@@ -63,14 +66,13 @@ class BetterImagePopups {
 			if (node.className == "modal-2LIEKY") {
 				const wrapper = node.getElementsByClassName("imageWrapper-38T7d9")[0];
 				if (wrapper && !node.getElementsByClassName("uploadModal-2KN6Mm")[0]) {
-					const wrapperInner = node.getElementsByClassName("imageWrapperInner-BRGZ7A")[0],
-					wrapperObserver = new MutationObserver(function(mutations) {
+					const wrapperObserver = new MutationObserver(function(mutations) {
 						if (mutations[1].addedNodes.length) {
 							this.imagePopHandler(wrapper, node.getElementsByClassName("bip-description")[0]);
 							wrapperObserver.disconnect();
 						}
 					});
-					if (wrapperInner) {
+					if (node.getElementsByClassName("imageWrapperInner-BRGZ7A")[0]) {
 						wrapperObserver.observe(wrapper,{childList: true});
 					}
 					else {
