@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.0.4",
+		version: "2.0.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -131,6 +131,7 @@ const CustomMediaSupport = (function() {
 /* BetterImagePopups */
 .bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
 .bip-container .imageWrapper-38T7d9 {display: table; margin: 0 auto;}
+.bip-container .imageWrapper-38T7d9 img {position: static;}
 .bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow: auto;}
 .bip-container .bip-scroller img {margin-bottom: -5px;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
@@ -255,7 +256,7 @@ const CustomMediaSupport = (function() {
 				}
 				return false;
 			},
-			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll(".filenameLink-2WwQH1:not(.cms-ignore), .markup > a:not(.cms-ignore)");
+			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll(".metadata-35KiYB > a:not(.cms-ignore), .markup > a:not(.cms-ignore)");
 			log("info", "mediaConvert", links);
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
