@@ -6,7 +6,7 @@ class BetterImagePopups {
 	getName() {return "Better Image Popups";}
 	getShortName() {return "BetterImagePopups";}
 	getDescription() {return "Show full sized images in image popup. Zooming is possible if the image is bigger than Discord window size";}
-	getVersion() {return "1.2.1";}
+	getVersion() {return "1.2.2";}
 	getAuthor() {return "Orrie";}
 
 	load() {}
@@ -14,6 +14,7 @@ class BetterImagePopups {
 		BdApi.injectCSS(this.getShortName(), `
 .bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
 .bip-container .imageWrapper-38T7d9 {display: table; margin: 0 auto;}
+.bip-container .imageWrapper-38T7d9 img {position: static;}
 .bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow: auto;}
 .bip-container .bip-scroller img {margin-bottom: -5px;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
