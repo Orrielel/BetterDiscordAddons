@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.0.5",
+		version: "2.0.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -65,16 +65,21 @@ const CustomMediaSupport = (function() {
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,.7);}
 .customMedia .embed-2diOCQ {max-width: unset;}
+.customMedia .embedInner-t4ag7g {position: relative;}
 .customMedia .embedInner-t4ag7g, .customMedia .embedInner-t4ag7g > table {width: 100%;}
 .customMedia table {border-spacing: 0;}
 .customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; min-width: 400px; max-height: 50vh;}
 .customMedia.media-video.media-large video {width: calc(100vw - 720px);}
-.customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
-.customMedia.media-video video::-webkit-media-controls-panel {display: flex !important; opacity: 1 !important;}
-.customMedia.media-video .embed-zoom {color: #202225; cursor: pointer; font-size: 30px; font-weight: bold; mix-blend-mode: difference; opacity: 0.15; position: absolute; right: 11px; top: 0;}
-.customMedia.media-video:hover .embed-zoom {opacity: 0.80;}
-.customMedia.media-video .embed-zoom:hover {opacity: 1;}
+.customMedia.media-video:hover .metadata-35KiYB {display: flex;}
+.customMedia .metadataDownload-1eyTml {cursor: pointer; font-size: 22px; font-weight: bold;}
 .customMedia.media-audio audio {width: 400px;}
+.customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
+.customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {padding: 3px 0; margin: 0 10px;}
+.customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-webkit-media-controls-download-button {filter: brightness(1.5);}
+.customMedia ::-webkit-media-controls-play-button:hover {filter: brightness(2.5);}
+.customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
+.customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
+.customMedia .metadata-35KiYB {display: none;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 /* exhentai previews */
@@ -345,9 +350,9 @@ const CustomMediaSupport = (function() {
 		// embed supported media
 		log("info", "mediaEmbedding", {fileMedia, fileSite, href, hrefSplit, message, message_body});
 		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
-			_createElement("div", {className: "embed-2diOCQ flex-3B1Tl4 embed"}, [
-				_createElement("div", {className: "embedPill-3sYS1X", style: `background-color:#${Math.random().toString(16).substr(2,6)};`}),
-				_createElement("div", {className: "embedInner-t4ag7g"}, [
+			_createElement("div", {className: "imageWrapper-38T7d9"}, [
+				_createElement("div", {className: "wrapper-GhVnpx"}, [
+					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq'><div class='metadataName-CJWo1Z'>${hrefSplit[hrefSplit.length-1]}</div><div class='metadataSize-L0PFDT'></div></div>`}),
 					_createElement(fileMedia, (function() {
 						switch(fileMedia) {
 							case "video":
@@ -366,7 +371,7 @@ const CustomMediaSupport = (function() {
 													this.pause();
 												};
 											}
-											this.parentNode.appendChild(_createElement("div", {className: "embed-zoom", innerHTML: "❐",
+											this.previousElementSibling.appendChild(_createElement("div", {className: "metadataDownload-1eyTml", innerHTML: "❐",
 												onclick() {container.classList.toggle("media-large");}
 											}));
 										}
