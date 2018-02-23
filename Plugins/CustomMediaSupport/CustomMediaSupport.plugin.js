@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.0.6",
+		version: "2.0.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -128,7 +128,7 @@ const CustomMediaSupport = (function() {
 .customMedia.knittingboard .thread_info .thread_creator {color: #30A75C;}
 .customMedia.knittingboard .thread_preview {padding: 0; width: 1px;}
 .customMedia.knittingboard .thread_preview img {border-radius: 5px; display: inline-block; height: unset; max-height: 200px; max-width: 200px;}
-.customMedia.knittingboard .thread_comment {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
+.customMedia.knittingboard .thread_comment {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
 .customMedia.knittingboard .thread_comment a {word-break: break-word;}
 .customMedia.knittingboard .thread_foot {padding: 10px 2px 0;}
 .custom_warning {color: #F32323;}
