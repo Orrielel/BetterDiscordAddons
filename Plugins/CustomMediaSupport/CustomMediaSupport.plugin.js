@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.0.8",
+		version: "2.0.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -73,7 +73,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video:hover .metadata-35KiYB {display: flex;}
 .customMedia.media-audio audio {width: 400px;}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
-.customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {padding: 3px 0; margin: 0 10px;}
+.customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
 .customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-webkit-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
 .customMedia ::-webkit-media-controls-play-button:hover {filter: brightness(2.5);}
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
@@ -330,7 +330,7 @@ const CustomMediaSupport = (function() {
 									// only continues if mediaCheck is true -- as in, the embedding doesn't already exist
 									if ((fileMedia || fileSite) && mediaCheck(message, href)) {
 										link.classList.add("customMediaLink");
-										mediaEmbedding(fileMedia, fileSite, href, hrefSplit, message, message_body);
+										mediaEmbedding(fileMedia, fileSite, href, hrefSplit, message, message_body, link.classList.contains("metadataDownload-1eyTml"));
 									}
 								}
 								break;
@@ -347,13 +347,13 @@ const CustomMediaSupport = (function() {
 			script.check.media = false;
 		}
 	},
-	mediaEmbedding = function(fileMedia, fileSite, href, hrefSplit, message, message_body) {
+	mediaEmbedding = function(fileMedia, fileSite, href, hrefSplit, message, message_body, metadata) {
 		// embed supported media
 		log("info", "mediaEmbedding", {fileMedia, fileSite, href, hrefSplit, message, message_body});
 		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
 			_createElement("div", {className: "imageWrapper-38T7d9"}, [
 				_createElement("div", {className: "wrapper-GhVnpx"}, [
-					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq'><div class='metadataName-CJWo1Z'>${hrefSplit[hrefSplit.length-1]}</div><div class='metadataSize-L0PFDT'></div></div>`}),
+					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq'><div class='metadataName-CJWo1Z'>${hrefSplit[hrefSplit.length-1]}</div><div class='metadataSize-L0PFDT'>${metadata ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "Filesize Unkown"}</div></div>`}),
 					_createElement(fileMedia, (function() {
 						switch(fileMedia) {
 							case "video":
