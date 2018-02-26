@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.0.7",
+		version: "2.0.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -71,15 +71,16 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; min-width: 400px; max-height: 50vh;}
 .customMedia.media-video.media-large video {width: calc(100vw - 720px);}
 .customMedia.media-video:hover .metadata-35KiYB {display: flex;}
-.customMedia .metadataDownload-1eyTml {cursor: pointer; font-size: 22px; font-weight: bold;}
 .customMedia.media-audio audio {width: 400px;}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {padding: 3px 0; margin: 0 10px;}
-.customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-webkit-media-controls-download-button {filter: brightness(1.5);}
+.customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-webkit-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
 .customMedia ::-webkit-media-controls-play-button:hover {filter: brightness(2.5);}
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
-.customMedia .metadata-35KiYB {display: none;}
+.customMedia .metadata-35KiYB {display: none; z-index: unset;}
+.customMedia .metadataZoomButton {cursor: pointer; font-size: 22px; font-weight: bold; opacity: 0.6; z-index: 1;}
+.customMedia .metadataZoomButton:hover {opacity: 1;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 /* exhentai previews */
@@ -371,8 +372,10 @@ const CustomMediaSupport = (function() {
 													this.pause();
 												};
 											}
-											this.previousElementSibling.appendChild(_createElement("div", {className: "metadataDownload-1eyTml", innerHTML: "❐",
-												onclick() {container.classList.toggle("media-large");}
+											this.previousElementSibling.appendChild(_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
+												onclick() {
+													container.classList.toggle("media-large");
+												}
 											}));
 										}
 										this.volume = script.settings.volume;
@@ -730,9 +733,9 @@ const CustomMediaSupport = (function() {
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
 			_createElement("div", {className: "flex-3B1Tl4 justifyAround-1CVbTI"}, [
-				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra'>Support (Discord)</button>"}),
-				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra'>Updates</button>"}),
-				_createElement("button", {type: "button", className: "button-2t3of8 smallGrow-2_7ZaC buttonBrandFilled-3Mv0Ra orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db).length || 0})`, onclick() {cleanDB(this);}})
+				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Support (Discord)</button>"}),
+				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Updates</button>"}),
+				_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db).length || 0})`, onclick() {cleanDB(this);}})
 			]),
 			_createElement("div", {className: "orrie-centerText marginTop8-2gOa2N", innerHTML: "It's recommended to clean the database on a regular basis"}),
 		]);
