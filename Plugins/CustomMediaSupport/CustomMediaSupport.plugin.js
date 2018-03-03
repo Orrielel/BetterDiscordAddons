@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.0.9",
+		version: "2.1.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -64,13 +64,18 @@ const CustomMediaSupport = (function() {
 			script: `
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,.7);}
+.customMedia table {border-spacing: 0;}
+.customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
 .customMedia .embedInner-t4ag7g {position: relative;}
 .customMedia .embedInner-t4ag7g, .customMedia .embedInner-t4ag7g > table {width: 100%;}
-.customMedia table {border-spacing: 0;}
 .customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; min-width: 400px; max-height: 50vh;}
-.customMedia.media-video.media-large video {width: calc(100vw - 720px);}
-.customMedia.media-video:hover .metadata-35KiYB {display: flex;}
+.customMedia.media-video.media-large video {width: calc(100vw - 740px);}
+.customMedia .metadata-35KiYB {display: none; z-index: unset;}
+.customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
+.customMedia .metadataContent-3HYqEq {overflow: hidden;}
+.customMedia .metadataZoomButton {cursor: pointer; font-size: 22px; font-weight: bold; opacity: 0.6; z-index: 1;}
+.customMedia .metadataZoomButton:hover {opacity: 1;}
 .customMedia.media-audio audio {width: 400px;}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
@@ -78,11 +83,7 @@ const CustomMediaSupport = (function() {
 .customMedia ::-webkit-media-controls-play-button:hover {filter: brightness(2.5);}
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
-.customMedia .metadata-35KiYB {display: none; z-index: unset;}
-.customMedia .metadataZoomButton {cursor: pointer; font-size: 22px; font-weight: bold; opacity: 0.6; z-index: 1;}
-.customMedia .metadataZoomButton:hover {opacity: 1;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto;}
-.customMedia table td {font-size: 0.875rem; vertical-align: top;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
 .customMedia.sadpanda .gallery_info .desc {color: #FFFFFF;}
@@ -614,8 +615,8 @@ const CustomMediaSupport = (function() {
 			])
 		]);
 	},
-	imagePopHandler = function(wrapper, desc, type) {
-		log("info", `imagePop: ${type}`, wrapper);
+	imagePopHandler = function(wrapper, desc) {
+		log("info", "imagePop", wrapper);
 		const img = wrapper.lastElementChild;
 		if (img.src) {
 			const fullSrc = img.src.split("?")[0];
@@ -820,48 +821,53 @@ const CustomMediaSupport = (function() {
 		observer({addedNodes}) {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages")) {
 				const node = addedNodes[0];
-				switch(node.className) {
-					case "messages-wrapper":
-						mediaConvert(false);
-						textParser();
-						if (!document.getElementsByClassName("cms-menuIcon")[0]) {
-							const menuAnchor = document.getElementsByClassName("topic-1KFf6J")[0] ? document.getElementsByClassName("topic-1KFf6J")[0].nextElementSibling : false;
-							if (menuAnchor) {
-								menuAnchor.insertBefore(_createElement("div", {className: "cms-menuIcon iconMargin-2Js7V9 icon-mr9wAc", title: "Custom Media Support Archive",
-									onclick() {BDfunctionsDevilBro.appendModal(archiveHandler());}
-								}), menuAnchor.firstChild);
-							}
-						}
-						break;
-					case "message-group hide-overflow":
-					case "message":
-						mediaConvert(false);
-						textParser();
-						break;
-					case "message-text":
-						setTimeout(function() {
+				if (node.className) {
+					switch(node.className) {
+						case "messages-wrapper":
+							mediaConvert(false);
 							textParser();
-						}, 250);
-						break;
-					case "modal-2LIEKY":
-						const wrapper = node.getElementsByClassName("imageWrapper-38T7d9")[0];
-						if (script.settings.imagePop && wrapper && !node.getElementsByClassName("uploadModal-2KN6Mm")[0]) {
-							const wrapperObserver = new MutationObserver(function(mutations) {
-								if (mutations[1].addedNodes.length) {
-									imagePopHandler(wrapper, node.getElementsByClassName("bip-description")[0]);
-									wrapperObserver.disconnect();
+							if (!document.getElementsByClassName("cms-menuIcon")[0]) {
+								const menuAnchor = document.getElementsByClassName("topic-1KFf6J")[0] ? document.getElementsByClassName("topic-1KFf6J")[0].nextElementSibling : false;
+								if (menuAnchor) {
+									menuAnchor.insertBefore(_createElement("div", {className: "cms-menuIcon iconMargin-2Js7V9 icon-mr9wAc", title: "Custom Media Support Archive",
+										onclick() {BDfunctionsDevilBro.appendModal(archiveHandler());}
+									}), menuAnchor.firstChild);
 								}
-							});
-							if (node.getElementsByClassName("imageWrapperInner-BRGZ7A")[0]) {
-								wrapperObserver.observe(wrapper,{childList: true});
 							}
-							else {
-								imagePopHandler(wrapper, node.getElementsByClassName("bip-description")[0]);
+							break;
+						case "message-group hide-overflow":
+						case "message":
+						case "wrapperPaused-3y2mev wrapper-GhVnpx":
+							mediaConvert(false);
+							textParser();
+							break;
+						case "message-text":
+							setTimeout(function() {
+								textParser();
+							}, 250);
+							break;
+						case "modal-2LIEKY":
+							if (script.settings.imagePop && BdApi.getPlugin('Better Image Popups') && !BdApi.getPlugin('Better Image Popups').active) {
+								const wrapper = node.getElementsByClassName("imageWrapper-38T7d9")[0];
+								if (wrapper && !node.getElementsByClassName("uploadModal-2KN6Mm")[0]) {
+									const wrapperObserver = new MutationObserver(function(mutations) {
+										if (mutations[1].addedNodes.length) {
+											imagePopHandler(wrapper, node.getElementsByClassName("bip-description")[0]);
+											wrapperObserver.disconnect();
+										}
+									});
+									if (node.getElementsByClassName("imageWrapperInner-BRGZ7A")[0]) {
+										wrapperObserver.observe(wrapper,{childList: true});
+									}
+									else {
+										imagePopHandler(wrapper, node.getElementsByClassName("bip-description")[0]);
+									}
+									node.classList.add("bip-container");
+								}
 							}
-							node.classList.add("bip-container");
-						}
-						break;
-					default:
+							break;
+						default:
+					}
 				}
 			}
 		}
