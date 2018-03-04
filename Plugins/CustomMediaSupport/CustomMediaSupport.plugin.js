@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.1.1",
+		version: "2.1.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -26,11 +26,37 @@ const CustomMediaSupport = (function() {
 				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio"
 			},
 			sites: {
-				"vocaroo.com":      ["audio",  4,     "https://vocaroo.com/media_command.php?media=*ID*&command=download_webm", "\/i\/",        false],
-				"pastebin.com":     ["iframe", 3,     "https://pastebin.com/embed_iframe/*ID*",                                 "[\\w\\d]{8}$", true ],
-				"wotlabs.net":      ["img",    5,     "https://wotlabs.net/sig_dark/eu/*ID*/signature.png",                     "/player/",     false],
-				"giant.gfycat.com": ["video",  "end", "https://giant.gfycat.com/*ID*.webm",                                     "gfycat.",      true ],
-				"gfycat.com":       ["video",  "end", "https://thumbs.gfycat.com/*ID*-mobile.mp4",                              "gfycat.",      true ]
+				"vocaroo.com": {
+					type: "audio",
+					replace: false,
+					convert: function({href, hrefSplit}) {return /\/i\//.test(href) ? `https://vocaroo.com/media_command.php?media=${hrefSplit[4]}&command=download_webm` : false;}
+				},
+				"pastebin.com": {
+					type: "iframe",
+					replace: true,
+					convert: function({href, hrefSplit}) {return /[\w\d]{8}$/.test(href) ? `https://pastebin.com/embed_iframe/${hrefSplit[3]}` : false;}
+				},
+				"wotlabs.net": {
+					type: "img",
+					replace: false,
+					convert: function({href, hrefSplit}) {return /\/player\//.test(href) ? `https://wotlabs.net/sig_dark/eu/${hrefSplit[5]}/signature.png` : false;}
+				},
+				"giant.gfycat.com": {
+					type: "video",
+					replace: true,
+					convert: function({hrefSplit}) {return `https://giant.gfycat.com/${hrefSplit.length-1}.webm`;}
+				},
+				"gfycat.com": {
+					type: "video",
+					replace: true,
+					convert: function({hrefSplit}) {return `https://thumbs.gfycat.com/${hrefSplit.length-1}-mobile.mp4`;}
+				},
+				"instagram.com": {
+					type: "video",
+					replace: true,
+					title: function(message) {return message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML;},
+					convert: function({message}) {return message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false;}
+				}
 			},
 			replace: ["i.imgur.com", "giant.gfycat.com", "gfycat.com"]
 		},
@@ -273,8 +299,8 @@ const CustomMediaSupport = (function() {
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.getAttribute("href")) {
-					let href = decodeURI(encodeURI(link.getAttribute("href").replace("http:", "https:").replace(".gifv", ".mp4")));
-					const hrefCheck = href.match(/\.(\w+)$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net/),
+					let href = decodeURI(encodeURI(link.getAttribute("href").replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
+					const hrefCheck = href.match(/\.(\w+)$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com/),
 					message = link.closest(".message");
 					if (hrefCheck && message) {
 						const message_body = message.firstElementChild,
@@ -324,19 +350,92 @@ const CustomMediaSupport = (function() {
 							default:
 								if (script.settings.embedding) {
 									let fileMedia = false,
+									fileTitle, fileSize,
 									fileSite = script.media.sites[hrefSplit[2]];
-									if (fileSite && new RegExp(fileSite[3], "g").test(href)) {
-										href = fileSite[2].replace("*ID*", hrefSplit[fileSite[1] == "end" ? hrefSplit.length-1 : fileSite[1]].match(/\w+/)[0]);
-										fileMedia = fileSite[0];
+									if (fileSite) {
+										href = fileSite.convert({href, hrefSplit, message});
+										fileMedia = fileSite.type;
+										fileTitle = fileSite.title ? fileSite.title(message) : "";
+										fileSize = fileSite.size ? fileSite.size(message) : "";
 									}
 									else {
 										fileMedia = hrefCheck && hrefCheck[1] ? script.media.types[hrefCheck[1].toLowerCase()] : false;
+										fileTitle = hrefSplit[hrefSplit.length-1];
+										fileSize = link.classList.contains("metadataDownload-1eyTml") ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "";
 										fileSite = false;
 									}
 									// only continues if mediaCheck is true -- as in, the embedding doesn't already exist
-									if ((fileMedia || fileSite) && mediaCheck(message, href)) {
+									if (href && (fileMedia || fileSite) && mediaCheck(message, href)) {
 										link.classList.add("customMediaLink");
-										mediaEmbedding(fileMedia, fileSite, href, hrefSplit, message, message_body, link.classList.contains("metadataDownload-1eyTml"));
+										log("info", "mediaEmbedding", {fileMedia, fileSite, href, hrefSplit, message, message_body});
+										container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
+											_createElement("div", {className: "imageWrapper-38T7d9"}, [
+												_createElement("div", {className: "wrapper-GhVnpx"}, [
+													_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq'><div class='metadataName-CJWo1Z'>${fileTitle}</div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}),
+													_createElement(fileMedia, (function() {
+														switch(fileMedia) {
+															case "video":
+															case "audio":
+																return {check: href, controls: true, preload: "metadata", loop: script.settings.loop, autoplay: script.settings.autoplay,
+																	onclick() {if (this.paused) {this.play();}else {this.pause();}},
+																	onloadedmetadata() {
+																		if (fileMedia == "video") {
+																			if (script.settings.hoverPlay) {
+																				this.onmouseover = function() {
+																					if (this.paused) {
+																						this.play();
+																					}
+																				};
+																				this.onmouseout = function() {
+																					this.pause();
+																				};
+																			}
+																			this.previousElementSibling.appendChild(_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
+																				onclick() {
+																					container.classList.toggle("media-large");
+																					if (container.getBoundingClientRect().bottom > window.innerHeight) {
+																						container.parentNode.scrollIntoView(false);
+																					}
+																				}
+																			}));
+																		}
+																		this.volume = script.settings.volume;
+																		scrollElement(this.parentNode.scrollHeight, "messages");
+																		// replace original accessory previews if they exist
+																		replaceMedia(message);
+																	}
+																};
+															case "img":
+															case "iframe":
+																return {"className": fileMedia, src: href, check: href, allowFullscreen: true};
+															default:
+																log("error", "mediaEmbed", href);
+														}
+													})(), [
+														_createElement("source", {src: href,
+															onerror(e) {
+																const wrapper = this.parentNode.parentNode;
+																container.classList.remove(`media-${fileMedia}`);
+																container.classList.add("media-error");
+																switch(hrefSplit[2]) {
+																	case "gfycat.com":
+																		wrapper.innerHTML = "Unable to embed media -- Either deleted or lowercased link";
+																		break;
+																	default:
+																		wrapper.innerHTML = "Error 404 - Media not found";
+																		break;
+																}
+															}
+														})
+													])
+												])
+											])
+										]);
+										message_body.parentNode.insertBefore(container, message_body.nextSibling);
+										// replace original accessory previews if they exist
+										if (fileSite.replace || script.media.replace.includes(hrefSplit[2])) {
+											replaceMedia(message);
+										}
 									}
 								}
 								break;
@@ -351,78 +450,6 @@ const CustomMediaSupport = (function() {
 				request("sadpanda", "https://e-hentai.org/api.php", sadpandaHandler, "POST", gallery);
 			}
 			script.check.media = false;
-		}
-	},
-	mediaEmbedding = function(fileMedia, fileSite, href, hrefSplit, message, message_body, metadata) {
-		// embed supported media
-		log("info", "mediaEmbedding", {fileMedia, fileSite, href, hrefSplit, message, message_body});
-		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
-			_createElement("div", {className: "imageWrapper-38T7d9"}, [
-				_createElement("div", {className: "wrapper-GhVnpx"}, [
-					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq'><div class='metadataName-CJWo1Z'>${hrefSplit[hrefSplit.length-1]}</div><div class='metadataSize-L0PFDT'>${metadata ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "Filesize Unkown"}</div></div>`}),
-					_createElement(fileMedia, (function() {
-						switch(fileMedia) {
-							case "video":
-							case "audio":
-								return {check: href, controls: true, preload: "metadata", loop: script.settings.loop, autoplay: script.settings.autoplay,
-									onclick() {if (this.paused) {this.play();}else {this.pause();}},
-									onloadedmetadata() {
-										if (fileMedia == "video") {
-											if (script.settings.hoverPlay) {
-												this.onmouseover = function() {
-													if (this.paused) {
-														this.play();
-													}
-												};
-												this.onmouseout = function() {
-													this.pause();
-												};
-											}
-											this.previousElementSibling.appendChild(_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
-												onclick() {
-													container.classList.toggle("media-large");
-													if (!(container.getBoundingClientRect().bottom < window.innerHeight)) {
-														container.parentNode.scrollIntoView(false);
-													}
-												}
-											}));
-										}
-										this.volume = script.settings.volume;
-										scrollElement(this.parentNode.scrollHeight, "messages");
-										// remove original accessory previews if they exist
-										//replaceMedia(message);
-									}
-								};
-							case "img":
-							case "iframe":
-								return {"className": fileMedia, src: href, check: href, allowFullscreen: true};
-							default:
-								log("error", "mediaEmbed", href);
-						}
-					})(), [
-						_createElement("source", {src: href,
-							onerror(e) {
-								const wrapper = this.parentNode.parentNode;
-								container.classList.remove(`media-${fileMedia}`);
-								container.classList.add("media-error");
-								switch(hrefSplit[2]) {
-									case "gfycat.com":
-										wrapper.innerHTML = "Unable to embed media -- Either deleted or lowercased link";
-										break;
-									default:
-										wrapper.innerHTML = "Error 404 - Media not found";
-										break;
-								}
-							}
-						})
-					])
-				])
-			])
-		]);
-		message_body.parentNode.insertBefore(container, message_body.nextSibling);
-		// remove original accessory previews if they exist
-		if (fileSite[4] || script.media.replace.includes(hrefSplit[2])) {
-			replaceMedia(message);
 		}
 	},
 	mediaCheck = function(message, href) {
@@ -445,7 +472,7 @@ const CustomMediaSupport = (function() {
 		setTimeout(function() {
 			const media = message.querySelectorAll(".accessory:not(.customMedia)");
 			if (media[0].firstElementChild && media[0].firstElementChild.className !== "reactions") {
-				media[0].firstElementChild.remove();
+				media[0].firstElementChild.classList.add("orrie-toggled");
 			}
 		}, 500);
 	},
@@ -634,7 +661,7 @@ const CustomMediaSupport = (function() {
 			])
 		]);
 	},
-	imagePopHandler = function(wrapper, desc) {
+	imagePopHandler = function(wrapper) {
 		log("info", "imagePop", wrapper);
 		const img = wrapper.lastElementChild;
 		if (img.src) {
@@ -648,15 +675,16 @@ const CustomMediaSupport = (function() {
 				img.src = fullSrc;
 				img.style.cssText = "";
 				img.onload = function() {
-					const overflow = this.naturalHeight > window.innerHeight*1.25,
-					html = `${img.naturalWidth}px × ${img.naturalHeight}px${overflow ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`;
-					if (!desc) {
+					const scaling = this.naturalHeight > window.innerHeight*1.25,
+					html = `${img.naturalWidth}px × ${img.naturalHeight}px${scaling ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`,
+					next = wrapper.nextElementSibling;
+					if (!next.classList.contains("bip-description")) {
 						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF'>${html}</div>`);
 					}
 					else {
-						desc.innerHTML = html;
+						next.innerHTML = html;
 					}
-					if (overflow) {
+					if (scaling) {
 						this.addEventListener("click", function() {
 							this.classList.toggle("bip-center");
 							wrapper.classList.toggle("bip-scroller");
@@ -866,12 +894,12 @@ const CustomMediaSupport = (function() {
 							}, 250);
 							break;
 						case "modal-2LIEKY":
-							if (script.settings.imagePop && BdApi.getPlugin('Better Image Popups') && !BdApi.getPlugin('Better Image Popups').active) {
+							if (script.settings.imagePop && !(BdApi.getPlugin('Better Image Popups') && BdApi.getPlugin('Better Image Popups').active)) {
 								const wrapper = node.getElementsByClassName("imageWrapper-38T7d9")[0];
 								if (wrapper && !node.getElementsByClassName("uploadModal-2KN6Mm")[0]) {
 									const wrapperObserver = new MutationObserver(function(mutations) {
 										if (mutations[1].addedNodes.length) {
-											imagePopHandler(wrapper, node.getElementsByClassName("bip-description")[0]);
+											imagePopHandler(wrapper);
 											wrapperObserver.disconnect();
 										}
 									});
@@ -879,7 +907,7 @@ const CustomMediaSupport = (function() {
 										wrapperObserver.observe(wrapper,{childList: true});
 									}
 									else {
-										imagePopHandler(wrapper, node.getElementsByClassName("bip-description")[0]);
+										imagePopHandler(wrapper);
 									}
 									node.classList.add("bip-container");
 								}
