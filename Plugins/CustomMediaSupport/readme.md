@@ -20,4 +20,5 @@ Script will also notify if there's an update available.
 ![Media](https://orrie.s-ul.eu/preview/71xVg9Ti)
 ![Sadpanda](https://orrie.s-ul.eu/preview/kSOsmQXu)
 ![4chan](https://orrie.s-ul.eu/preview/O69jaMf9)
+![Archive](https://orrie.s-ul.eu/preview/6VGLN9en)
 ![Settings](https://orrie.s-ul.eu/preview/VdQEZEiC)
