@@ -17,7 +17,7 @@ Content fetched from Sadpanda and 4chan archives, will be cached for faster load
 Script will also notify if there's an update available.
 
 ### Previews (Lewd)
-![Media](https://orrie.s-ul.eu/preview/4eY7ioLr)
+![Media](https://orrie.s-ul.eu/preview/71xVg9Ti)
 ![Sadpanda](https://orrie.s-ul.eu/preview/kSOsmQXu)
 ![4chan](https://orrie.s-ul.eu/preview/O69jaMf9)
 ![Settings](https://orrie.s-ul.eu/preview/VdQEZEiC)
