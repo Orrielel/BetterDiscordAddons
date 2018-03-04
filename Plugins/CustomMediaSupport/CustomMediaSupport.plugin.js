@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.1.2",
+		version: "2.1.3",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -72,13 +72,14 @@ const CustomMediaSupport = (function() {
 				"https://archive.loveisover.me": ["c","d","e","i","lgbt","t","u"]
 			}
 		},
-		settings: {embedding: true, loop: true, volume: 0.25, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, imagePop: true, debug: false},
+		settings: {embedding: true, loop: true, volume: 0.25, preload: true, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, imagePop: true, debug: false},
 		settingsMenu: {
 			//          localized                 type     description
 			embedding: ["Media Embedding",        "check", "Embeds supported elements"],
 			loop:      ["Loop",                   "check", "Loops media"],
 			volume:    ["Volume",                 "range", "Default volume &#8213; 25%"],
-			autoplay:  ["Autoplay Media",         "check", "Not recommended &#8213; RIP CPU"],
+			preload:   ["Preload",                "check", "Preload media"],
+			autoplay:  ["Autoplay",               "check", "Not recommended &#8213; RIP CPU"],
 			hoverPlay: ["Play on Hover",          "check", "Play media on mouse hover"],
 			board:     ["4chan",                  "check", "Embed 4chan thread links"],
 			sadpanda:  ["Sadpanda",               "check", "Embed Sadpanda galleries"],
@@ -371,12 +372,21 @@ const CustomMediaSupport = (function() {
 										container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
 											_createElement("div", {className: "imageWrapper-38T7d9"}, [
 												_createElement("div", {className: "wrapper-GhVnpx"}, [
-													_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq'><div class='metadataName-CJWo1Z'>${fileTitle}</div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}),
+													_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq'><div class='metadataName-CJWo1Z'>${fileTitle}</div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
+														_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
+															onclick() {
+																container.classList.toggle("media-large");
+																if (container.getBoundingClientRect().bottom > window.innerHeight) {
+																	container.parentNode.scrollIntoView(false);
+																}
+															}
+														})
+													]),
 													_createElement(fileMedia, (function() {
 														switch(fileMedia) {
 															case "video":
 															case "audio":
-																return {check: href, controls: true, preload: "metadata", loop: script.settings.loop, autoplay: script.settings.autoplay,
+																return {check: href, controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay,
 																	onclick() {if (this.paused) {this.play();}else {this.pause();}},
 																	onloadedmetadata() {
 																		if (fileMedia == "video") {
@@ -390,14 +400,6 @@ const CustomMediaSupport = (function() {
 																					this.pause();
 																				};
 																			}
-																			this.previousElementSibling.appendChild(_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
-																				onclick() {
-																					container.classList.toggle("media-large");
-																					if (container.getBoundingClientRect().bottom > window.innerHeight) {
-																						container.parentNode.scrollIntoView(false);
-																					}
-																				}
-																			}));
 																		}
 																		this.volume = script.settings.volume;
 																		scrollElement(this.parentNode.scrollHeight, "messages");
