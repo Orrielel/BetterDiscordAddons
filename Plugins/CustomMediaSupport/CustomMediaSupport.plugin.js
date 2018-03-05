@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.1.3",
+		version: "2.1.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -44,12 +44,14 @@ const CustomMediaSupport = (function() {
 				"giant.gfycat.com": {
 					type: "video",
 					replace: true,
-					convert: function({hrefSplit}) {return `https://giant.gfycat.com/${hrefSplit.length-1}.webm`;}
+					convert: function({hrefSplit}) {return `https://giant.gfycat.com/${hrefSplit[hrefSplit.length-1]}.webm`;}
 				},
 				"gfycat.com": {
 					type: "video",
 					replace: true,
-					convert: function({hrefSplit}) {return `https://thumbs.gfycat.com/${hrefSplit.length-1}-mobile.mp4`;}
+					convert: function({hrefSplit}) {
+						return `https://thumbs.gfycat.com/${hrefSplit[hrefSplit.length-1]}-mobile.mp4`;
+						}
 				},
 				"instagram.com": {
 					type: "video",
@@ -295,12 +297,12 @@ const CustomMediaSupport = (function() {
 				}
 				return false;
 			},
-			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll(".metadata-35KiYB > a:not(.cms-ignore), .markup > a:not(.cms-ignore)");
+			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll(".video-3ihULu:not(.cms-ignore) > source, .markup:not(.cms-ignore) > a");
 			log("info", "mediaConvert", links);
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
-				if (link.getAttribute("href")) {
-					let href = decodeURI(encodeURI(link.getAttribute("href").replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
+				if (link.getAttribute("href") || link.getAttribute("src")) {
+					let href = decodeURI(encodeURI(link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href").replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
 					const hrefCheck = href.match(/\.(\w+)$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com/),
 					message = link.closest(".message");
 					if (hrefCheck && message) {
@@ -360,6 +362,7 @@ const CustomMediaSupport = (function() {
 										fileSize = fileSite.size ? fileSite.size(message) : "";
 									}
 									else {
+										href = /external/.test(href) ? href.match(/(https\/[\w\.\/]+)/)[0].replace(/http\/|https\//,"https://") : href;
 										fileMedia = hrefCheck && hrefCheck[1] ? script.media.types[hrefCheck[1].toLowerCase()] : false;
 										fileTitle = hrefSplit[hrefSplit.length-1];
 										fileSize = link.classList.contains("metadataDownload-1eyTml") ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "";
@@ -444,7 +447,7 @@ const CustomMediaSupport = (function() {
 						}
 					}
 				}
-				link.classList.add("cms-ignore");
+				link.parentNode.classList.add("cms-ignore");
 			}
 			// fetch Sadpanda data if gallery links where found
 			if (gallery.gidlist.length > 0 && !script.check.sadpanda) {
@@ -456,9 +459,10 @@ const CustomMediaSupport = (function() {
 	},
 	mediaCheck = function(message, href) {
 		const media_elements = message.getElementsByClassName("customMedia");
-		if (media_elements.length !== 0) {
+		if (media_elements.length) {
 			for (let _cm=media_elements.length; _cm--;) {
-				if (media_elements[_cm].check == href) {
+				const check = media_elements[_cm].check;
+				if (check == href) {
 					return false;
 				}
 				else if (_cm === 0) {
@@ -677,7 +681,7 @@ const CustomMediaSupport = (function() {
 				img.src = fullSrc;
 				img.style.cssText = "";
 				img.onload = function() {
-					const scaling = this.naturalHeight > window.innerHeight*1.25,
+					const scaling = this.naturalHeight > window.innerHeight*1.15 || this.naturalWidth > window.innerWidth*1.15,
 					html = `${img.naturalWidth}px × ${img.naturalHeight}px${scaling ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`,
 					next = wrapper.nextElementSibling;
 					if (!next.classList.contains("bip-description")) {
