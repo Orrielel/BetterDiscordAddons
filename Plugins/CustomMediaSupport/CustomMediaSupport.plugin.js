@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.1.4",
+		version: "2.1.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -297,7 +297,7 @@ const CustomMediaSupport = (function() {
 				}
 				return false;
 			},
-			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll(".video-3ihULu:not(.cms-ignore) > source, .markup:not(.cms-ignore) > a");
+			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll(".video-3ihULu:not(.cms-ignore) > source, .markup:not(.cms-ignore) > a, .filenameLink-2WwQH1");
 			log("info", "mediaConvert", links);
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
