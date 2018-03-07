@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.1.5",
+		version: "2.1.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -23,41 +23,115 @@ const CustomMediaSupport = (function() {
 		media: {
 			types: {
 				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", mov: "video",
-				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio"
+				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio",
+				jpg: "ignore", jpeg: "ignore", png: "ignore", gif: "ignore"
 			},
 			sites: {
 				"vocaroo.com": {
-					type: "audio",
-					replace: false,
-					convert: function({href, hrefSplit}) {return /\/i\//.test(href) ? `https://vocaroo.com/media_command.php?media=${hrefSplit[4]}&command=download_webm` : false;}
+					data({href, hrefSplit, fileTitle}) {
+						return {
+							fileMedia: "audio",
+							fileTitle,
+							fileReplace: false,
+							href: /\/i\//.test(href) ? `https://vocaroo.com/media_command.php?media=${hrefSplit[4]}&command=download_webm` : false
+						};
+					}
 				},
 				"pastebin.com": {
-					type: "iframe",
-					replace: true,
-					convert: function({href, hrefSplit}) {return /[\w\d]{8}$/.test(href) ? `https://pastebin.com/embed_iframe/${hrefSplit[3]}` : false;}
+					data({href, hrefSplit, fileTitle}) {
+						return {
+							fileMedia: "iframe",
+							fileTitle,
+							fileReplace: true,
+							href:  /[\w\d]{8}$/.test(href) ? `https://pastebin.com/embed_iframe/${hrefSplit[3]}` : false
+						};
+					}
 				},
 				"wotlabs.net": {
-					type: "img",
-					replace: false,
-					convert: function({href, hrefSplit}) {return /\/player\//.test(href) ? `https://wotlabs.net/sig_dark/eu/${hrefSplit[5]}/signature.png` : false;}
+					data({href, hrefSplit, fileTitle}) {
+						return {
+							fileMedia: "img",
+							fileTitle,
+							fileReplace: false,
+							href: /\/player\//.test(href) ? `https://wotlabs.net/sig_dark/eu/${hrefSplit[5]}/signature.png` : false
+						};
+					}
 				},
-				"giant.gfycat.com": {
-					type: "video",
-					replace: true,
-					convert: function({hrefSplit}) {return `https://giant.gfycat.com/${hrefSplit[hrefSplit.length-1]}.webm`;}
+				"imgur.com":{
+					data({href, message, fileTitle}) {
+						const check = message.querySelector(`a.embedTitleLink-1IGDvg[href='${href}']`);
+						if (check && /\.jpg|\.jpeg|\.png|\.gif/.test(check.closest(".embedContent-AqkoYv").nextElementSibling.getAttribute("href"))) {
+							return {fileMedia: "ignore", fileTitle, fileReplace: false, href};
+						}
+						else {
+							const video = message.getElementsByTagName("video")[0];
+							if (video) {
+								return {
+									fileMedia: "video",
+									fileTitle,
+									fileReplace: false,
+									href: video && href !== video.src ? video.src : href
+								};
+							}
+						}
+						return {fileMedia: "ignore", fileTitle, fileReplace: false, href};
+					},
+					api(data) {
+						return request("imgur", `https://cors-anywhere.herokuapp.com/https://api.imgur.com/3/image/${data.fileTitle.match(/(\w+)/)[0]}`, function(resp, data) {
+							const item = resp.success ? resp.data : false;
+							if (item) {
+								data.href = item.mp4;
+								data.media = "video";
+								data.fileTitle = item.title ? item.title : `${item.section} - No Title`;
+								data.fileSize = mediaSize(item.mp4_size);
+								mediaEmbedding(data);
+								// store in database to prevent api spam
+								script.db_url[data.id] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+								bdPluginStorage.set(script.file, "db_url", script.db_url);
+							}
+						}, "GET", data);
+					}
 				},
 				"gfycat.com": {
-					type: "video",
-					replace: true,
-					convert: function({hrefSplit}) {
-						return `https://thumbs.gfycat.com/${hrefSplit[hrefSplit.length-1]}-mobile.mp4`;
-						}
+					data({href, fileTitle}) {
+						return {
+							fileMedia: "video",
+							fileTitle,
+							fileReplace: true,
+							href
+						};
+					},
+					api(data) {
+						return request("gfycat", `https://cors-anywhere.herokuapp.com/https://api.gfycat.com/v1/gfycats/${data.fileTitle.match(/(\w+)/)[0]}`, function({gfyItem}, data) {
+							if (gfyItem) {
+								let fileSize;
+								if (gfyItem.webmUrl) {
+									data.href = gfyItem.webmUrl;
+									fileSize = gfyItem.webmSize;
+								}
+								else if (gfyItem.mp4Url) {
+									data.href = gfyItem.mp4Url;
+									fileSize = gfyItem.mp4Size;
+								}
+								data.fileTitle = gfyItem.gfyName;
+								data.fileSize = mediaSize(fileSize);
+								mediaEmbedding(data);
+								// store in database to prevent api spam
+								script.db_url[data.id] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+								bdPluginStorage.set(script.file, "db_url", script.db_url);
+							}
+						}, "GET", data);
+					}
 				},
 				"instagram.com": {
-					type: "video",
-					replace: true,
-					title: function(message) {return message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML;},
-					convert: function({message}) {return message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false;}
+					data({message, fileTitle}) {
+						return {
+							fileMedia: "video",
+							fileTitle: message && message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle, 
+							fileReplace: true,
+							href: message && message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
+						};
+					}
 				}
 			},
 			replace: ["i.imgur.com", "giant.gfycat.com", "gfycat.com"]
@@ -74,17 +148,18 @@ const CustomMediaSupport = (function() {
 				"https://archive.loveisover.me": ["c","d","e","i","lgbt","t","u"]
 			}
 		},
-		settings: {embedding: true, loop: true, volume: 0.25, preload: true, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, imagePop: true, debug: false},
+		settings: {embedding: true, api: true, loop: true, volume: 0.25, preload: true, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, imagePop: true, debug: false},
 		settingsMenu: {
 			//          localized                 type     description
 			embedding: ["Media Embedding",        "check", "Embeds supported elements"],
+			api:       ["Embedding API",          "check", "Use API embedding when possible -- might be \"heavy\" on the data -- data will be stored"],
 			loop:      ["Loop",                   "check", "Loops media"],
 			volume:    ["Volume",                 "range", "Default volume &#8213; 25%"],
 			preload:   ["Preload",                "check", "Preload media"],
 			autoplay:  ["Autoplay",               "check", "Not recommended &#8213; RIP CPU"],
 			hoverPlay: ["Play on Hover",          "check", "Play media on mouse hover"],
-			board:     ["4chan",                  "check", "Embed 4chan thread links"],
-			sadpanda:  ["Sadpanda",               "check", "Embed Sadpanda galleries"],
+			board:     ["4chan",                  "check", "Embed 4chan thread links -- data will be stored"],
+			sadpanda:  ["Sadpanda",               "check", "Embed Sadpanda galleries -- data will be stored"],
 			greentext: ["Greentext",              "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
 			imagePop:  ["Full Resolution Images", "check", "Replaces images with full resolution ones whilst in popup mode.<br>Images larger than the visible screen will be clickable for pure native previews with scrolling"],
 			debug:     ["Debug",                  "check", "Displays verbose stuff into the console"]
@@ -92,7 +167,7 @@ const CustomMediaSupport = (function() {
 		css: {
 			script: `
 /* hide default video */
-.accessory:not(.customMedia) > .embed-2diOCQ > .embedVideo-3EiCm6, .accessory:not(.customMedia) > .imageWrapper-38T7d9:not(a) {display: none;}
+.customMedia:not(.media-error) + .accessory:not(.customMedia) > .embed-2diOCQ > .embedVideo-3EiCm6, .customMedia:not(.media-error) + .accessory:not(.customMedia) > .imageWrapper-38T7d9:not(a) {display: none;}
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,.7);}
 .customMedia table {border-spacing: 0;}
@@ -100,9 +175,9 @@ const CustomMediaSupport = (function() {
 .customMedia .embed-2diOCQ {max-width: unset;}
 .customMedia .embedInner-t4ag7g {position: relative;}
 .customMedia .embedInner-t4ag7g, .customMedia .embedInner-t4ag7g > table {width: 100%;}
-.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; min-width: 400px; max-height: 50vh; vertical-align: middle;}
-.customMedia.media-video.media-large video {width: calc(100vw - 740px);}
-.customMedia .metadata-35KiYB {display: none; z-index: unset;}
+.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; width: 25vw; min-width: 400px; max-height: 35vh; vertical-align: middle;}
+.customMedia.media-video.media-large video {width: calc(100vw - 740px); max-height: 50vh;}
+.customMedia .metadata-35KiYB {display: none;}
 .customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
 .customMedia .metadataZoomButton {cursor: pointer; font-size: 22px; font-weight: bold; opacity: 0.6; z-index: 1;}
@@ -116,6 +191,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
 .customMedia.media-error .wrapper-GhVnpx {color: #F04747; padding: 5px 10px;}
+.media-toggled {display: none !important;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
 .customMedia.sadpanda .gallery_info .desc {color: #FFFFFF;}
@@ -213,6 +289,8 @@ const CustomMediaSupport = (function() {
 		else {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
+		script.db = bdPluginStorage.get(script.file, "db") || {};
+		script.db_url = bdPluginStorage.get(script.file, "db_url") || {};
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
 		}
@@ -302,8 +380,8 @@ const CustomMediaSupport = (function() {
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.getAttribute("href") || link.getAttribute("src")) {
-					let href = decodeURI(encodeURI(link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href").replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
-					const hrefCheck = href.match(/\.(\w+)$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com/),
+					let href = decodeURI(encodeURI(/SOURCE|VIDEO/.test(link.tagName) ? link.getAttribute("src") : link.getAttribute("href").replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
+					const hrefCheck = href.match(/\w+$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com/g),
 					message = link.closest(".message");
 					if (hrefCheck && message) {
 						const message_body = message.firstElementChild,
@@ -352,94 +430,31 @@ const CustomMediaSupport = (function() {
 								break;
 							default:
 								if (script.settings.embedding) {
-									let fileMedia = false,
-									fileTitle, fileSize,
-									fileSite = script.media.sites[hrefSplit[2]];
+									let fileMedia = hrefCheck && hrefCheck[hrefCheck.length-1] ? script.media.types[hrefCheck[hrefCheck.length-1].toLowerCase()] : false;
+									if (fileMedia == "ignore") {break;}
+									let fileSize, fileReplace,
+									fileTitle = hrefSplit[hrefSplit.length-1], 
+									fileSite = script.media.sites[hrefSplit[2].match(/(\w+.\w+)$/)[0]];
 									if (fileSite) {
-										href = fileSite.convert({href, hrefSplit, message});
-										fileMedia = fileSite.type;
-										fileTitle = fileSite.title ? fileSite.title(message) : "";
-										fileSize = fileSite.size ? fileSite.size(message) : "";
+										({href, fileMedia, fileReplace, fileTitle} = fileSite.data({href, hrefSplit, message, fileTitle}));
 									}
 									else {
 										href = /external/.test(href) ? href.match(/(https\/[\w\.\/]+)/)[0].replace(/http\/|https\//,"https://") : href;
-										fileMedia = hrefCheck && hrefCheck[1] ? script.media.types[hrefCheck[1].toLowerCase()] : false;
-										fileTitle = hrefSplit[hrefSplit.length-1];
-										fileSize = link.classList.contains("metadataDownload-1eyTml") ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "";
+										fileSize = message.getElementsByClassName("metadataSize-L0PFDT")[0] ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "";
 										fileSite = false;
 									}
 									// only continues if mediaCheck is true -- as in, the embedding doesn't already exist
-									if (href && (fileMedia || fileSite) && mediaCheck(message, href)) {
+									if (href && fileMedia && mediaCheck(message, href)) {
 										link.classList.add("customMediaLink");
-										log("info", "mediaEmbedding", {fileMedia, fileSite, href, hrefSplit, message, message_body});
-										container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
-											_createElement("div", {className: "imageWrapper-38T7d9"}, [
-												_createElement("div", {className: "wrapper-GhVnpx"}, [
-													_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq'><div class='metadataName-CJWo1Z'>${fileTitle}</div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
-														_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
-															onclick() {
-																container.classList.toggle("media-large");
-																if (container.getBoundingClientRect().bottom > window.innerHeight) {
-																	container.parentNode.scrollIntoView(false);
-																}
-															}
-														})
-													]),
-													_createElement(fileMedia, (function() {
-														switch(fileMedia) {
-															case "video":
-															case "audio":
-																return {check: href, controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay,
-																	onclick() {if (this.paused) {this.play();}else {this.pause();}},
-																	onloadedmetadata() {
-																		if (fileMedia == "video") {
-																			if (script.settings.hoverPlay) {
-																				this.onmouseover = function() {
-																					if (this.paused) {
-																						this.play();
-																					}
-																				};
-																				this.onmouseout = function() {
-																					this.pause();
-																				};
-																			}
-																		}
-																		this.volume = script.settings.volume;
-																		scrollElement(this.parentNode.scrollHeight, "messages");
-																		// replace original accessory previews if they exist
-																		replaceMedia(message);
-																	}
-																};
-															case "img":
-															case "iframe":
-																return {"className": fileMedia, src: href, check: href, allowFullscreen: true};
-															default:
-																log("error", "mediaEmbed", href);
-														}
-													})(), [
-														_createElement("source", {src: href,
-															onerror(e) {
-																const wrapper = this.parentNode.parentNode;
-																container.classList.remove(`media-${fileMedia}`);
-																container.classList.add("media-error");
-																switch(hrefSplit[2]) {
-																	case "gfycat.com":
-																		wrapper.innerHTML = "Unable to embed media -- Either deleted or lowercased link";
-																		break;
-																	default:
-																		wrapper.innerHTML = "Error 404 - Media not found";
-																		break;
-																}
-															}
-														})
-													])
-												])
-											])
-										]);
-										message_body.parentNode.insertBefore(container, message_body.nextSibling);
-										// replace original accessory previews if they exist
-										if (fileSite.replace || script.media.replace.includes(hrefSplit[2])) {
-											replaceMedia(message);
+										if (script.db_url[href]) {
+											({href, fileTitle, fileSize} = script.db_url[href]);
+											mediaEmbedding({fileMedia, fileReplace, href, hrefSplit, message, message_body, fileTitle, fileSize});
+										}
+										else if (script.settings.api && fileSite.api) {
+											fileSite.api({id: href, fileMedia, fileReplace, href, hrefSplit, message, message_body, fileTitle, fileSize});
+										}
+										else {
+											mediaEmbedding({fileMedia, fileReplace, href, hrefSplit, message, message_body, fileTitle, fileSize});
 										}
 									}
 								}
@@ -456,6 +471,65 @@ const CustomMediaSupport = (function() {
 			}
 			script.check.media = false;
 		}
+	},
+	mediaEmbedding = function({fileMedia, fileReplace, href, hrefSplit, message, message_body, fileTitle, fileSize}) {
+		log("info", "mediaEmbedding", {fileMedia, fileReplace, href, hrefSplit, message, message_body, fileTitle, fileSize});
+		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
+			_createElement("div", {className: "imageWrapper-38T7d9"}, [
+				_createElement("div", {className: "wrapper-GhVnpx"}, [
+					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'>${fileTitle}</div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
+						_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
+							onclick() {
+								container.classList.toggle("media-large");
+								if (container.getBoundingClientRect().bottom > window.innerHeight) {
+									container.parentNode.scrollIntoView(true);
+								}
+							}
+						})
+					]),
+					_createElement(fileMedia, (function() {
+						switch(fileMedia) {
+							case "video":
+							case "audio":
+								return {check: href, controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay,
+									onclick() {if (this.paused) {this.play();}else {this.pause();}},
+									onloadedmetadata() {
+										if (fileMedia == "video") {
+											if (script.settings.hoverPlay) {
+												this.onmouseover = function() {
+													if (this.paused) {
+														this.play();
+													}
+												};
+												this.onmouseout = function() {
+													this.pause();
+												};
+											}
+										}
+										this.volume = script.settings.volume;
+										scrollElement(this.parentNode.scrollHeight, "messages");
+									}
+								};
+							case "img":
+							case "iframe":
+								return {"className": fileMedia, src: href, check: href, allowFullscreen: true};
+							default:
+								log("error", "mediaEmbed", href);
+						}
+					})(), [
+						_createElement("source", {src: href,
+							onerror(e) {
+								const wrapper = this.parentNode.parentNode;
+								container.classList.remove(`media-${fileMedia}`);
+								container.classList.add("media-error");
+								wrapper.innerHTML = `<div class='userSelectText-wz4t4g'>Unable to embed link</div><div class='userSelectText-wz4t4g'>${fileTitle}</div>`;
+							}
+						})
+					])
+				])
+			])
+		]);
+		message_body.parentNode.insertBefore(container, message_body.nextSibling);
 	},
 	mediaCheck = function(message, href) {
 		const media_elements = message.getElementsByClassName("customMedia");
@@ -474,13 +548,13 @@ const CustomMediaSupport = (function() {
 			return true;
 		}
 	},
-	replaceMedia = function(message) {
-		setTimeout(function() {
-			const media = message.querySelectorAll(".accessory:not(.customMedia)");
-			if (media[0].firstElementChild && media[0].firstElementChild.className !== "reactions") {
-				media[0].firstElementChild.classList.add("orrie-toggled");
-			}
-		}, 500);
+	mediaSize = function(fileSize) {
+		let l = 0;
+		while(fileSize >= 1024) {
+			fileSize = fileSize/1024;
+			l++;
+		}
+		return fileSize ? `${fileSize.toFixed(3)} ${["Bytes","KB","MB","GB"][l]}` : "ERROR";
 	},
 	sadpandaHandler = function(resp) {
 		// fetch sadpanda gallery information
@@ -508,14 +582,6 @@ const CustomMediaSupport = (function() {
 					}
 				}
 				return tagsString;
-			},
-			sizeParser = function(filesize) {
-				let l = 0;
-				while(filesize >= 1024) {
-					filesize = filesize/1024;
-					l++;
-				}
-				return `${filesize.toFixed(3)} ${["Bytes","KB","MB","GB"][l]}`;
 			};
 			for (let _g=galleries.length; _g--;) {
 				let container;
@@ -525,7 +591,7 @@ const CustomMediaSupport = (function() {
 				for (let _a=gallery_anchors.length; _a--;) {
 					const element_message = gallery_anchors[_a].closest(".message");
 					if (element_message.querySelectorAll(`#gallery_${gallery_id}`).length === 0) {
-						container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X cat-${gallery.category}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='2'><div><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2rEBfJ marginBottom4-_yArcI'><a class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${sizeParser(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+						container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X cat-${gallery.category}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='2'><div><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2rEBfJ marginBottom4-_yArcI'><a class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
 						element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 						scrollElement(container.parentNode.scrollHeight, "messages");
 						gallery_anchors[_a].classList.remove("fetchingMedia");
@@ -820,9 +886,10 @@ const CustomMediaSupport = (function() {
 			method,
 			headers: {
 				"Accept": "application/json",
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
+				"Authorization": name == "imgur" ? "Client-ID b975f50eb16a396" : null
 			},
-			body: (name == "sadpanda") ? JSON.stringify(data) : null
+			body: name == "sadpanda" ? JSON.stringify(data) : null
 		}).then(function(resp) {
 			if (resp.status >= 200 && resp.status < 300) {
 				return resp.json();
@@ -851,7 +918,6 @@ const CustomMediaSupport = (function() {
 		}
 		start() {
 			settingsLoad();
-			script.db = bdPluginStorage.get(script.file, "db") || {};
 			BdApi.injectCSS(script.file, script.css.script);
 			if (typeof BDfunctionsDevilBro !== "object") {
 				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDfunctionsDevilBro.js"}));
