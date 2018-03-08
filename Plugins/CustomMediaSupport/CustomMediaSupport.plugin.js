@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.1.6",
+		version: "2.1.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -22,59 +22,39 @@ const CustomMediaSupport = (function() {
 		},
 		media: {
 			types: {
-				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", mov: "video",
+				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", mov: "video", gifv: "video",
 				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio",
 				jpg: "ignore", jpeg: "ignore", png: "ignore", gif: "ignore"
 			},
 			sites: {
 				"vocaroo.com": {
 					data({href, hrefSplit, fileTitle}) {
-						return {
-							fileMedia: "audio",
-							fileTitle,
-							fileReplace: false,
-							href: /\/i\//.test(href) ? `https://vocaroo.com/media_command.php?media=${hrefSplit[4]}&command=download_webm` : false
-						};
+						return {fileMedia: "audio", fileTitle, fileReplace: false, href: /\/i\//.test(href) ? `https://vocaroo.com/media_command.php?media=${hrefSplit[4]}&command=download_webm` : false};
 					}
 				},
 				"pastebin.com": {
 					data({href, hrefSplit, fileTitle}) {
-						return {
-							fileMedia: "iframe",
-							fileTitle,
-							fileReplace: true,
-							href:  /[\w\d]{8}$/.test(href) ? `https://pastebin.com/embed_iframe/${hrefSplit[3]}` : false
-						};
+						return {fileMedia: "iframe", fileTitle, fileReplace: true, href:  /[\w\d]{8}$/.test(href) ? `https://pastebin.com/embed_iframe/${hrefSplit[3]}` : false};
 					}
 				},
 				"wotlabs.net": {
 					data({href, hrefSplit, fileTitle}) {
-						return {
-							fileMedia: "img",
-							fileTitle,
-							fileReplace: false,
-							href: /\/player\//.test(href) ? `https://wotlabs.net/sig_dark/eu/${hrefSplit[5]}/signature.png` : false
-						};
+						return {fileMedia: "img", fileTitle, fileReplace: false, href: /\/player\//.test(href) ? `https://wotlabs.net/sig_dark/eu/${hrefSplit[5]}/signature.png` : false};
 					}
 				},
 				"imgur.com":{
-					data({href, message, fileTitle}) {
-						const check = message.querySelector(`a.embedTitleLink-1IGDvg[href='${href}']`);
-						if (check && /\.jpg|\.jpeg|\.png|\.gif/.test(check.closest(".embedContent-AqkoYv").nextElementSibling.getAttribute("href"))) {
+					data({href, message, fileTitle, fileMedia}) {
+						const check = message.querySelector(`a.embedTitleLink-1IGDvg[href='${href.replace("//m.","//")}']`);
+						if (check && /\.jpg|\.jpeg|\.png|\.gif$/.test(check.closest(".embedContent-AqkoYv").nextElementSibling.getAttribute("href"))) {
 							return {fileMedia: "ignore", fileTitle, fileReplace: false, href};
 						}
 						else {
 							const video = message.getElementsByTagName("video")[0];
 							if (video) {
-								return {
-									fileMedia: "video",
-									fileTitle,
-									fileReplace: false,
-									href: video && href !== video.src ? video.src : href
-								};
+								return {fileMedia: script.media.types[video.src.match(/\w+$/)[0].toLowerCase()], fileTitle, fileReplace: false, href: video.src};
 							}
 						}
-						return {fileMedia: "ignore", fileTitle, fileReplace: false, href};
+						return {fileMedia, fileTitle, fileReplace: false, href};
 					},
 					api(data) {
 						return request("imgur", `https://cors-anywhere.herokuapp.com/https://api.imgur.com/3/image/${data.fileTitle.match(/(\w+)/)[0]}`, function(resp, data) {
@@ -82,7 +62,7 @@ const CustomMediaSupport = (function() {
 							if (item) {
 								data.href = item.mp4;
 								data.media = "video";
-								data.fileTitle = item.title ? item.title : `${item.section} - No Title`;
+								data.fileTitle = item.title ? item.title : "No Title";
 								data.fileSize = mediaSize(item.mp4_size);
 								mediaEmbedding(data);
 								// store in database to prevent api spam
@@ -94,27 +74,14 @@ const CustomMediaSupport = (function() {
 				},
 				"gfycat.com": {
 					data({href, fileTitle}) {
-						return {
-							fileMedia: "video",
-							fileTitle,
-							fileReplace: true,
-							href
-						};
+						return {fileMedia: "video", fileTitle, fileReplace: true, href};
 					},
 					api(data) {
 						return request("gfycat", `https://cors-anywhere.herokuapp.com/https://api.gfycat.com/v1/gfycats/${data.fileTitle.match(/(\w+)/)[0]}`, function({gfyItem}, data) {
 							if (gfyItem) {
-								let fileSize;
-								if (gfyItem.webmUrl) {
-									data.href = gfyItem.webmUrl;
-									fileSize = gfyItem.webmSize;
-								}
-								else if (gfyItem.mp4Url) {
-									data.href = gfyItem.mp4Url;
-									fileSize = gfyItem.mp4Size;
-								}
+								data.href = gfyItem.webmUrl ? gfyItem.webmUrl : gfyItem.mp4Url;
 								data.fileTitle = gfyItem.gfyName;
-								data.fileSize = mediaSize(fileSize);
+								data.fileSize = mediaSize(gfyItem.webmSize ? gfyItem.webmSize : gfyItem.mp4Size);
 								mediaEmbedding(data);
 								// store in database to prevent api spam
 								script.db_url[data.id] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
@@ -125,12 +92,7 @@ const CustomMediaSupport = (function() {
 				},
 				"instagram.com": {
 					data({message, fileTitle}) {
-						return {
-							fileMedia: "video",
-							fileTitle: message && message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle, 
-							fileReplace: true,
-							href: message && message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-						};
+						return {fileMedia: "video", fileTitle: message && message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle, fileReplace: true, href: message && message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false};
 					}
 				}
 			},
@@ -320,12 +282,6 @@ const CustomMediaSupport = (function() {
 				break;
 		}
 	},
-	cleanDB = function(elem) {
-		// clean database
-		script.db = {};
-		bdPluginStorage.set(script.file, "db", {});
-		elem.innerHTML = "Clean Database (0)";
-	},
 	log = function(method, title, data) {
 		// logging function
 		if (script.settings.debug) {
@@ -436,7 +392,7 @@ const CustomMediaSupport = (function() {
 									fileTitle = hrefSplit[hrefSplit.length-1], 
 									fileSite = script.media.sites[hrefSplit[2].match(/(\w+.\w+)$/)[0]];
 									if (fileSite) {
-										({href, fileMedia, fileReplace, fileTitle} = fileSite.data({href, hrefSplit, message, fileTitle}));
+										({href, fileMedia, fileReplace, fileTitle} = fileSite.data({href, hrefSplit, message, fileTitle, fileMedia}));
 									}
 									else {
 										href = /external/.test(href) ? href.match(/(https\/[\w\.\/]+)/)[0].replace(/http\/|https\//,"https://") : href;
@@ -855,7 +811,14 @@ const CustomMediaSupport = (function() {
 			_createElement("div", {className: "flex-3B1Tl4 justifyAround-1CVbTI"}, [
 				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Support (Discord)</button>"}),
 				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Updates</button>"}),
-				_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db).length || 0})`, onclick() {cleanDB(this);}})
+				_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db).length || 0})`,
+					onclick() {
+						// clean database
+						script.db = {};
+						bdPluginStorage.set(script.file, "db", {});
+						this.innerHTML = "Clean Database (0)";
+					}
+				})
 			]),
 			_createElement("div", {className: "orrie-centerText marginTop8-2gOa2N", innerHTML: "It's recommended to clean the database on a regular basis"}),
 		]);
