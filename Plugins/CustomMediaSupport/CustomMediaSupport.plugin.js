@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.1.8",
+		version: "2.1.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -98,9 +98,17 @@ const CustomMediaSupport = (function() {
 							fileReplace: true, href: message && message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
 						};
 					}
+				},
+				"steampowered.com": {
+					data({message}) {
+						return {
+							fileMedia: "video",
+							href: message && message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
+						};
+					}
 				}
 			},
-			replace: ["steamcdn-a.akamaihd.net"]
+			replace: ["store.steampowered.com"]
 		},
 		chan: {
 			nsfw: ["aco","b","bant","d","e","gif","h","hc","hm","hr","pol","r","r9k","s","s4s","soc","t","u","y"],
@@ -343,21 +351,31 @@ const CustomMediaSupport = (function() {
 				}
 				return false;
 			},
-			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll(".video-3ihULu:not(.cms-ignore) > source, .markup:not(.cms-ignore) > a, .filenameLink-2WwQH1:not(.cms-ignore)");
+			links = reCheck ? document.getElementsByClassName("messages")[0].querySelectorAll("a:not([class]), a.customMediaLink") : document.getElementsByClassName("messages")[0].querySelectorAll(".metadataDownload-1eyTml:not(.cms-ignore), .markup:not(.cms-ignore) > a, .filenameLink-2WwQH1:not(.cms-ignore)");
 			log("info", "mediaConvert", links);
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.getAttribute("href") || link.getAttribute("src")) {
 					let href = decodeURI(encodeURI(/SOURCE|VIDEO/.test(link.tagName) ? link.getAttribute("src") : link.getAttribute("href").replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
-					const hrefCheck = href.match(/\w+$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com/g),
-					message = link.closest(".message"),
-					accessory_anchor = message.querySelector(`.accessory a[href*='${href}'], .accessory video[src*='${href}'], .accessory source[src*='${href}']`),
-					accessory = accessory_anchor ? accessory_anchor.closest(".accessory") : false;
-					href = /external/.test(href) ? href.match(/(https\/[\w\.\/\-]+)/)[0].replace(/http\/|https\//,"https://") : href;
+					const hrefCheck = href.match(/\w+$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|store.steampowered.com/g),
+					message = link.closest(".message");
 					if (hrefCheck && message) {
-						const message_body = message.firstElementChild,
-						hrefSplit = href.split("/");
-						let container;
+						const accessory_anchors = message.querySelectorAll(".accessory:not(.customMedia) a, .accessory:not(.customMedia) source, .accessory:not(.customMedia) video")
+						message_body = message.firstElementChild;
+						let accessory = false, container;
+						if (accessory_anchors) {
+							for (let _a=accessory_anchors.length; _a--;) {
+								const anchor = accessory_anchors[_a],
+								source = (anchor.tagName == "A" ? anchor.getAttribute("href") : anchor.src).split("/"),
+								hrefSplit = href.split("/");
+								if (source[source.length-1] == hrefSplit[hrefSplit.length-1]) {
+									accessory = accessory_anchors[_a].closest(".accessory");
+									break;
+								}
+							}
+						}
+						href = /external/.test(href) ? href.match(/(https\/[\w\.\/\-]+)/)[0].replace(/http\/|https\//,"https://") : href;
+						const hrefSplit = href.split("/");
 						switch(hrefSplit[2]) {
 							case "exhentai.org":
 								const gallery_id = `${hrefSplit[4]}_${hrefSplit[5]}`;
@@ -405,7 +423,7 @@ const CustomMediaSupport = (function() {
 										fileId: href,
 										fileMedia: hrefCheck && hrefCheck[hrefCheck.length-1] ? script.media.types[hrefCheck[hrefCheck.length-1].toLowerCase()] : false,
 										fileTitle: hrefSplit[hrefSplit.length-1],
-										fileSize: "",
+										fileSize: message.getElementsByClassName("metadataSize-L0PFDT")[0] ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "",
 										fileReplace: false,
 										href, hrefSplit, message, message_body, accessory
 									};
@@ -414,11 +432,8 @@ const CustomMediaSupport = (function() {
 									if (fileSite) {
 										data = Object.assign({}, data, fileSite.data(data));
 									}
-									else {
-										data.fileSize = message.getElementsByClassName("metadataSize-L0PFDT")[0] ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "";
-									}
 									// only continues if mediaCheck is true -- as in, the embedding doesn't already exist
-									if (data.href && data.fileMedia && mediaCheck(message, data.href)) {
+									if (data.href && data.fileMedia  && data.fileMedia !== "ignore" && mediaCheck(message, data.href)) {
 										link.classList.add("customMediaLink");
 										if (script.db_url[data.href]) {
 											mediaEmbedding(Object.assign({}, data, script.db_url[data.href]));
@@ -502,7 +517,7 @@ const CustomMediaSupport = (function() {
 				])
 			])
 		]);
-		if (script.media.replace.includes(hrefSplit[2])) {
+		if (script.media.replace.includes(hrefSplit[2]) && accessory) {
 			const embed = accessory.getElementsByClassName("embedVideo-3EiCm6")[0];
 			if (embed) {
 				container.classList.add("media-replace");
@@ -513,7 +528,7 @@ const CustomMediaSupport = (function() {
 		}
 		else {
 			message.insertBefore(container, message_body.nextSibling);
-			if (accessory) {
+			if (accessory && accessory.classList) {
 				accessory.classList.add("media-toggled");
 			}
 		}
