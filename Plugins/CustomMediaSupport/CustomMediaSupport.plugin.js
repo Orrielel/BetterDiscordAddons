@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.1.9",
+		version: "2.2.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -495,6 +495,9 @@ const CustomMediaSupport = (function() {
 											}
 										}
 										this.volume = script.settings.volume;
+										if (accessory && accessory.classList) {
+											accessory.classList.add("media-toggled");
+										}
 										scrollElement(this.parentNode.scrollHeight, "messages");
 									}
 								};
