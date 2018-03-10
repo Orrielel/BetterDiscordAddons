@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.2.0",
+		version: "2.2.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -22,9 +22,8 @@ const CustomMediaSupport = (function() {
 		},
 		media: {
 			types: {
-				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", mov: "video", gifv: "video",
-				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio",
-				jpg: "ignore", jpeg: "ignore", png: "ignore", gif: "ignore"
+				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", mov: "video",
+				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio"
 			},
 			sites: {
 				"vocaroo.com": {
@@ -51,8 +50,9 @@ const CustomMediaSupport = (function() {
 						else {
 							const video = message.getElementsByTagName("video")[0];
 							if (video) {
-								const source = video.firstElementChild ? video.firstElementChild.src : video.src;
-								return {fileMedia: script.media.types[source.match(/\w+$/)[0].toLowerCase()], fileReplace: false, href: source};
+								const source = video.firstElementChild ? video.firstElementChild.src : video.src,
+								hrefSplit = source.split("/");
+								return {fileMedia: script.media.types[source.match(/\w+$/)[0].toLowerCase()], fileTitle: hrefSplit[hrefSplit.length-1], fileReplace: false, href: source, hrefSplit, };
 							}
 						}
 						return {fileMedia, fileReplace: false, href};
@@ -67,8 +67,10 @@ const CustomMediaSupport = (function() {
 								data.fileSize = mediaSize(item.mp4_size);
 								mediaEmbedding(data);
 								// store in database to prevent api spam
-								script.db_url[data.fileId] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
-								bdPluginStorage.set(script.file, "db_url", script.db_url);
+								if (data.fileSize !== "ERROR") {
+									script.db_url[data.fileId] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+									bdPluginStorage.set(script.file, "db_url", script.db_url);	
+								}
 							}
 						}, "GET", data);
 					}
@@ -85,8 +87,10 @@ const CustomMediaSupport = (function() {
 								data.fileSize = mediaSize(gfyItem.webmSize ? gfyItem.webmSize : gfyItem.mp4Size);
 								mediaEmbedding(data);
 								// store in database to prevent api spam
-								script.db_url[data.fileId] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
-								bdPluginStorage.set(script.file, "db_url", script.db_url);
+								if (data.fileSize !== "ERROR") {
+									script.db_url[data.fileId] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+									bdPluginStorage.set(script.file, "db_url", script.db_url);
+								}
 							}
 						}, "GET", data);
 					}
@@ -108,7 +112,7 @@ const CustomMediaSupport = (function() {
 					}
 				}
 			},
-			replace: ["store.steampowered.com"]
+			replace: ["i.imgur.com", "giant.gfycat.com", "gfycat.com"]
 		},
 		chan: {
 			nsfw: ["aco","b","bant","d","e","gif","h","hc","hm","hr","pol","r","r9k","s","s4s","soc","t","u","y"],
@@ -141,7 +145,7 @@ const CustomMediaSupport = (function() {
 		css: {
 			script: `
 /* hide default video */
-/* .customMedia:not(.media-error) + .accessory:not(.customMedia) > .embed-2diOCQ > .embedVideo-3EiCm6, .customMedia:not(.media-error) + .accessory:not(.customMedia) > .imageWrapper-38T7d9:not(a) {display: none;} */
+.accessory:not(.customMedia) > .embed-2diOCQ > .embedVideo-3EiCm6, .accessory:not(.customMedia) > .imageWrapper-38T7d9:not(a) {display: none;}
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,.7);}
 .customMedia table {border-spacing: 0;}
@@ -167,7 +171,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
 .customMedia.media-error .wrapper-GhVnpx {color: #F04747; padding: 5px 10px;}
-.media-toggled {display: none !important;}
+.media-toggled {display: none !important;}  
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
 .customMedia.sadpanda .gallery_info .desc {color: #FFFFFF;}
@@ -266,7 +270,7 @@ const CustomMediaSupport = (function() {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
 		script.db = bdPluginStorage.get(script.file, "db") || {};
-		script.db_url = bdPluginStorage.get(script.file, "db_url") || {};
+		script.db_url = bdPluginStorage.get(script.file, "db_url") || {};						   
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
 		}
@@ -357,25 +361,12 @@ const CustomMediaSupport = (function() {
 				const link = links[_l];
 				if (link.getAttribute("href") || link.getAttribute("src")) {
 					let href = decodeURI(encodeURI(/SOURCE|VIDEO/.test(link.tagName) ? link.getAttribute("src") : link.getAttribute("href").replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
-					const hrefCheck = href.match(/\w+$|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|store.steampowered.com/g),
+					const hrefCheck = href.match(/\.(\w+$)|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|imgur.com/),
 					message = link.closest(".message");
 					if (hrefCheck && message) {
-						const accessory_anchors = message.querySelectorAll(".accessory:not(.customMedia) a, .accessory:not(.customMedia) source, .accessory:not(.customMedia) video")
-						message_body = message.firstElementChild;
-						let accessory = false, container;
-						if (accessory_anchors) {
-							for (let _a=accessory_anchors.length; _a--;) {
-								const anchor = accessory_anchors[_a],
-								source = (anchor.tagName == "A" ? anchor.getAttribute("href") : anchor.src).split("/"),
-								hrefSplit = href.split("/");
-								if (source[source.length-1] == hrefSplit[hrefSplit.length-1]) {
-									accessory = accessory_anchors[_a].closest(".accessory");
-									break;
-								}
-							}
-						}
-						href = /external/.test(href) ? href.match(/(https\/[\w\.\/\-]+)/)[0].replace(/http\/|https\//,"https://") : href;
-						const hrefSplit = href.split("/");
+						const message_body = message.firstElementChild,
+						hrefSplit = href.split("/");
+						let container;
 						switch(hrefSplit[2]) {
 							case "exhentai.org":
 								const gallery_id = `${hrefSplit[4]}_${hrefSplit[5]}`;
@@ -383,7 +374,7 @@ const CustomMediaSupport = (function() {
 									link.classList.add("customMediaLink",`anchor_${gallery_id}`);
 									if (script.db[gallery_id]) {
 										container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: script.db[gallery_id]});
-										message_body.parentNode.insertBefore(container, message_body.nextSibling);
+										message.insertBefore(container, message_body.nextSibling);
 										scrollElement(container.parentNode.scrollHeight, "messages");
 									}
 									else {
@@ -402,7 +393,7 @@ const CustomMediaSupport = (function() {
 									link.classList.add("customMediaLink",`anchor_${thread_id}`);
 									if (script.db[thread_id]) {
 										container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: script.db[thread_id]});
-										message_body.parentNode.insertBefore(container, message_body.nextSibling);
+										message.insertBefore(container, message_body.nextSibling);
 										scrollElement(container.parentNode.scrollHeight, "messages");
 									}
 									else {
@@ -425,9 +416,9 @@ const CustomMediaSupport = (function() {
 										fileTitle: hrefSplit[hrefSplit.length-1],
 										fileSize: message.getElementsByClassName("metadataSize-L0PFDT")[0] ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "",
 										fileReplace: false,
-										href, hrefSplit, message, message_body, accessory
+										href, hrefSplit, message, message_body
 									};
-									if (data.fileMedia == "ignore") {break;}
+									if (data.fileMedia == "ignore") {break;} 
 									const fileSite = script.media.sites[hrefSplit[2].match(/(\w+.\w+)$/)[0]] || false;
 									if (fileSite) {
 										data = Object.assign({}, data, fileSite.data(data));
@@ -460,8 +451,8 @@ const CustomMediaSupport = (function() {
 			script.check.media = false;
 		}
 	},
-	mediaEmbedding = function({fileMedia, fileTitle, fileSize, fileReplace, href, hrefSplit, message, message_body, accessory}) {
-		log("info", "mediaEmbedding", {fileMedia, fileTitle, fileSize, fileReplace, href, hrefSplit, message, message_body, accessory});
+	mediaEmbedding = function({fileMedia, fileTitle, fileSize, fileReplace, href, hrefSplit, message, message_body}) {
+		log("info", "mediaEmbedding", {fileMedia, fileTitle, fileSize, fileReplace, href, hrefSplit, message, message_body});
 		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
 			_createElement("div", {className: "imageWrapper-38T7d9"}, [
 				_createElement("div", {className: "wrapper-GhVnpx"}, [
@@ -495,10 +486,9 @@ const CustomMediaSupport = (function() {
 											}
 										}
 										this.volume = script.settings.volume;
-										if (!script.media.replace.includes(hrefSplit[2]) && accessory && accessory.classList) {
-											accessory.classList.add("media-toggled");
-										}
 										scrollElement(this.parentNode.scrollHeight, "messages");
+										// replace original accessory previews if they exist
+										replaceMedia(message);
 									}
 								};
 							case "img":
@@ -520,20 +510,10 @@ const CustomMediaSupport = (function() {
 				])
 			])
 		]);
-		if (script.media.replace.includes(hrefSplit[2]) && accessory) {
-			const embed = accessory.getElementsByClassName("embedVideo-3EiCm6")[0];
-			if (embed) {
-				container.classList.add("media-replace");
-				embed.firstElementChild.remove();
-				embed.appendChild(container);
-				embed.style.height = "auto";
-			}
-		}
-		else {
-			message.insertBefore(container, message_body.nextSibling);
-			if (accessory && accessory.classList) {
-				accessory.classList.add("media-toggled");
-			}
+		message_body.parentNode.insertBefore(container, message_body.nextSibling);
+		// replace original accessory previews if they exist
+		if (fileReplace || script.media.replace.includes(hrefSplit[2])) {
+			replaceMedia(message);
 		}
 	},
 	mediaCheck = function(message, href) {
@@ -552,6 +532,14 @@ const CustomMediaSupport = (function() {
 		else {
 			return true;
 		}
+	},
+	replaceMedia = function(message) {
+		setTimeout(function() {
+			const media = message.querySelectorAll(".accessory:not(.customMedia)");
+			if (media[0].firstElementChild && media[0].firstElementChild.className !== "reactions") {
+				media[0].firstElementChild.classList.add("media-toggled");
+			}
+		}, 500);
 	},
 	mediaSize = function(fileSize) {
 		let l = 0;
@@ -894,13 +882,16 @@ const CustomMediaSupport = (function() {
 	},
 	request = function(name, api, handler, method, data) {
 		// request handler
+		const headers = {
+			"Accept": "application/json",
+			"Content-Type": "application/json"
+		};
+		if (name == "imgur") {
+			headers.Authorization = "Client-ID b975f50eb16a396"
+		};
 		fetch(api, {
 			method,
-			headers: {
-				"Accept": "application/json",
-				"Content-Type": "application/json",
-				"Authorization": name == "imgur" ? "Client-ID b975f50eb16a396" : null
-			},
+			headers,
 			body: name == "sadpanda" ? JSON.stringify(data) : null
 		}).then(function(resp) {
 			if (resp.status >= 200 && resp.status < 300) {
