@@ -495,7 +495,7 @@ const CustomMediaSupport = (function() {
 											}
 										}
 										this.volume = script.settings.volume;
-										if (accessory && accessory.classList) {
+										if (!script.media.replace.includes(hrefSplit[2]) && accessory && accessory.classList) {
 											accessory.classList.add("media-toggled");
 										}
 										scrollElement(this.parentNode.scrollHeight, "messages");
