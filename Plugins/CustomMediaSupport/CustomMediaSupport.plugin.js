@@ -383,8 +383,6 @@ const CustomMediaSupport = (function() {
 								thread_id = `${hrefSplit[3]}_${postnumber[1] ? hrefSplit[5].replace("#","_") : hrefSplit[5]}`;
 								if (script.settings.board && !link.classList.contains("fetchingMedia") && message.querySelectorAll(`#post_${thread_id}`).length === 0) {
 									link.classList.add("customMediaLink",`anchor_${thread_id}`);
-									console.log("id", thread_id);
-									console.log("db", script.db[thread_id]);
 									if (script.db[thread_id]) {
 										container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: script.db[thread_id]});
 										message.insertBefore(container, message_body.nextSibling);
@@ -396,7 +394,6 @@ const CustomMediaSupport = (function() {
 											script.check.chan = true;
 											const archive = archiveCheck(hrefSplit[3]);
 											if (archive) {
-												console.log(`https://cors-anywhere.herokuapp.com/${archive}/_/api/chan/thread/?board=${hrefSplit[3]}&num=${postnumber[0]}`);
 												request("4chan", `https://cors-anywhere.herokuapp.com/${archive}/_/api/chan/thread/?board=${hrefSplit[3]}&num=${postnumber[0]}`, chanHandler, "GET", {href, hrefSplit, archive});
 											}
 										}
@@ -619,7 +616,6 @@ const CustomMediaSupport = (function() {
 		script.check.sadpanda = false;
 	},
 	chanHandler = function(resp, {href, hrefSplit, archive}) {
-		console.log("chanHandler", resp, {href, hrefSplit, archive});
 		// fetch knitting image board information
 		let container;
 		const postnumber = hrefSplit[5].match(/\d+/g),
