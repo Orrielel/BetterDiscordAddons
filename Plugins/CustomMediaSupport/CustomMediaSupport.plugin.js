@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.2.4",
+		version: "2.2.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -52,7 +52,7 @@ const CustomMediaSupport = (function() {
 							if (video) {
 								const source = video.firstElementChild ? video.firstElementChild.src : video.src,
 								hrefSplit = source.split("/");
-								return {fileMedia: script.media.types[source.match(/\w+$/)[0].toLowerCase()], fileTitle: hrefSplit[hrefSplit.length-1], fileReplace: false, href: source, hrefSplit, };
+								return {fileMedia: script.media.types[source.match(/\w+$/)[0].toLowerCase()], fileTitle: hrefSplit[hrefSplit.length-1], fileReplace: true, href: source, hrefSplit, };
 							}
 						}
 						return {fileMedia, fileReplace: false, href};
@@ -164,8 +164,8 @@ const CustomMediaSupport = (function() {
 .customMedia .embed-2diOCQ {max-width: unset;}
 .customMedia .embedInner-t4ag7g {position: relative;}
 .customMedia .embedInner-t4ag7g, .customMedia .embedInner-t4ag7g > table {width: 100%;}
-.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; object-fit: cover; object-position: right; padding-bottom: 32px; vertical-align: middle; width: 100%;}
-.customMedia.media-video:not(.media-replace) video {width: 25vw; min-width: 400px; max-height: 35vh;}
+.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: 100%;}
+.customMedia.media-video:not(.media-replace) video {width: 25vw; min-width: 400px; max-height: 50vh;}
 .customMedia.media-video.media-replace .metadataZoomButton {display: none;}
 .customMedia.media-video.media-large video {width: calc(100vw - 740px); max-height: 50vh;}
 .customMedia .metadata-35KiYB {display: none;}
