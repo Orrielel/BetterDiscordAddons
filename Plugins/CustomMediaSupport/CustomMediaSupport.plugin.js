@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.2.5",
+		version: "2.2.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -41,7 +41,7 @@ const CustomMediaSupport = (function() {
 						return {fileMedia: "img", fileReplace: false, href: /\/player\//.test(href) ? `https://wotlabs.net/sig_dark/eu/${hrefSplit[5]}/signature.png` : false};
 					}
 				},
-				"imgur.com":{
+				"imgur.com": {
 					data({href, message, fileMedia}) {
 						const check = message.querySelector(`a.embedTitleLink-1IGDvg[href='${href.replace("//m.","//")}']`);
 						if (check && /\.jpg|\.jpeg|\.png|\.gif$/.test(check.closest(".embedContent-AqkoYv").nextElementSibling.getAttribute("href"))) {
@@ -52,7 +52,11 @@ const CustomMediaSupport = (function() {
 							if (video) {
 								const source = video.firstElementChild ? video.firstElementChild.src : video.src,
 								hrefSplit = source.split("/");
-								return {fileMedia: script.media.types[source.match(/\w+$/)[0].toLowerCase()], fileTitle: hrefSplit[hrefSplit.length-1], fileReplace: true, href: source, hrefSplit, };
+								return {
+									fileMedia: script.media.types[source.match(/\w+$/)[0].toLowerCase()],
+									fileTitle: hrefSplit[hrefSplit.length-1],
+									fileReplace: true, href: source, hrefSplit
+								};
 							}
 						}
 						return {fileMedia, fileReplace: false, href};
@@ -69,7 +73,9 @@ const CustomMediaSupport = (function() {
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
 									script.db_url[data.fileId] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
-									bdPluginStorage.set(script.file, "db_url", script.db_url);
+								}
+								else {
+									log("error", "imgur", item);
 								}
 							}
 						}, "GET", data);
@@ -89,7 +95,9 @@ const CustomMediaSupport = (function() {
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
 									script.db_url[data.fileId] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
-									bdPluginStorage.set(script.file, "db_url", script.db_url);
+								}
+								else {
+									log("error", "imgur", gfyItem);
 								}
 							}
 						}, "GET", data);
@@ -97,29 +105,49 @@ const CustomMediaSupport = (function() {
 				},
 				"instagram.com": {
 					data({message, fileTitle}) {
-						return {
-							fileMedia: "video", fileTitle: message && message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
-							fileReplace: true, href: message && message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-						};
+						if (message) {
+							return {
+								fileMedia: "video",
+								fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
+								fileReplace: true,
+								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
+							}
+						}
 					}
 				},
 				"streamable.com": {
-					data({message}) {
-						return {
-							fileMedia: "video",
-							fileTitle: message && message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : false,
-							href: message && message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-						};
+					data({message, fileTitle}) {
+						if (message) {
+							return {
+								fileMedia: "video",
+								fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
+								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
+							}
+						}
 					}
 				},
 				"steampowered.com": {
-					data({message}) {
-						return {
-							fileMedia: "video",
-							fileTitle: message && message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : false,
-							filePoster: message && message.getElementsByTagName("video")[0] ? message.getElementsByTagName("video")[0].poster : false,
-							href: message && message.getElementsByTagName("source")[0] ? `https://${message.getElementsByTagName("source")[0].src.match(/(steamcdn[\w\-\.\/]+)/)[0]}` : false
-						};
+					data({message, fileTitle}) {
+						if (message) {
+							return {
+								fileMedia: "video",
+								fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
+								filePoster: message.getElementsByTagName("video")[0] ? message.getElementsByTagName("video")[0].poster : "",
+								href: message.getElementsByTagName("source")[0] ? `https://${message.getElementsByTagName("source")[0].src.match(/(steamcdn[\w\-\.\/]+)/)[0]}` : false
+							}
+						}
+					}
+				},
+				"ifunny.co": {
+					data({message, fileTitle}) {
+						if (message) {
+							return {
+								fileMedia: "video",
+								fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
+								filePoster: message.getElementsByTagName("video")[0] ? message.getElementsByTagName("video")[0].poster : "",
+								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
+							}
+						}
 					}
 				}
 			},
@@ -269,7 +297,8 @@ const CustomMediaSupport = (function() {
 .theme-dark .orrie-plugin {color: #B0B6B9;}
 			`
 		},
-		db: {}
+		db: {},
+		db_url: {}
 	},
 	settingsLoad = function() {
 		// load settings
@@ -281,7 +310,6 @@ const CustomMediaSupport = (function() {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
 		script.db = bdPluginStorage.get(script.file, "db") || {};
-		script.db_url = bdPluginStorage.get(script.file, "db_url") || {};
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
 		}
@@ -313,7 +341,7 @@ const CustomMediaSupport = (function() {
 	},
 	log = function(method, title, data) {
 		// logging function
-		if (script.settings.debug) {
+		if (script.settings.debug || method == "error") {
 			console[method](`%c[${script.file}]%c ${title}`, "color: purple; font-weight: bold;", "", new Date().toLocaleTimeString("en-GB"), data ? data : "");
 		}
 	},
@@ -352,7 +380,7 @@ const CustomMediaSupport = (function() {
 				if (link.getAttribute("href") || link.getAttribute("src")) {
 					const fileId = /SOURCE|VIDEO/.test(link.tagName) ? link.getAttribute("src") : link.getAttribute("href");
 					let href = decodeURI(encodeURI(fileId.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
-					const hrefCheck = href.match(/\.(\w+$)|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|imgur.com|streamable.com|steampowered.com/),
+					const hrefCheck = href.match(/\.(\w+$)|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|imgur.com|streamable.com|steampowered.com|ifunny.co/),
 					message = link.closest(".message");
 					if (hrefCheck && message) {
 						const message_body = message.firstElementChild,
@@ -967,6 +995,7 @@ const CustomMediaSupport = (function() {
 							/* falls through */
 						case "message-group hide-overflow":
 						case "message":
+						case "embed-2diOCQ flex-3B1Tl4 embed":
 							mediaConvert("messages", node);
 							textParser(node);
 							break;
