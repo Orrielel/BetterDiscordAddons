@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.2.6",
+		version: "2.2.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -62,7 +62,7 @@ const CustomMediaSupport = (function() {
 						return {fileMedia, fileReplace: false, href};
 					},
 					api(data) {
-						return request("imgur", `https://cors-anywhere.herokuapp.com/https://api.imgur.com/3/image/${data.fileTitle.match(/(\w+)/)[0]}`, function(resp, data) {
+						request("imgur", `https://cors-anywhere.herokuapp.com/https://api.imgur.com/3/image/${data.fileTitle.match(/(\w+)/)[0]}`, function(resp, data) {
 							const item = resp.success ? resp.data : false;
 							if (item) {
 								data.href = item.mp4;
@@ -86,7 +86,7 @@ const CustomMediaSupport = (function() {
 						return {fileMedia: "video", fileReplace: true, href};
 					},
 					api(data) {
-						return request("gfycat", `https://cors-anywhere.herokuapp.com/https://api.gfycat.com/v1/gfycats/${data.fileTitle.match(/(\w+)/)[0]}`, function({gfyItem}, data) {
+						request("gfycat", `https://cors-anywhere.herokuapp.com/https://api.gfycat.com/v1/gfycats/${data.fileTitle.match(/(\w+)/)[0]}`, function({gfyItem}, data) {
 							if (gfyItem) {
 								data.href = gfyItem.webmUrl ? gfyItem.webmUrl : gfyItem.mp4Url;
 								data.fileTitle = gfyItem.gfyName;
@@ -111,7 +111,7 @@ const CustomMediaSupport = (function() {
 								fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
 								fileReplace: true,
 								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-							}
+							};
 						}
 					}
 				},
@@ -122,7 +122,7 @@ const CustomMediaSupport = (function() {
 								fileMedia: "video",
 								fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
 								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-							}
+							};
 						}
 					}
 				},
@@ -134,7 +134,7 @@ const CustomMediaSupport = (function() {
 								fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
 								filePoster: message.getElementsByTagName("video")[0] ? message.getElementsByTagName("video")[0].poster : "",
 								href: message.getElementsByTagName("source")[0] ? `https://${message.getElementsByTagName("source")[0].src.match(/(steamcdn[\w\-\.\/]+)/)[0]}` : false
-							}
+							};
 						}
 					}
 				},
@@ -146,7 +146,7 @@ const CustomMediaSupport = (function() {
 								fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : fileTitle,
 								filePoster: message.getElementsByTagName("video")[0] ? message.getElementsByTagName("video")[0].poster : "",
 								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-							}
+							};
 						}
 					}
 				}
@@ -190,12 +190,11 @@ const CustomMediaSupport = (function() {
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
-.customMedia .embedInner-t4ag7g {position: relative;}
-.customMedia .embedInner-t4ag7g, .customMedia .embedInner-t4ag7g > table {width: 100%;}
 .customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: 100%;}
 .customMedia.media-video:not(.media-replace) video {width: 25vw; min-width: 400px; max-height: 50vh;}
 .customMedia.media-video.media-replace .metadataZoomButton {display: none;}
-.customMedia.media-video.media-large video {width: calc(100vw - 740px); max-height: 50vh;}
+.customMedia.media-video.media-large-horizontal video {width: calc(100vw - 740px); max-height: 50vh;}
+.customMedia.media-video.media-large-vertical video {width: auto; height: 70vh; max-height: 70vh;}
 .customMedia .metadata-35KiYB {display: none;}
 .customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
@@ -212,7 +211,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-error .wrapper-GhVnpx {color: #F04747; padding: 5px 10px;}
 .media-toggled {display: none !important;}
 /* exhentai previews */
-.customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px;}
+.customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
 .customMedia.sadpanda .gallery_info .desc {color: #FFFFFF;}
 .customMedia.sadpanda .gallery_info .tags span {display: inline-block; margin: 0 3px;}
 .customMedia.sadpanda .gallery_info .tag {display: inline-block; margin: 0 3px;}
@@ -257,7 +256,7 @@ const CustomMediaSupport = (function() {
 .customMedia.knittingboard .thread_info .thread_creator {color: #30A75C;}
 .customMedia.knittingboard .thread_preview {padding: 0; width: 1px;}
 .customMedia.knittingboard .thread_preview img {border-radius: 5px; display: inline-block; height: unset; max-height: 200px; max-width: 200px;}
-.customMedia.knittingboard .thread_comment {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
+.customMedia.knittingboard .thread_comment {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%; word-break: break-word;}
 .customMedia.knittingboard .thread_comment a {word-break: break-word;}
 .customMedia.knittingboard .thread_foot {padding: 10px 2px 0;}
 .custom_warning {color: #F32323;}
@@ -481,9 +480,10 @@ const CustomMediaSupport = (function() {
 					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'>${fileTitle}</div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
 						_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
 							onclick() {
-								container.classList.toggle("media-large");
+								const video = this.parentNode.nextElementSibling;
+								container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
 								if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
-									container.parentNode.scrollIntoView(false);
+									container.parentNode.parentNode.scrollIntoView(false);
 								}
 							}
 						})
@@ -523,7 +523,7 @@ const CustomMediaSupport = (function() {
 						}
 					})(), [
 						_createElement("source", {src: href,
-							onerror(e) {
+							onerror() {
 								const wrapper = this.parentNode.parentNode;
 								container.classList.remove(`media-${fileMedia}`);
 								container.classList.add("media-error");
@@ -560,20 +560,15 @@ const CustomMediaSupport = (function() {
 				if (check == href) {
 					return false;
 				}
-				else if (_cm === 0) {
-					return true;
-				}
 			}
 		}
-		else {
-			return true;
-		}
+		return true;
 	},
 	mediaReplace = function(message) {
 		setTimeout(function() {
-			const media = message.querySelectorAll(".accessory:not(.customMedia)");
-			if (media[0].firstElementChild && media[0].firstElementChild.className !== "reactions") {
-				media[0].firstElementChild.classList.add("media-toggled");
+			const media = message.querySelectorAll(".accessory:not(.customMedia)")[0].firstElementChild;
+			if (media && media.className !== "reactions") {
+				media.classList.add("media-toggled");
 			}
 		}, 500);
 	},
@@ -995,7 +990,6 @@ const CustomMediaSupport = (function() {
 							/* falls through */
 						case "message-group hide-overflow":
 						case "message":
-						case "embed-2diOCQ flex-3B1Tl4 embed":
 							mediaConvert("messages", node);
 							textParser(node);
 							break;
