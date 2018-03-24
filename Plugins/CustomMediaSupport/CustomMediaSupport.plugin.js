@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.2.7",
+		version: "2.2.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -183,8 +183,6 @@ const CustomMediaSupport = (function() {
 		},
 		css: {
 			script: `
-/* hide default video */
-.customEmbedded .accessory:not(.customMedia) > .embed-2diOCQ > .embedVideo-3EiCm6, .customEmbedded .accessory:not(.customMedia) > .imageWrapper-38T7d9:not(a) {display: none;}
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,.7);}
 .customMedia table {border-spacing: 0;}
@@ -474,7 +472,8 @@ const CustomMediaSupport = (function() {
 	},
 	mediaEmbedding = function({fileId, fileMedia, fileTitle, fileSize, filePoster, fileReplace, href, hrefSplit, message, message_body}) {
 		log("info", "mediaEmbedding", {fileId, fileMedia, fileTitle, fileSize, filePoster, fileReplace, href, hrefSplit, message, message_body});
-		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
+		const filter = hrefSplit[hrefSplit.length-1].match(/(\w+)/)[0],
+		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: href}, [
 			_createElement("div", {className: "imageWrapper-38T7d9"}, [
 				_createElement("div", {className: "wrapper-GhVnpx"}, [
 					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'>${fileTitle}</div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
@@ -508,10 +507,10 @@ const CustomMediaSupport = (function() {
 											}
 										}
 										this.volume = script.settings.volume;
-										scrollElement(this.parentNode.scrollHeight, "messages");
+										scrollElement(container.parentNode.scrollHeight, "messages");
 										// replace original accessory previews if they exist
 										if (!script.media.replace.includes(hrefSplit[2])) {
-											mediaReplace(message);
+											mediaReplace(message, filter);
 										}
 									}
 								};
@@ -535,7 +534,7 @@ const CustomMediaSupport = (function() {
 			])
 		]);
 		if (script.media.replace.includes(hrefSplit[2])) {
-			const anchor = message.querySelector(`.accessory a[href*='${fileId}']`),
+			const anchor = message.querySelector(`.accessory a[href*='${filter}']`),
 			embed = anchor ? anchor.closest(".embedContent-AqkoYv").nextElementSibling : false;
 			if (embed) {
 				container.classList.add("media-replace");
@@ -549,7 +548,7 @@ const CustomMediaSupport = (function() {
 		}
 		// replace original accessory previews if they exist
 		if (fileReplace) {
-			mediaReplace(message);
+			mediaReplace(message, filter);
 		}
 	},
 	mediaCheck = function(message, href) {
@@ -564,11 +563,17 @@ const CustomMediaSupport = (function() {
 		}
 		return true;
 	},
-	mediaReplace = function(message) {
+	mediaReplace = function(message, filter) {
 		setTimeout(function() {
-			const media = message.querySelectorAll(".accessory:not(.customMedia)")[0].firstElementChild;
-			if (media && media.className !== "reactions") {
-				media.classList.add("media-toggled");
+			const media = message.querySelector(`.accessory:not(.customMedia) a[href*='${filter}'], .accessory:not(.customMedia) source[src*='${filter}']`);
+			if (media) {
+				const wrapper = media.closest(".imageWrapper-38T7d9");
+				if (!wrapper.parentNode.classList.contains("accessory")) {
+					wrapper.closest(".embed").classList.add("media-toggled");
+				}
+				else {
+					wrapper.classList.add("media-toggled");
+				}
 			}
 		}, 500);
 	},
