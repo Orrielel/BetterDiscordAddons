@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.2.8",
+		version: "2.2.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -565,7 +565,7 @@ const CustomMediaSupport = (function() {
 	},
 	mediaReplace = function(message, filter) {
 		setTimeout(function() {
-			const media = message.querySelector(`.accessory:not(.customMedia) a[href*='${filter}'], .accessory:not(.customMedia) source[src*='${filter}']`);
+			const media = message.querySelector(`.accessory:not(.customMedia) video[src*='${filter}'], .accessory:not(.customMedia) source[src*='${filter}']`);
 			if (media) {
 				const wrapper = media.closest(".imageWrapper-38T7d9");
 				if (!wrapper.parentNode.classList.contains("accessory")) {
