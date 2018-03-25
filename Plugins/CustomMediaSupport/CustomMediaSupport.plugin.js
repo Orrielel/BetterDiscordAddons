@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.3.1",
+		version: "2.3.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -379,7 +379,7 @@ const CustomMediaSupport = (function() {
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.getAttribute("href") || link.getAttribute("src")) {
-					const fileId = /SOURCE|VIDEO/.test(link.tagName) ? link.getAttribute("src") : link.getAttribute("href");
+					const fileId = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href");
 					let href = decodeURI(encodeURI(fileId.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
 					const hrefCheck = href.match(/\.(\w+$)|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|imgur.com|streamable.com|steampowered.com|ifunny.co/),
 					message = link.closest(".message");
@@ -552,7 +552,7 @@ const CustomMediaSupport = (function() {
 			message.insertBefore(container, message_body.nextSibling);
 		}
 		// replace original accessory previews if they exist
-		if (fileReplace) {
+		if (fileReplace || (fileMedia == "video" || fileMedia == "audio")) {
 			mediaReplace(message, fileFilter);
 		}
 	},
