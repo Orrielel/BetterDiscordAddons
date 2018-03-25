@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.3.0",
+		version: "2.3.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -198,7 +198,10 @@ const CustomMediaSupport = (function() {
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
 .customMedia .metadataZoomButton {cursor: pointer; font-size: 22px; font-weight: bold; opacity: 0.6; z-index: 1;}
 .customMedia .metadataZoomButton:hover {opacity: 1;}
-.customMedia.media-audio audio {width: 400px;}
+.customMedia.media-audio .wrapper-GhVnpx {display: flex; height: 75px;}
+.customMedia.media-audio .metadata-35KiYB {display: flex; z-index: auto;}
+.customMedia.media-audio .metadataZoomButton {display: none;}
+.customMedia.media-audio audio {align-self: flex-end; vertical-align: middle; width: 25vw; min-width: 400px;}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
 .customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-internal-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
@@ -354,7 +357,7 @@ const CustomMediaSupport = (function() {
 		if (!script.check.media) {
 			script.check.media = true;
 			const types = {
-				messages: ".markup > a:not(.cms-ignore), .metadataDownload-1eyTml:not(.cms-ignore), .filenameLink-2WwQH1:not(.cms-ignore)",
+				messages: ".markup > a:not(.cms-ignore), .metadataDownload-1eyTml:not(.cms-ignore), .fileNameLink-342ZEF:not(.cms-ignore)",
 				media: ".markup > a, .metadataDownload-1eyTml:not(.cms-ignore)",
 				video: "source:not(.cms-ignore)"
 			},
@@ -388,7 +391,7 @@ const CustomMediaSupport = (function() {
 						switch(hrefSplit[2]) {
 							case "exhentai.org":
 								const gallery_id = `${hrefSplit[4]}_${hrefSplit[5]}`;
-								if (script.settings.sadpanda && !link.classList.contains("fetchingMedia") && message.querySelectorAll(`#gallery_${gallery_id}`).length === 0) {
+								if (script.settings.sadpanda && !link.classList.contains("fetchingMedia") && !message.getElementById(`gallery_${gallery_id}`)) {
 									link.classList.add("customMediaLink",`anchor_${gallery_id}`);
 									if (script.db[gallery_id]) {
 										container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: script.db[gallery_id]});
@@ -408,7 +411,7 @@ const CustomMediaSupport = (function() {
 								}
 								const postnumber = hrefSplit[5].match(/\d+/g),
 								thread_id = `${hrefSplit[3]}_${postnumber[1] ? hrefSplit[5].replace("#","_") : hrefSplit[5]}`;
-								if (script.settings.board && !link.classList.contains("fetchingMedia") && message.querySelectorAll(`#post_${thread_id}`).length === 0) {
+								if (script.settings.board && !link.classList.contains("fetchingMedia") && !message.getElementById(`post_${thread_id}`)) {
 									link.classList.add("customMediaLink",`anchor_${thread_id}`);
 									if (script.db[thread_id]) {
 										container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: script.db[thread_id]});
@@ -421,7 +424,7 @@ const CustomMediaSupport = (function() {
 											script.check.chan = true;
 											const archive = archiveCheck(hrefSplit[3]);
 											if (archive) {
-												request("4chan", `https://cors-anywhere.herokuapp.com/${archive}/_/api/chan/thread/?board=${hrefSplit[3]}&num=${postnumber[0]}`, chanHandler, "GET", {href, hrefSplit, archive});
+												request("4chan", `https://cors-anywhere.herokuapp.com/${archive}/_/api/chan/thread/?board=${hrefSplit[3]}&num=${postnumber[0]}`, chanHandler, "GET", {href, hrefSplit, archive, postnumber});
 											}
 										}
 									}
@@ -472,9 +475,10 @@ const CustomMediaSupport = (function() {
 			script.check.media = false;
 		}
 	},
-	mediaEmbedding = function({fileId, fileMedia, fileTitle, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body}) {
-		log("info", "mediaEmbedding", {fileId, fileMedia, fileTitle, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body});
-		const container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
+	mediaEmbedding = function(data) {
+		log("info", "mediaEmbedding", data);
+		const {fileMedia, fileTitle, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
+		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
 			_createElement("div", {className: "imageWrapper-38T7d9"}, [
 				_createElement("div", {className: "wrapper-GhVnpx"}, [
 					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'>${fileTitle}</div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
@@ -565,11 +569,11 @@ const CustomMediaSupport = (function() {
 		}
 		return true;
 	},
-	mediaReplace = function(message, filter) {
+	mediaReplace = function(message, fileFilter) {
 		setTimeout(function() {
-			const media = message.querySelector(`.accessory:not(.customMedia) a[href*='${filter}'], .accessory:not(.customMedia) video[src*='${filter}'], .accessory:not(.customMedia) source[src*='${filter}']`);
+			const media = message.querySelector(`.accessory:not(.customMedia) a[href*='${fileFilter}'], .accessory:not(.customMedia) video[src*='${fileFilter}'], .accessory:not(.customMedia) source[src*='${fileFilter}']`);
 			if (media) {
-				const wrapper = media.closest(".imageWrapper-38T7d9");
+				const wrapper = media.classList.contains("fileNameLink-342ZEF") ? media.closest(".attachment-1Vom9D") : media.closest(".imageWrapper-38T7d9");
 				if (wrapper) {
 					if (!wrapper.parentNode.classList.contains("accessory")) {
 						wrapper.closest(".embed").classList.add("media-toggled");
@@ -582,7 +586,7 @@ const CustomMediaSupport = (function() {
 					media.closest(".embed").classList.add("media-toggled");
 				}
 			}
-		}, 50);
+		}, 150);
 	},
 	mediaSize = function(fileSize) {
 		let l = 0;
@@ -626,7 +630,7 @@ const CustomMediaSupport = (function() {
 				gallery_anchors = messages.getElementsByClassName(`anchor_${gallery_id}`);
 				for (let _a=gallery_anchors.length; _a--;) {
 					const element_message = gallery_anchors[_a].closest(".message");
-					if (element_message.querySelectorAll(`#gallery_${gallery_id}`).length === 0) {
+					if (!element_message.getElementById(`gallery_${gallery_id}`)) {
 						container = _createElement("div", {className: "accessory customMedia sadpanda", id: `gallery_${gallery_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X cat-${gallery.category}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='2'><div><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2rEBfJ marginBottom4-_yArcI'><a class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>": ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
 						element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 						scrollElement(container.parentNode.scrollHeight, "messages");
@@ -650,11 +654,10 @@ const CustomMediaSupport = (function() {
 		}
 		script.check.sadpanda = false;
 	},
-	chanHandler = function(resp, {href, hrefSplit, archive}) {
+	chanHandler = function(resp, {href, hrefSplit, archive, postnumber}) {
 		// fetch knitting image board information
 		let container;
-		const postnumber = hrefSplit[5].match(/\d+/g),
-		thread = resp[postnumber[0]],
+		const thread = resp[postnumber[0]],
 		post = thread.posts && thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
 		thread_id = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
 		is_reply = thread.posts && thread.posts[postnumber[1]] ? true : false,
@@ -671,7 +674,7 @@ const CustomMediaSupport = (function() {
 		chan_anchors = document.getElementsByClassName("messages")[0].getElementsByClassName(`anchor_${thread_id}`);
 		for (let _a=chan_anchors.length; _a--;) {
 			const element_message = chan_anchors[_a].closest(".message");
-			if (element_message.querySelectorAll(`#post_${thread_id}`).length === 0) {
+			if (!element_message.getElementById(`post_${thread_id}`)) {
 				container = _createElement("div", {className: "accessory customMedia knittingboard", id: `post_${thread_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2rEBfJ '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-1wjlWP weightMedium-13x9Y8 custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2rEBfJ marginBottom4-_yArcI'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
 				element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 				scrollElement(container.parentNode.scrollHeight, "messages");
