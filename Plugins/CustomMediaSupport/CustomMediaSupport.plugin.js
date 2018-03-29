@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.3.5",
+		version: "2.3.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -390,16 +390,19 @@ const CustomMediaSupport = (function() {
 		return true;
 	},
 	mediaReplace  = function(message) {
-		const media = message.querySelector(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a:not(.imageWrapper-38T7d9)`);
-		if (media) {
-			const hrefSplit = (media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).split("/");
-			if (script.db_filter.includes(hrefSplit.slice(-2).join("/"))) {
-				const wrapper = media.classList.contains("fileNameLink-342ZEF") ? media.closest(".attachment-1Vom9D") : media.closest(".imageWrapper-38T7d9");
+		const mediaAll = message.querySelectorAll(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a:not(.imageWrapper-38T7d9)`);
+		for (let _rm=mediaAll.length; _rm--;) {
+			const media = mediaAll[_rm];
+			if (media && script.db_filter.includes(((media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).split("/")).slice(-2).join("/"))) {
+				let wrapper = media.classList.contains("fileNameLink-342ZEF") ? media.closest(".attachment-1Vom9D") : media.closest(".imageWrapper-38T7d9");
 				if (wrapper && wrapper.parentNode.classList.contains("accessory")) {
 					wrapper.classList.add("media-toggled");
 				}
 				else {
-					media.closest(".embed").classList.add("media-toggled");
+					wrapper = media.closest(".embed");
+					if (wrapper) {
+						wrapper.classList.add("media-toggled");
+					}
 				}
 			}
 		}
