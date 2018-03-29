@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.3.6",
+		version: "2.3.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -68,6 +68,7 @@ const CustomMediaSupport = (function() {
 								data.href = item.mp4;
 								data.media = "video";
 								data.fileTitle = item.title ? item.title : "No Title";
+								data.fileFilter = data.href.split("/").slice(-2).join("/");
 								data.fileSize = mediaSize(item.mp4_size);
 								mediaEmbedding(data);
 								// store in database to prevent api spam
@@ -622,7 +623,7 @@ const CustomMediaSupport = (function() {
 			message.insertBefore(container, message_body.nextSibling);
 		}
 		// replace original accessory previews if they exist
-		if (fileReplace || (fileMedia == "video" || fileMedia == "audio")) {
+		if ((fileReplace || (fileMedia == "video" || fileMedia == "audio")) && !script.media.replace.includes(hrefSplit[2])) {
 			if (!script.db_filter.includes(fileFilter)) {
 				script.db_filter.push(fileFilter);
 			}
