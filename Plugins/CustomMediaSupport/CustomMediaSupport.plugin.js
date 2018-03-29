@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.3.4",
+		version: "2.3.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -88,9 +88,10 @@ const CustomMediaSupport = (function() {
 					api(data) {
 						request("gfycat", `https://cors-anywhere.herokuapp.com/https://api.gfycat.com/v1/gfycats/${data.fileTitle.match(/(\w+)/)[0]}`, function({gfyItem}, data) {
 							if (gfyItem) {
-								data.href = gfyItem.webmUrl ? gfyItem.webmUrl : gfyItem.mp4Url;
+								data.href = gfyItem.mp4Url;
 								data.fileTitle = gfyItem.gfyName;
-								data.fileSize = mediaSize(gfyItem.webmSize ? gfyItem.webmSize : gfyItem.mp4Size);
+								data.fileFilter = data.href.split("/").slice(-2).join("/");
+								data.fileSize = mediaSize(gfyItem.mp4Size);
 								mediaEmbedding(data);
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
@@ -189,13 +190,14 @@ const CustomMediaSupport = (function() {
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
 .customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: 100%;}
-.customMedia.media-video:not(.media-replace) video {width: 25vw; min-width: 400px; max-height: 50vh;}
-.customMedia.media-video.media-replace .metadataZoomButton {display: none;}
+.customMedia.media-video video {width: 25vw; min-width: 400px; max-height: 50vh;}
 .customMedia.media-video.media-large-horizontal video {width: calc(100vw - 740px); max-height: 50vh;}
 .customMedia.media-video.media-large-vertical video {width: auto; height: 70vh; max-height: 70vh;}
 .customMedia .metadata-35KiYB {display: none;}
 .customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
+.customMedia .metadataName-CJWo1Z a {color: #FFFFFF; opacity: 0.6;}
+.customMedia .metadataName-CJWo1Z:hover a {opacity: 1;}
 .customMedia .metadataZoomButton {cursor: pointer; font-size: 22px; font-weight: bold; opacity: 0.6; z-index: 1;}
 .customMedia .metadataZoomButton:hover {opacity: 1;}
 .customMedia.media-audio .wrapper-GhVnpx {display: flex; height: 75px;}
@@ -210,6 +212,8 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
 .customMedia.media-error .wrapper-GhVnpx {color: #F04747; padding: 5px 10px;}
+.accessory.media-replace .customMedia.media-video video {width: 100%;}
+.accessory.media-replace .metadataZoomButton {display: none;}
 .media-toggled {display: none !important;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
@@ -303,7 +307,8 @@ const CustomMediaSupport = (function() {
 			`
 		},
 		db: {},
-		db_url: {}
+		db_url: {},
+		db_filter: []
 	},
 	settingsLoad = function() {
 		// load settings
@@ -374,19 +379,21 @@ const CustomMediaSupport = (function() {
 		const media_elements = message.getElementsByClassName("customMedia");
 		if (media_elements.length) {
 			for (let _cm=media_elements.length; _cm--;) {
-				const check = media_elements[_cm].check;
-				if (check == fileFilter) {
-					mediaReplace(message, fileFilter);
+				if (media_elements[_cm].check == fileFilter) {
+					if (!script.db_filter.includes(fileFilter)) {
+						script.db_filter.push(fileFilter);
+					}
 					return false;
 				}
 			}
 		}
 		return true;
 	},
-	mediaReplace = function(message, fileFilter) {
-		setTimeout(function() {
-			const media = message.querySelector(`.accessory:not(.customMedia) a[href*='${fileFilter}'], .accessory:not(.customMedia) video[src*='${fileFilter}'], .accessory:not(.customMedia) source[src*='${fileFilter}']`);
-			if (media) {
+	mediaReplace  = function(message) {
+		const media = message.querySelector(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a:not(.imageWrapper-38T7d9)`);
+		if (media) {
+			const hrefSplit = (media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).split("/");
+			if (script.db_filter.includes(hrefSplit.slice(-2).join("/"))) {
 				const wrapper = media.classList.contains("fileNameLink-342ZEF") ? media.closest(".attachment-1Vom9D") : media.closest(".imageWrapper-38T7d9");
 				if (wrapper && wrapper.parentNode.classList.contains("accessory")) {
 					wrapper.classList.add("media-toggled");
@@ -395,7 +402,7 @@ const CustomMediaSupport = (function() {
 					media.closest(".embed").classList.add("media-toggled");
 				}
 			}
-		}, 150);
+		}
 	},
 	mediaSize = function(fileSize) {
 		let l = 0;
@@ -419,16 +426,15 @@ const CustomMediaSupport = (function() {
 			script.check.media = true;
 			const types = {
 				messages: ".markup > a:not(.cms-ignore), .metadataDownload-1eyTml:not(.cms-ignore), .fileNameLink-342ZEF:not(.cms-ignore)",
-				media: ".markup > a, .metadataDownload-1eyTml:not(.cms-ignore)",
-				video: "source:not(.cms-ignore)"
+				video: ".accessory:not(.media-replace) .embedTitleLink-1IGDvg, .accessory:not(.media-replace) .metadataDownload-1eyTml"
 			},
 			gallery = {
 				"method":"gdata",
 				"gidlist":[],
 				"namespace": 1
 			},
-			links = (type == "media" ? node.closest(".message") : node).querySelectorAll(types[type]);
-			log("info", "mediaConvert", links);
+			links = (type !== "messages" ? node.closest(".message") : node).querySelectorAll(types[type]);
+			log("info", `mediaConvert ${type}`, links);
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.getAttribute("href") || link.getAttribute("src")) {
@@ -439,7 +445,7 @@ const CustomMediaSupport = (function() {
 					if (hrefCheck && message) {
 						const message_body = message.firstElementChild,
 						hrefSplit = href.split("/"),
-						fileFilter = hrefSplit[hrefSplit.length-1];
+						fileFilter = hrefSplit.slice(-2).join("/");
 						let container;
 						switch(hrefSplit[2]) {
 							case "exhentai.org":
@@ -455,7 +461,9 @@ const CustomMediaSupport = (function() {
 										link.classList.add("fetchingMedia");
 										gallery.gidlist.push([hrefSplit[4], hrefSplit[5]]);
 									}
-									mediaReplace(message, fileFilter);
+									if (!script.db_filter.includes(fileFilter)) {
+										script.db_filter.push(fileFilter);
+									}
 								}
 								break;
 							case "boards.4chan.org":
@@ -481,14 +489,17 @@ const CustomMediaSupport = (function() {
 											}
 										}
 									}
-									mediaReplace(message, fileFilter);
+									if (!script.db_filter.includes(fileFilter)) {
+										script.db_filter.push(fileFilter);
+										mediaReplace(message);
+									}
 								}
 								break;
 							default:
 								if (script.settings.embedding) {
 									let data = {
 										fileMedia: hrefCheck && hrefCheck[hrefCheck.length-1] ? script.media.types[hrefCheck[hrefCheck.length-1].toLowerCase()] : false,
-										fileTitle: fileFilter,
+										fileTitle: hrefSplit[hrefSplit.length-1],
 										fileSize: message.getElementsByClassName("metadataSize-L0PFDT")[0] ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "",
 										fileReplace: false,
 										filePoster: "",
@@ -530,11 +541,11 @@ const CustomMediaSupport = (function() {
 	},
 	mediaEmbedding = function(data) {
 		log("info", "mediaEmbedding", data);
-		const {fileMedia, fileTitle, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
+		const {fileId, fileMedia, fileTitle, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
 			_createElement("div", {className: "imageWrapper-38T7d9"}, [
 				_createElement("div", {className: "wrapper-GhVnpx"}, [
-					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
+					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a class='white-1yVmLu' href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
 						_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
 							onclick() {
 								const video = this.parentNode.nextElementSibling;
@@ -568,7 +579,10 @@ const CustomMediaSupport = (function() {
 										scrollElement(container.parentNode.scrollHeight, "messages");
 										// replace original accessory previews if they exist
 										if (!script.media.replace.includes(hrefSplit[2])) {
-											mediaReplace(message, fileFilter);
+											if (!script.db_filter.includes(fileFilter)) {
+												script.db_filter.push(fileFilter);
+											}
+											mediaReplace(message);
 										}
 									}
 								};
@@ -595,7 +609,7 @@ const CustomMediaSupport = (function() {
 			const anchor = message.querySelector(`.accessory a[href*='${fileFilter}']`),
 			embed = anchor ? anchor.closest(".embedContent-AqkoYv").nextElementSibling : false;
 			if (embed) {
-				container.classList.add("media-replace");
+				anchor.closest(".accessory").classList.add("media-replace");
 				embed.firstElementChild.classList.add("media-toggled");
 				embed.appendChild(container);
 				embed.style.height = "auto";
@@ -606,7 +620,10 @@ const CustomMediaSupport = (function() {
 		}
 		// replace original accessory previews if they exist
 		if (fileReplace || (fileMedia == "video" || fileMedia == "audio")) {
-			mediaReplace(message, fileFilter);
+			if (!script.db_filter.includes(fileFilter)) {
+				script.db_filter.push(fileFilter);
+			}
+			mediaReplace(message);
 		}
 	},
 	sadpandaHandler = function(resp) {
@@ -1000,6 +1017,7 @@ const CustomMediaSupport = (function() {
 				if (node.className) {
 					switch(node.className) {
 						case "messages-wrapper":
+						case "content flex-spacer flex-horizontal":
 							if (!document.getElementsByClassName("cms-menuIcon")[0]) {
 								const menuAnchor = document.getElementsByClassName("topic-1KFf6J")[0] ? document.getElementsByClassName("topic-1KFf6J")[0].nextElementSibling : false;
 								if (menuAnchor) {
@@ -1014,8 +1032,10 @@ const CustomMediaSupport = (function() {
 							mediaConvert("messages", node);
 							textParser(node);
 							break;
+						case "embed-2diOCQ flex-3B1Tl4 embed":
 						case "wrapperPaused-3y2mev wrapper-GhVnpx":
 							mediaConvert("video", node);
+							mediaReplace(node);
 							break;
 						case "message-text":
 						case "edited":
