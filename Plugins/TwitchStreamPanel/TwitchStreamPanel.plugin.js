@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.5.8",
+		version: "1.5.9",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -57,7 +57,6 @@ const TwitchStreamPanel = (function() {
 .TwitchStreamPanel .tsp-edit_button {display: inline-block; float: right; padding-left: 0; width: auto;}
 .tsp-menuIcon {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABN0lEQVR4AWMAgST7hUdTHJf+Jxs7Le1mSLKao57suOQfSCDBdt7KBLt584nF8XZzV8ANSrRb2AwzOdCsQ4aBBOBuVCUJNyjFYckmmhsE9KpTisPS6P8M/xlB/DT7pRop9ksSom1nSJJkUKL9/E1Ag77U2+9nAfFTHZZmgdRFWk52HzUIApLsFvglOy3NqWeoZwIb7LhIH5jmCmOtZ8pRMfr/MyY5LG4D6Ut2INMgUHJIdlzUCjFk8aNEm7lKKAaFmvfYeJvUK4Gwj3GRCEiTh8pEdhAfGUNdgjAECOAGoWNgPloQ47qIG5ih96LLwQyJc1ygDDKDgEHzVic6LNqHLo7uEkQ2sFtQlWg3fwMc2y+4BFX8D6YRKLYXJp9gv2AN2CWEQIzN7Dxk24Ga2xjIAbE2s3LJMQQAZ9SV6n4xp1sAAAAASUVORK5CYII=) no-repeat center; opacity: 0.6;}
 .tsp-menuIcon:hover {opacity: 1;}
-.orriePluginModal .modal-3HOjGZ {padding: 0 20px; user-select: auto; width: 800px;}
 .orriePluginModal .tsp-menu .content-2mSKOj {height: auto;}
 .orriePluginModal .tsp-content svg {top: 0; left: 0;}
 .orriePluginModal .tsp-content .cardPrimary-ZVL9Jr {border-radius: 5px; display: table; width: 100%;}
@@ -72,6 +71,11 @@ const TwitchStreamPanel = (function() {
 .orriePluginModal #tsp-stream_input .buttonGreyGhost-SfY7zU:hover {background-color: rgba(116, 127, 141, 0.20);}
 			`,
 			shared: `
+.orriePluginModal .backdrop-2ohBEd {animation: animation-backdrop 250ms ease; animation-fill-mode: forwards; opacity: 0; background-color: rgb(0, 0, 0); transform: translateZ(0px);}
+.orriePluginModal .modal-2LIEKY {animation: animation-modal 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275); animation-fill-mode: forwards; transform: scale(0.7); transform-origin: 50% 50%;}
+.orriePluginModal .modal-3HOjGZ {padding: 0 20px; user-select: auto; width: 800px;}
+.orriePluginModal.closing .backdrop-2ohBEd {animation: animation-backdrop-closing 200ms linear; animation-fill-mode: forwards; animation-delay: 50ms; opacity: 0.2;}
+.orriePluginModal.closing .modal-2LIEKY {animation: animation-modal-closing 250ms cubic-bezier(0.19, 1, 0.22, 1); animation-fill-mode: forwards; opacity: 1; transform: scale(1);}
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
@@ -131,6 +135,22 @@ const TwitchStreamPanel = (function() {
 		// force board scrolling
 		const parent = document.getElementsByClassName(parentClass)[0];
 		parent.scrollTop += elemHeight;
+	},
+	modalHandler = function(modal) {
+		const parent = document.getElementById("app-mount").lastElementChild;
+		modal.getElementsByClassName("backdrop-2ohBEd")[0].addEventListener('click', function() {
+			modal.classList.add("closing");
+			setTimeout(function() {
+				modal.remove()
+			}, 300);
+		}, false);
+		modal.getElementsByClassName("orrie-button-cancel")[0].addEventListener('click', function() {
+			modal.classList.add("closing");
+			setTimeout(function() {
+				modal.remove()
+			}, 300);
+		}, false);
+		parent.appendChild(modal);
 	},
 	streamTimer = function(length) {
 		const display = document.getElementById("tsp-timer");
@@ -197,7 +217,7 @@ const TwitchStreamPanel = (function() {
 			_createElement("div", {className: `wrapperDefault-1Dl4SS tsp-footer_wrapper${!script.settings.state ? " orrie-toggled" : ""}`, innerHTML: `<div class='nameDefault-Lnjrwm tsp-time_text'><span id="tsp-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="tsp-timer">00:00</span></div>`}, [
 				_createElement("div", {className: "nameDefault-Lnjrwm cursorPointer-3oKATS tsp-edit_button", innerHTML: "Edit",
 					onclick() {
-						BDfunctionsDevilBro.appendModal(createStreamModal());
+						modalHandler(createStreamModal());
 					}
 				})
 			])
@@ -352,7 +372,7 @@ const TwitchStreamPanel = (function() {
 				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Support (Discord)</button>"}),
 				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Updates</button>"}),
 				_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Edit Streamlist",
-					onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}
+					onclick() {modalHandler(createStreamModal());}
 				}),
 				_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u orrie-buttonRed", innerHTML: "Clean Database (Creates Backup)",
 					onclick() {
@@ -368,7 +388,7 @@ const TwitchStreamPanel = (function() {
 		return _createElement("span", {className: `${script.file}Modal orriePluginModal DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div>"}, [
 			_createElement("div", {className: "modal-2LIEKY"}, [
 				_createElement("div", {className: "inner-1_1f7b"}, [
-					_createElement("div", {className: "modal-3HOjGZ sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist Manager</h4></div><svg class='btn-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
+					_createElement("div", {className: "modal-3HOjGZ sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist Manager</h4></div><svg class='orrie-button-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
 						_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW"}, [
 							_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ border-39Cu-M tsp-content"}, createServerList())
 						]),
@@ -685,7 +705,7 @@ const TwitchStreamPanel = (function() {
 						menuIcon.remove();
 					}
 					menuAnchor.insertBefore(_createElement("div", {className: "tsp-menuIcon iconMargin-2Js7V9 icon-mr9wAc", title: "Twitch Stream Panel",
-						onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}
+						onclick() {modalHandler(createStreamModal());}
 					}), menuAnchor.firstChild);
 				}
 			}
@@ -697,7 +717,7 @@ const TwitchStreamPanel = (function() {
 					const menuAnchor = document.getElementsByClassName("topic-1KFf6J")[0] ? document.getElementsByClassName("topic-1KFf6J")[0].nextElementSibling : false;
 					if (menuAnchor) {
 						menuAnchor.insertBefore(_createElement("div", {className: "tsp-menuIcon iconMargin-2Js7V9 icon-mr9wAc", title: "Twitch Stream Panel",
-							onclick() {BDfunctionsDevilBro.appendModal(createStreamModal());}
+							onclick() {modalHandler(createStreamModal());}
 						}), menuAnchor.firstChild);
 					}
 				}
