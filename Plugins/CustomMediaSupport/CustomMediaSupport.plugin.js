@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.3.7",
+		version: "2.3.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -430,7 +430,7 @@ const CustomMediaSupport = (function() {
 			script.check.media = true;
 			const types = {
 				messages: ".markup > a:not(.cms-ignore), .metadataDownload-1eyTml:not(.cms-ignore), .fileNameLink-342ZEF:not(.cms-ignore)",
-				video: ".accessory:not(.media-replace) .embedTitleLink-1IGDvg, .accessory:not(.media-replace) .metadataDownload-1eyTml"
+				message: ".accessory:not(.media-replace) .embedTitleLink-1IGDvg, .accessory:not(.media-replace) .metadataDownload-1eyTml"
 			},
 			gallery = {
 				"method":"gdata",
@@ -442,11 +442,11 @@ const CustomMediaSupport = (function() {
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.getAttribute("href") || link.getAttribute("src")) {
-					const fileId = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href");
-					let href = decodeURI(encodeURI(fileId.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4")));
-					const hrefCheck = href.match(/\.(\w+$)|4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|imgur.com|streamable.com|steampowered.com|ifunny.co/),
+					const fileId = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href"),
+					href = decodeURI(encodeURI(fileId.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4"))),
+					fileType = href.match(/\.(\w+$)/) ? href.match(/\.(\w+$)/)[1] : false;
 					message = link.closest(".message");
-					if (hrefCheck && message) {
+					if (message && fileType || /4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|imgur.com|streamable.com|steampowered.com|ifunny.co/.test(href)) {
 						const message_body = message.firstElementChild,
 						hrefSplit = href.split("/"),
 						fileFilter = hrefSplit.slice(-2).join("/");
@@ -502,12 +502,12 @@ const CustomMediaSupport = (function() {
 							default:
 								if (script.settings.embedding) {
 									let data = {
-										fileMedia: hrefCheck && hrefCheck[hrefCheck.length-1] ? script.media.types[hrefCheck[hrefCheck.length-1].toLowerCase()] : false,
+										fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
 										fileTitle: hrefSplit[hrefSplit.length-1],
 										fileSize: message.getElementsByClassName("metadataSize-L0PFDT")[0] ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "",
 										fileReplace: false,
 										filePoster: "",
-										fileId, fileFilter, href, hrefSplit, message, message_body
+										fileId, fileType, fileFilter, href, hrefSplit, message, message_body
 									};
 									if (data.fileMedia == "ignore") {break;}
 									const fileSite = script.media.sites[hrefSplit[2].match(/(\w+.\w+)$/)[0]] || false;
@@ -1038,7 +1038,7 @@ const CustomMediaSupport = (function() {
 							break;
 						case "embed-2diOCQ flex-3B1Tl4 embed":
 						case "wrapperPaused-3y2mev wrapper-GhVnpx":
-							mediaConvert("video", node);
+							mediaConvert("message", node);
 							mediaReplace(node);
 							break;
 						case "message-text":
