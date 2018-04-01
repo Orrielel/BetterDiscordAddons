@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.3.8",
+		version: "2.3.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -205,6 +205,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-audio .metadata-35KiYB {display: flex; z-index: auto;}
 .customMedia.media-audio .metadataZoomButton {display: none;}
 .customMedia.media-audio audio {align-self: flex-end; vertical-align: middle; width: 25vw; min-width: 400px;}
+.customMedia.media-img .imageWrapper-38T7d9 img {position: static;}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
 .customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-internal-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
@@ -212,9 +213,9 @@ const CustomMediaSupport = (function() {
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
-.customMedia.media-error .wrapper-GhVnpx {color: #F04747; padding: 5px 10px;}
 .accessory.media-replace .customMedia.media-video video {width: 100%;}
 .accessory.media-replace .metadataZoomButton {display: none;}
+.customMedia .media-error-message {color: #F04747; max-width: 75vh; padding: 5px 10px;}
 .media-toggled {display: none !important;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
@@ -309,7 +310,8 @@ const CustomMediaSupport = (function() {
 		},
 		db: {},
 		db_url: {},
-		db_filter: []
+		db_filter: [],
+		db_proxy: {}
 	},
 	settingsLoad = function() {
 		// load settings
@@ -393,8 +395,10 @@ const CustomMediaSupport = (function() {
 	mediaReplace  = function(message) {
 		const mediaAll = message.querySelectorAll(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a:not(.imageWrapper-38T7d9)`);
 		for (let _rm=mediaAll.length; _rm--;) {
-			const media = mediaAll[_rm];
-			if (media && script.db_filter.includes(((media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).split("/")).slice(-2).join("/"))) {
+			const media = mediaAll[_rm],
+			url = media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href"),
+			fileFilter = url.split("/").slice(-2).join("/");
+			if (media && script.db_filter.includes(fileFilter)) {
 				let wrapper = media.classList.contains("fileNameLink-342ZEF") ? media.closest(".attachment-1Vom9D") : media.closest(".imageWrapper-38T7d9");
 				if (wrapper && wrapper.parentNode.classList.contains("accessory")) {
 					wrapper.classList.add("media-toggled");
@@ -404,6 +408,21 @@ const CustomMediaSupport = (function() {
 					if (wrapper) {
 						wrapper.classList.add("media-toggled");
 					}
+				}
+				if (script.db_proxy[fileFilter] == "ERROR") {
+					const source = document.getElementById(`error_${fileFilter}`);
+					if (source) {
+						source.id = "";
+						source.src = url;
+						source.parentNode.load();
+						source.parentNode.classList.remove("media-toggled");
+						source.parentNode.nextElementSibling.classList.add("media-toggled");
+						delete script.db_proxy[fileFilter];
+					}
+					delete script.db_proxy[fileFilter];
+				}
+				else {
+					script.db_proxy[fileFilter] = url;
 				}
 			}
 		}
@@ -444,7 +463,7 @@ const CustomMediaSupport = (function() {
 				if (link.getAttribute("href") || link.getAttribute("src")) {
 					const fileId = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href"),
 					href = decodeURI(encodeURI(fileId.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4"))),
-					fileType = href.match(/\.(\w+$)/) ? href.match(/\.(\w+$)/)[1] : false;
+					fileType = href.match(/\.(\w+$)/) ? href.match(/\.(\w+$)/)[1] : false,
 					message = link.closest(".message");
 					if (message && fileType || /4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|imgur.com|streamable.com|steampowered.com|ifunny.co/.test(href)) {
 						const message_body = message.firstElementChild,
@@ -599,13 +618,22 @@ const CustomMediaSupport = (function() {
 					})(), [
 						_createElement("source", {src: href,
 							onerror() {
-								const wrapper = this.parentNode.parentNode;
-								container.classList.remove(`media-${fileMedia}`);
-								container.classList.add("media-error");
-								wrapper.innerHTML = `<div class='userSelectText-wz4t4g'>Unable to embed link</div><div class='userSelectText-wz4t4g'>${href}</div>`;
+								const proxy = script.db_proxy[fileFilter];
+								if (proxy) {
+									this.src = proxy;
+									this.parentNode.load();
+									delete script.db_proxy[fileFilter];
+								}
+								else {
+									script.db_proxy[fileFilter] = "ERROR";
+									this.id = `error_${fileFilter}`;
+									this.parentNode.classList.add("media-toggled");
+									this.parentNode.nextElementSibling.classList.remove("media-toggled");
+								}
 							}
 						})
-					])
+					]),
+					_createElement("div", {className: "media-error-message userSelectText-wz4t4g media-toggled", innerHTML: `Unable to embed link - ${href}`})
 				])
 			])
 		]);
