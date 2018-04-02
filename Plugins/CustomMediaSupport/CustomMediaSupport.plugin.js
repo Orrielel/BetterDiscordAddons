@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.3.9",
+		version: "2.4.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -191,9 +191,9 @@ const CustomMediaSupport = (function() {
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
 .customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: 100%;}
-.customMedia.media-video video {width: 25vw; min-width: 400px; max-height: 50vh;}
-.customMedia.media-video.media-large-horizontal video {width: calc(100vw - 740px); max-height: 50vh;}
-.customMedia.media-video.media-large-vertical video {width: auto; height: 70vh; max-height: 70vh;}
+.customMedia.media-video video {max-width: 25vw; min-width: 400px; max-height: 50vh;}
+.customMedia.media-video.media-large-horizontal video {width: calc(100vw - 740px); max-width: unset; max-height: 50vh;}
+.customMedia.media-video.media-large-vertical video {width: auto; height: 70vh; max-width: unset; max-height: 70vh;}
 .customMedia .metadata-35KiYB {display: none;}
 .customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
@@ -267,6 +267,7 @@ const CustomMediaSupport = (function() {
 .customMedia.knittingboard .thread_comment a {word-break: break-word;}
 .customMedia.knittingboard .thread_foot {padding: 10px 2px 0;}
 .custom_warning {color: #F32323;}
+/* greentext */
 .greentext {color: #709900;}
 /* BetterImagePopups */
 .bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
@@ -584,7 +585,7 @@ const CustomMediaSupport = (function() {
 							case "video":
 							case "audio":
 								return {check: href, controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
-									onclick() {if (this.paused) {this.play();}else {this.pause();}},
+									onclick() {if (this.paused) {this.play();} else {this.pause();}},
 									onloadedmetadata() {
 										if (fileMedia == "video") {
 											if (script.settings.hoverPlay) {
@@ -880,25 +881,26 @@ const CustomMediaSupport = (function() {
 				if (elem.firstElementChild && elem.firstElementChild.tagName == "PRE") {
 					continue;
 				}
-				let elemHtml = elem.innerHTML;
-				if (elemHtml.match(/&gt;|magnet:\?/)) {
-					const textSplit = elemHtml.replace(/<!--[\s\w\/\-:]+>/g, "").split("\n");
+				if (elem.innerHTML.match(/&gt;|magnet:\?/)) {
+					const textSplit = elem.innerHTML.replace(/<!--[\s\w\/\-:]+>/g, "").split("\n");
 					for (let _t=textSplit.length; _t--;) {
-						const line = textSplit[_t];
-						switch(true) {
-							case /^&gt;/.test(line):
-								// greentext for the cool kids on the block
-								if (script.settings.greentext) {
-									elemHtml = elemHtml.replace(new RegExp(line.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"),"g"), `<span class='greentext'>${line}</span>`);
-								}
-								break;
-							case /magnet:\?/.test(line):
-								// parse magnet links
-								elemHtml = elemHtml.replace(/(magnet:\?[\w=:%&\-.;/]+)/g, "<a class='cms-ignore' href='$1' target='_blank' rel='noreferrer'>$1</a> (Click to Open in Torrent Client)");
-								break;
+						let line = textSplit[_t];
+						if (/^&gt;/.test(line)) {
+							// greentext for the cool kids on the block
+							if (script.settings.greentext) {
+								textSplit[_t] = `<div class='greentext'>${line}</div>`;
+							}
+						}
+						else {
+							textSplit[_t] += "\n";
+						}
+						if (/magnet:\?/.test(line)) {
+							// parse magnet links
+							textSplit[_t] = line.replace(/(magnet:\?[\w=:%&\-.;/]+)/g, "<a class='cms-ignore' href='$1' target='_blank' rel='noreferrer'>$1</a> (Click to Open in Torrent Client)\n");
+							break;
 						}
 					}
-					elem.innerHTML = elemHtml;
+					elem.innerHTML = textSplit.join("");
 				}
 				elem.classList.add("textParserProcessed");
 			}
