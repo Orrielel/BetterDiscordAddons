@@ -882,7 +882,7 @@ const CustomMediaSupport = (function() {
 					continue;
 				}
 				if (elem.innerHTML.match(/&gt;|magnet:\?/)) {
-					const textSplit = elem.innerHTML.replace(/<!--[\s\w\/\-:]+>/g, "").split("\n");
+					const textSplit = elem.innerHTML.split("\n");
 					for (let _t=textSplit.length; _t--;) {
 						let line = textSplit[_t];
 						if (/^&gt;/.test(line)) {
