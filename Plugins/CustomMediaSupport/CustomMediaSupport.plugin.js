@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.0",
+		version: "2.4.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -190,8 +190,7 @@ const CustomMediaSupport = (function() {
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
-.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: 100%;}
-.customMedia.media-video video {max-width: 25vw; min-width: 400px; max-height: 50vh;}
+.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: 100%; max-width: 25vw; max-height: 50vh;}
 .customMedia.media-video.media-large-horizontal video {width: calc(100vw - 740px); max-width: unset; max-height: 50vh;}
 .customMedia.media-video.media-large-vertical video {width: auto; height: 70vh; max-width: unset; max-height: 70vh;}
 .customMedia .metadata-35KiYB {display: none;}
@@ -249,12 +248,12 @@ const CustomMediaSupport = (function() {
 .customMedia.sadpanda .gallery_info .cat-Misc {color: #D3D3D3;}
 /* 4chan previews */
 .customMedia.knittingboard {color: #AAAAAA;}
-.customMedia.knittingboard .embed-2diOCQ {max-width: 600px; min-width: 520px;}
+.customMedia.knittingboard .embed-2diOCQ {max-width: 640px; min-width: 520px;}
 .customMedia.knittingboard .embed-2diOCQ .board-sfw {background-color: #9099D0;}
 .customMedia.knittingboard .embed-2diOCQ .board-nsfw {background-color: #FFBEAF;}
 .customMedia.knittingboard .thread_head {position: relative;}
 .customMedia.knittingboard .thread_head .thread_posttype {font-weight: bold; line-height: 30px; margin: 0 5px;}
-.customMedia.knittingboard .thread_head .thread_data {display: inline; position: absolute; right: -5px;}
+.customMedia.knittingboard .thread_head .thread_data {display: inline; position: absolute; right: 0;}
 .customMedia.knittingboard .thread_head .thread_data td:last-of-type {text-align: right;}
 .customMedia.knittingboard .thread_link {font-weight: 500; white-space: nowrap;}
 .customMedia.knittingboard .thread_link span {display: inline; margin: 0 5px;}
@@ -515,8 +514,8 @@ const CustomMediaSupport = (function() {
 									}
 									if (!script.db_filter.includes(fileFilter)) {
 										script.db_filter.push(fileFilter);
-										mediaReplace(message);
 									}
+									mediaReplace(message);
 								}
 								break;
 							default:
@@ -748,6 +747,7 @@ const CustomMediaSupport = (function() {
 		script.db[thread_id] = container.innerHTML;
 		bdPluginStorage.set(script.file, "db", script.db);
 		script.check.chan = false;
+		mediaReplace(message);
 	},
 	archiveHandler = function() {
 		// displays the archived links in a modal
