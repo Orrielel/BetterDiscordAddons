@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.1",
+		version: "2.4.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -741,13 +741,13 @@ const CustomMediaSupport = (function() {
 				element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 				scrollElement(container.parentNode.scrollHeight, "messages");
 				chan_anchors[_a].classList.remove("fetchingMedia");
+				mediaReplace(element_message);
 			}
 		}
 		// cache embed html in database and remove fetching tag
 		script.db[thread_id] = container.innerHTML;
 		bdPluginStorage.set(script.file, "db", script.db);
 		script.check.chan = false;
-		mediaReplace(message);
 	},
 	archiveHandler = function() {
 		// displays the archived links in a modal
@@ -839,8 +839,9 @@ const CustomMediaSupport = (function() {
 		log("info", "imagePop", wrapper);
 		const img = wrapper.lastElementChild;
 		if (img.src) {
-			const fullSrc = img.src.split("?")[0];
-			if (!/\.gif$/.test(fullSrc)) {
+			const proxy = img.src.split("?")[0];
+			if (!/\.gif$/.test(proxy)) {
+				const fullSrc = /\/external\//.test(proxy) ? proxy.match(/http.\/[\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
 				wrapper.href = fullSrc;
 				wrapper.style.cssText = "";
 				wrapper.removeAttribute("target");
@@ -866,6 +867,10 @@ const CustomMediaSupport = (function() {
 							wrapper.parentNode.classList.toggle("scrollerWrap-2uBjct");
 						}, false);
 					}
+				};
+				img.onerror = function() {
+					this.src = proxy;
+					this.onerror = undefined;
 				};
 			}
 		}
