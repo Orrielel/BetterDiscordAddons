@@ -109,7 +109,7 @@ const BetterImagePopups = (function() {	// plugin settings
 					else {
 						next.innerHTML = html;
 					}
-					if (scaling*1.25) {
+					if (scaling) {
 						this.addEventListener("click", function() {
 							this.classList.toggle("bip-center");
 							wrapper.classList.toggle("bip-scroller");
