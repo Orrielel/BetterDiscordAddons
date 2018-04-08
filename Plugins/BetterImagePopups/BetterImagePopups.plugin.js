@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.2.3",
+		version: "1.2.4",
 		author: "Orrie",
 		desc: "Show full sized images in image popup. Zooming is possible if the image is bigger than Discord window size",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -88,7 +88,7 @@ const BetterImagePopups = (function() {	// plugin settings
 		if (img.src) {
 			const proxy = img.src.split("?")[0];
 			if (!/\.gif$/.test(proxy)) {
-				const fullSrc = /\/external\//.test(proxy) ? proxy.match(/http.\/[\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
+				const fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
 				wrapper.href = fullSrc;
 				wrapper.style.cssText = "";
 				wrapper.removeAttribute("target");
