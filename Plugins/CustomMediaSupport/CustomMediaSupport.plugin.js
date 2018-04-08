@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.2",
+		version: "2.4.3",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -23,7 +23,8 @@ const CustomMediaSupport = (function() {
 		media: {
 			types: {
 				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", mov: "video",
-				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio"
+				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio",
+				pdf: "iframe"
 			},
 			sites: {
 				"vocaroo.com": {
@@ -190,9 +191,9 @@ const CustomMediaSupport = (function() {
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
-.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: 100%; max-width: 25vw; max-height: 50vh;}
-.customMedia.media-video.media-large-horizontal video {width: calc(100vw - 740px); max-width: unset; max-height: 50vh;}
-.customMedia.media-video.media-large-vertical video {width: auto; height: 70vh; max-width: unset; max-height: 70vh;}
+.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh;}
+.customMedia.media-video.media-large-horizontal video {max-width: calc(100vw - 740px); height: 50vh;}
+.customMedia.media-video.media-large-vertical video {height: 70vh; max-width: unset; max-height: unset;}
 .customMedia .metadata-35KiYB {display: none;}
 .customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
@@ -417,7 +418,6 @@ const CustomMediaSupport = (function() {
 						source.parentNode.load();
 						source.parentNode.classList.remove("media-toggled");
 						source.parentNode.nextElementSibling.classList.add("media-toggled");
-						delete script.db_proxy[fileFilter];
 					}
 					delete script.db_proxy[fileFilter];
 				}
@@ -451,11 +451,7 @@ const CustomMediaSupport = (function() {
 				messages: ".markup > a:not(.cms-ignore), .metadataDownload-1eyTml:not(.cms-ignore), .fileNameLink-342ZEF:not(.cms-ignore)",
 				message: ".accessory:not(.media-replace) .embedTitleLink-1IGDvg, .accessory:not(.media-replace) .metadataDownload-1eyTml"
 			},
-			gallery = {
-				"method":"gdata",
-				"gidlist":[],
-				"namespace": 1
-			},
+			gallery = {"method": "gdata", "gidlist": [], "namespace": 1},
 			links = (type !== "messages" ? node.closest(".message") : node).querySelectorAll(types[type]);
 			log("info", `mediaConvert ${type}`, links);
 			for (let _l=links.length; _l--;) {
@@ -467,8 +463,7 @@ const CustomMediaSupport = (function() {
 					message = link.closest(".message");
 					if (message && fileType || /4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|instagram.com|imgur.com|streamable.com|steampowered.com|ifunny.co/.test(href)) {
 						const message_body = message.firstElementChild,
-						hrefSplit = href.split("/"),
-						fileFilter = hrefSplit.slice(-2).join("/");
+						hrefSplit = href.split("/");
 						let container;
 						switch(hrefSplit[2]) {
 							case "exhentai.org":
@@ -484,8 +479,8 @@ const CustomMediaSupport = (function() {
 										link.classList.add("fetchingMedia");
 										gallery.gidlist.push([hrefSplit[4], hrefSplit[5]]);
 									}
-									if (!script.db_filter.includes(fileFilter)) {
-										script.db_filter.push(fileFilter);
+									if (!script.db_filter.includes(gallery_id)) {
+										script.db_filter.push(gallery_id);
 									}
 								}
 								break;
@@ -512,14 +507,15 @@ const CustomMediaSupport = (function() {
 											}
 										}
 									}
-									if (!script.db_filter.includes(fileFilter)) {
-										script.db_filter.push(fileFilter);
+									if (!script.db_filter.includes(`thread/${postnumber[0]}`)) {
+										script.db_filter.push(`thread/${postnumber[0]}`);
 									}
 									mediaReplace(message);
 								}
 								break;
 							default:
 								if (script.settings.embedding) {
+									const fileFilter = hrefSplit.slice(-2).join("/");
 									let data = {
 										fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
 										fileTitle: hrefSplit[hrefSplit.length-1],
@@ -564,7 +560,7 @@ const CustomMediaSupport = (function() {
 	},
 	mediaEmbedding = function(data) {
 		log("info", "mediaEmbedding", data);
-		const {fileId, fileMedia, fileTitle, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
+		const {fileId, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
 			_createElement("div", {className: "imageWrapper-38T7d9"}, [
 				_createElement("div", {className: "wrapper-GhVnpx"}, [
@@ -574,7 +570,7 @@ const CustomMediaSupport = (function() {
 								const video = this.parentNode.nextElementSibling;
 								container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
 								if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
-									container.parentNode.parentNode.scrollIntoView(false);
+									container.parentNode.scrollIntoView(false);
 								}
 							}
 						})
@@ -611,7 +607,7 @@ const CustomMediaSupport = (function() {
 								};
 							case "img":
 							case "iframe":
-								return {"className": fileMedia, src: href, check: href, allowFullscreen: true};
+								return {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, check: href, allowFullscreen: true};
 							default:
 								log("error", "mediaEmbed", href);
 						}
@@ -841,7 +837,7 @@ const CustomMediaSupport = (function() {
 		if (img.src) {
 			const proxy = img.src.split("?")[0];
 			if (!/\.gif$/.test(proxy)) {
-				const fullSrc = /\/external\//.test(proxy) ? proxy.match(/http.\/[\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
+				const fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
 				wrapper.href = fullSrc;
 				wrapper.style.cssText = "";
 				wrapper.removeAttribute("target");
