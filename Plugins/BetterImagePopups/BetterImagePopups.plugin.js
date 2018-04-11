@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.2.4",
+		version: "1.2.5",
 		author: "Orrie",
 		desc: "Show full sized images in image popup. Zooming is possible if the image is bigger than Discord window size",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -34,7 +34,8 @@ const BetterImagePopups = (function() {	// plugin settings
 .bip-container .bip-scroller img {margin-bottom: -5px;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
-.bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto; user-select: auto;}
+.bip-container .bip-description {font-size: 16px; line-height: 24px;}
+.bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto;}
 .bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
 		`
 	},
@@ -104,7 +105,7 @@ const BetterImagePopups = (function() {	// plugin settings
 					html = `${img.naturalWidth}px × ${img.naturalHeight}px${scaling ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`,
 					next = wrapper.nextElementSibling;
 					if (!next.classList.contains("bip-description")) {
-						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF'>${html}</div>`);
+						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF selectable-prgIYK'>${html}</div>`);
 					}
 					else {
 						next.innerHTML = html;
