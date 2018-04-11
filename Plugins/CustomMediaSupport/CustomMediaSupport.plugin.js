@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.3",
+		version: "2.4.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -187,7 +187,7 @@ const CustomMediaSupport = (function() {
 		css: {
 			script: `
 /* custom embeds */
-.customMedia {color: hsla(0,0%,100%,.7);}
+.customMedia {color: hsla(0,0%,100%,0.7);}
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
@@ -195,7 +195,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video.media-large-horizontal video {max-width: calc(100vw - 740px); height: 50vh;}
 .customMedia.media-video.media-large-vertical video {height: 70vh; max-width: unset; max-height: unset;}
 .customMedia .metadata-35KiYB {display: none;}
-.customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
+.customMedia .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
 .customMedia .metadataName-CJWo1Z a {color: #FFFFFF; opacity: 0.6;}
 .customMedia .metadataName-CJWo1Z:hover a {opacity: 1;}
@@ -213,6 +213,8 @@ const CustomMediaSupport = (function() {
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
+.CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh; width: 90vw; max-height: unset; max-width: unset; resize: none;}
+.CustomMediaSupportModal .customMedia.media-iframe .metadata-35KiYB {display: none;}
 .accessory.media-replace .customMedia.media-video video {width: 100%;}
 .accessory.media-replace .metadataZoomButton {display: none;}
 .customMedia .media-error-message {color: #F04747; max-width: 75vh; padding: 5px 10px;}
@@ -277,7 +279,7 @@ const CustomMediaSupport = (function() {
 .bip-container .bip-scroller img {margin-bottom: -5px;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
-.bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto; user-select: auto;}
+.bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto;}
 .bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
 /* archive manager */
 .cms-menuIcon {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAASCAYAAABrXO8xAAABfElEQVR42rWSu4rCQBiF51n2VVJsZSVEkWjjXQOCooUajeJdtLNR8QJaKYiCl85SEDvxCbb3BbY4y5nCDSiSxoGTGf7/fJOTnwguj8fz5XK5rtFoFKFQ6KXYc7vdV3olpKrqdzwevw8GA3S7XXQ6nZdibzgcQtf1OxkRDAZ/1+s1NpsNuL/Rw0NGRCIRtNttZLNZGIbxVrlcDq1WS8aWYLPZRLlcZqS3qlQqqNfrHwALhcIjHs+feSOHw8Z0OkWv1+P5Sfl8/h/ko9FoIBAIyOJiscB+v8dut8N4PJZJEokEwuHwwxOLxSBY5G2KomA0GklwuVxiu93ifD7jdrvJfT6fw+fzoVQqgYxIp9MoFotwOp0S7Pf7mEwmmM1mWK1WOBwOOB6PuFwujCoHRkbw21KpFGFbopc/gjBNE5lMhlOzJXoZV9RqNSvI349Ttoo1KygHJFhk9mq1SslzMpm06qnPC4SmaSe/3//Dm+yIXjKCy+FwmF6vF3ZEL5k/rZRshi+9vygAAAAASUVORK5CYII=) no-repeat center; opacity: 0.6;}
@@ -293,11 +295,13 @@ const CustomMediaSupport = (function() {
 .cms-archive_delete:hover .close-3ejNTg, .cms-archive_clean:hover .close-3ejNTg {background-color: rgba(240, 71, 71, 0.5);}
 .cms-info-header {height: 24px; padding: 8px;}
 .cms-archive_container .customMedia.knittingboard .thread_head .thread_data {right: 30px;}
+.ndfHFb-c4YZDc-i5oIFb.ndfHFb-c4YZDc-e1YmVc .ndfHFb-c4YZDc-Wrql6b {display: none;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-2ohBEd {animation: animation-backdrop 250ms ease; animation-fill-mode: forwards; opacity: 0; background-color: rgb(0, 0, 0); transform: translateZ(0px);}
 .orriePluginModal .modal-2LIEKY {animation: animation-modal 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275); animation-fill-mode: forwards; transform: scale(0.7); transform-origin: 50% 50%;}
-.orriePluginModal .modal-3HOjGZ {padding: 0 20px; user-select: auto; width: 800px;}
+.orriePluginModal .modal-3HOjGZ {padding: 0 20px; width: 800px;}
+.orriePluginModal .description-3MVziF {font-size: 16px; line-height: 24px;}
 .orriePluginModal.closing .backdrop-2ohBEd {animation: animation-backdrop-closing 200ms linear; animation-fill-mode: forwards; animation-delay: 50ms; opacity: 0.2;}
 .orriePluginModal.closing .modal-2LIEKY {animation: animation-modal-closing 250ms cubic-bezier(0.19, 1, 0.22, 1); animation-fill-mode: forwards; opacity: 1; transform: scale(1);}
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
@@ -363,21 +367,33 @@ const CustomMediaSupport = (function() {
 			parent.scrollTop += scrollDistance;
 		}
 	},
-	modalHandler = function(modal) {
-		const parent = document.getElementById("app-mount").lastElementChild;
-		modal.getElementsByClassName("backdrop-2ohBEd")[0].addEventListener('click', function() {
-			modal.classList.add("closing");
-			setTimeout(function() {
-				modal.remove();
-			}, 300);
-		}, false);
-		modal.getElementsByClassName("orrie-button-cancel")[0].addEventListener('click', function() {
-			modal.classList.add("closing");
-			setTimeout(function() {
-				modal.remove();
-			}, 300);
-		}, false);
-		parent.appendChild(modal);
+	modalHandler = function(modalContent, data) {
+		if (data) {
+			modalContent.appendChild(_createElement("div", {className: "description-3MVziF textCenter-1t1XXw selectable-prgIYK", innerHTML: data.fileTitle}));
+		}
+		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
+			_createElement("div", {className: "backdrop-2ohBEd",
+				onclick() {
+					modal.classList.add("closing");
+					setTimeout(function() {
+						modal.remove();
+					}, 300);
+				}
+			}),
+			_createElement("div", {className: "modal-2LIEKY"}, [
+				_createElement("div", {className: "inner-1_1f7b"}, modalContent)
+			])
+		]),
+		button = modal.getElementsByClassName("orrie-button-cancel")[0];
+		if (button) {
+			button.addEventListener('click', function() {
+				modal.classList.add("closing");
+				setTimeout(function() {
+					modal.remove();
+				}, 300);
+			}, false);
+		}
+		document.getElementById("app-mount").lastElementChild.appendChild(modal);
 	},
 	mediaCheck = function(message, fileFilter) {
 		const media_elements = message.getElementsByClassName("customMedia");
@@ -518,7 +534,7 @@ const CustomMediaSupport = (function() {
 									const fileFilter = hrefSplit.slice(-2).join("/");
 									let data = {
 										fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
-										fileTitle: hrefSplit[hrefSplit.length-1],
+										fileTitle: decodeURIComponent(hrefSplit[hrefSplit.length-1]),
 										fileSize: message.getElementsByClassName("metadataSize-L0PFDT")[0] ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "",
 										fileReplace: false,
 										filePoster: "",
@@ -567,10 +583,15 @@ const CustomMediaSupport = (function() {
 					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a class='white-1yVmLu' href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
 						_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
 							onclick() {
-								const video = this.parentNode.nextElementSibling;
-								container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
-								if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
-									container.parentNode.scrollIntoView(false);
+								if (fileMedia == "iframe") {
+									modalHandler(container.cloneNode(true), data);	
+								}
+								else {
+									const video = this.parentNode.nextElementSibling;
+									container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
+									if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
+										container.parentNode.scrollIntoView(false);
+									}
 								}
 							}
 						})
@@ -779,56 +800,50 @@ const CustomMediaSupport = (function() {
 				]));
 			}
 		}
-		return _createElement("span", {className: `${script.file}Modal orriePluginModal`, innerHTML: "<div class='backdrop-2ohBEd'></div>"}, [
-			_createElement("div", {className: "modal-2LIEKY"}, [
-				_createElement("div", {className: "inner-1_1f7b"}, [
-					_createElement("div", {className: "modal-3HOjGZ sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Archive Manager</h4></div><svg class='orrie-button-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
-						_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w inner-tqJwAU cms-archive_header", style: "flex: 0 0 auto;"}, [
-							_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>ExHentai (<span id='cms-archive_sadpanda-counter'>${sadpandaFragment.children.length}</span>)</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`,
-								onclick() {
-									document.getElementById("cms-archive_sadpanda").classList.toggle("orrie-toggled");
-									document.getElementById("cms-archive_chan").classList.add("orrie-toggled");
-									this.classList.toggle("cms-archive_active");
-									this.nextElementSibling.classList.remove("cms-archive_active");
-								}
-							}),
-							_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>4chan (<span id='cms-archive_chan-counter'>${chanFragment.children.length}</span>)</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`,
-								onclick() {
-									document.getElementById("cms-archive_sadpanda").classList.add("orrie-toggled");
-									document.getElementById("cms-archive_chan").classList.toggle("orrie-toggled");
-									this.classList.toggle("cms-archive_active");
-									this.previousElementSibling.classList.remove("cms-archive_active");
-								}
-							})
-						]),
-						_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w inner-tqJwAU border-39Cu-M cms-archive_filter", style: "flex: 0 0 auto;"}, [
-							_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ"}, [
-								_createElement("input", {className: "input-2YozMi size16-3IvaX_", placeholder: "Filter Content (tags or board)", type: "text", value: "",
-									onchange() {
-										BdApi.clearCSS("cms-filters");
-										BdApi.injectCSS("cms-filters", `.cms-filter:not(.${this.value.replace(/\s+/g,"").split(",").join(", .")}) {display:none;}`);
-									}
-								}),
-								_createElement("div", {className: "flex-3B1Tl4 cms-archive_clean", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
-									onclick() {
-										this.previousElementSibling.value = "";
-										BdApi.clearCSS("cms-filters");
-									}
-								})
-							])
-						]),
-						_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW border-39Cu-M"}, [
-							_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ cms-content"}, [
-								_createElement("div", {className: "cms-archive_container"}, [
-									_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_sadpanda"}, sadpandaFragment.children.length ? sadpandaFragment : _createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
-									_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_chan"}, chanFragment.children.length ? chanFragment : _createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
-								])
-							])
-						]),
-						_createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'></h3>", style: "flex: 0 0 auto;"})
+		return _createElement("div", {className: "modal-3HOjGZ selectable-prgIYK sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Archive Manager</h4></div><svg class='orrie-button-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
+			_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w inner-tqJwAU cms-archive_header", style: "flex: 0 0 auto;"}, [
+				_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>ExHentai (<span id='cms-archive_sadpanda-counter'>${sadpandaFragment.children.length}</span>)</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`,
+					onclick() {
+						document.getElementById("cms-archive_sadpanda").classList.toggle("orrie-toggled");
+						document.getElementById("cms-archive_chan").classList.add("orrie-toggled");
+						this.classList.toggle("cms-archive_active");
+						this.nextElementSibling.classList.remove("cms-archive_active");
+					}
+				}),
+				_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>4chan (<span id='cms-archive_chan-counter'>${chanFragment.children.length}</span>)</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`,
+					onclick() {
+						document.getElementById("cms-archive_sadpanda").classList.add("orrie-toggled");
+						document.getElementById("cms-archive_chan").classList.toggle("orrie-toggled");
+						this.classList.toggle("cms-archive_active");
+						this.previousElementSibling.classList.remove("cms-archive_active");
+					}
+				})
+			]),
+			_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w inner-tqJwAU border-39Cu-M cms-archive_filter", style: "flex: 0 0 auto;"}, [
+				_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ"}, [
+					_createElement("input", {className: "input-2YozMi size16-3IvaX_", placeholder: "Filter Content (tags or board)", type: "text", value: "",
+						onchange() {
+							BdApi.clearCSS("cms-filters");
+							BdApi.injectCSS("cms-filters", `.cms-filter:not(.${this.value.replace(/\s+/g,"").split(",").join(", .")}) {display:none;}`);
+						}
+					}),
+					_createElement("div", {className: "flex-3B1Tl4 cms-archive_clean", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
+						onclick() {
+							this.previousElementSibling.value = "";
+							BdApi.clearCSS("cms-filters");
+						}
+					})
+				])
+			]),
+			_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW border-39Cu-M"}, [
+				_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ cms-content"}, [
+					_createElement("div", {className: "cms-archive_container"}, [
+						_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_sadpanda"}, sadpandaFragment.children.length ? sadpandaFragment : _createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
+						_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_chan"}, chanFragment.children.length ? chanFragment : _createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
 					])
 				])
-			])
+			]),
+			_createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'></h3>", style: "flex: 0 0 auto;"})
 		]);
 	},
 	imagePopHandler = function(wrapper) {
@@ -850,7 +865,7 @@ const CustomMediaSupport = (function() {
 					html = `${img.naturalWidth}px × ${img.naturalHeight}px${scaling ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`,
 					next = wrapper.nextElementSibling;
 					if (!next.classList.contains("bip-description")) {
-						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF'>${html}</div>`);
+						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF selectable-prgIYK'>${html}</div>`);
 					}
 					else {
 						next.innerHTML = html;
