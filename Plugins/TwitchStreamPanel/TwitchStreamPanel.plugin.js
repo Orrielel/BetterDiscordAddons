@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.5.9",
+		version: "1.6.0",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -74,6 +74,7 @@ const TwitchStreamPanel = (function() {
 .orriePluginModal .backdrop-2ohBEd {animation: animation-backdrop 250ms ease; animation-fill-mode: forwards; opacity: 0; background-color: rgb(0, 0, 0); transform: translateZ(0px);}
 .orriePluginModal .modal-2LIEKY {animation: animation-modal 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275); animation-fill-mode: forwards; transform: scale(0.7); transform-origin: 50% 50%;}
 .orriePluginModal .modal-3HOjGZ {padding: 0 20px; user-select: auto; width: 800px;}
+.orriePluginModal .description-3MVziF {font-size: 16px; line-height: 24px;}
 .orriePluginModal.closing .backdrop-2ohBEd {animation: animation-backdrop-closing 200ms linear; animation-fill-mode: forwards; animation-delay: 50ms; opacity: 0.2;}
 .orriePluginModal.closing .modal-2LIEKY {animation: animation-modal-closing 250ms cubic-bezier(0.19, 1, 0.22, 1); animation-fill-mode: forwards; opacity: 1; transform: scale(1);}
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
