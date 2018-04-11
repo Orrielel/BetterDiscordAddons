@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.4",
+		version: "2.4.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -297,12 +297,10 @@ const CustomMediaSupport = (function() {
 .cms-archive_container .customMedia.knittingboard .thread_head .thread_data {right: 30px;}
 			`,
 			shared: `
-.orriePluginModal .backdrop-2ohBEd {animation: animation-backdrop 250ms ease; animation-fill-mode: forwards; opacity: 0; background-color: rgb(0, 0, 0); transform: translateZ(0px);}
-.orriePluginModal .modal-2LIEKY {animation: animation-modal 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275); animation-fill-mode: forwards; transform: scale(0.7); transform-origin: 50% 50%;}
+.orriePluginModal .backdrop-2ohBEd {background-color: #000000; opacity: 0.85;}
+.orriePluginModal .modal-2LIEKY {opacity: 1;}
 .orriePluginModal .modal-3HOjGZ {padding: 0 20px; width: 800px;}
 .orriePluginModal .description-3MVziF {font-size: 16px; line-height: 24px;}
-.orriePluginModal.closing .backdrop-2ohBEd {animation: animation-backdrop-closing 200ms linear; animation-fill-mode: forwards; animation-delay: 50ms; opacity: 0.2;}
-.orriePluginModal.closing .modal-2LIEKY {animation: animation-modal-closing 250ms cubic-bezier(0.19, 1, 0.22, 1); animation-fill-mode: forwards; opacity: 1; transform: scale(1);}
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
@@ -371,26 +369,14 @@ const CustomMediaSupport = (function() {
 			modalContent.appendChild(_createElement("div", {className: "description-3MVziF textCenter-1t1XXw selectable-prgIYK", innerHTML: data.fileTitle}));
 		}
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
-			_createElement("div", {className: "backdrop-2ohBEd",
-				onclick() {
-					modal.classList.add("closing");
-					setTimeout(function() {
-						modal.remove();
-					}, 300);
-				}
-			}),
+			_createElement("div", {className: "backdrop-2ohBEd", onclick() {modal.remove();}}),
 			_createElement("div", {className: "modal-2LIEKY"}, [
 				_createElement("div", {className: "inner-1_1f7b"}, modalContent)
 			])
 		]),
 		button = modal.getElementsByClassName("orrie-button-cancel")[0];
 		if (button) {
-			button.addEventListener('click', function() {
-				modal.classList.add("closing");
-				setTimeout(function() {
-					modal.remove();
-				}, 300);
-			}, false);
+			button.addEventListener('click', function() {modal.remove();}, false);
 		}
 		document.getElementById("app-mount").lastElementChild.appendChild(modal);
 	},
@@ -1034,14 +1020,13 @@ const CustomMediaSupport = (function() {
 		getSettingsPanel() {
 			return createSettingsPanel();
 		}
-		// load, start and observer
-		load() {
-			console.info(`${script.name} v${script.version} loaded.`);
+		// start and observer
+		load() {}
+		start() {
+			console.info(`${script.name} v${script.version} started.`);
+			settingsLoad();
 			BdApi.clearCSS("orrie-plugin");
 			BdApi.injectCSS("orrie-plugin", script.css.shared);
-		}
-		start() {
-			settingsLoad();
 			BdApi.injectCSS(script.file, script.css.script);
 			const messages = document.getElementsByClassName("messages");
 			if (messages.length) {
