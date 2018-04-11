@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.6.0",
+		version: "1.6.1",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -71,12 +71,10 @@ const TwitchStreamPanel = (function() {
 .orriePluginModal #tsp-stream_input .buttonGreyGhost-SfY7zU:hover {background-color: rgba(116, 127, 141, 0.20);}
 			`,
 			shared: `
-.orriePluginModal .backdrop-2ohBEd {animation: animation-backdrop 250ms ease; animation-fill-mode: forwards; opacity: 0; background-color: rgb(0, 0, 0); transform: translateZ(0px);}
-.orriePluginModal .modal-2LIEKY {animation: animation-modal 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275); animation-fill-mode: forwards; transform: scale(0.7); transform-origin: 50% 50%;}
-.orriePluginModal .modal-3HOjGZ {padding: 0 20px; user-select: auto; width: 800px;}
+.orriePluginModal .backdrop-2ohBEd {background-color: #000000; opacity: 0.85;}
+.orriePluginModal .modal-2LIEKY {opacity: 1;}
+.orriePluginModal .modal-3HOjGZ {padding: 0 20px; width: 800px;}
 .orriePluginModal .description-3MVziF {font-size: 16px; line-height: 24px;}
-.orriePluginModal.closing .backdrop-2ohBEd {animation: animation-backdrop-closing 200ms linear; animation-fill-mode: forwards; animation-delay: 50ms; opacity: 0.2;}
-.orriePluginModal.closing .modal-2LIEKY {animation: animation-modal-closing 250ms cubic-bezier(0.19, 1, 0.22, 1); animation-fill-mode: forwards; opacity: 1; transform: scale(1);}
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
@@ -140,16 +138,10 @@ const TwitchStreamPanel = (function() {
 	modalHandler = function(modal) {
 		const parent = document.getElementById("app-mount").lastElementChild;
 		modal.getElementsByClassName("backdrop-2ohBEd")[0].addEventListener('click', function() {
-			modal.classList.add("closing");
-			setTimeout(function() {
-				modal.remove()
-			}, 300);
+			modal.remove()
 		}, false);
 		modal.getElementsByClassName("orrie-button-cancel")[0].addEventListener('click', function() {
-			modal.classList.add("closing");
-			setTimeout(function() {
-				modal.remove()
-			}, 300);
+			modal.remove()
 		}, false);
 		parent.appendChild(modal);
 	},
@@ -386,7 +378,7 @@ const TwitchStreamPanel = (function() {
 		]);
 	},
 	createStreamModal = function() {
-		return _createElement("span", {className: `${script.file}Modal orriePluginModal DevilBro-modal`, innerHTML: "<div class='backdrop-2ohBEd'></div>"}, [
+		return _createElement("span", {className: `${script.file}Modal orriePluginModal`, innerHTML: "<div class='backdrop-2ohBEd'></div>"}, [
 			_createElement("div", {className: "modal-2LIEKY"}, [
 				_createElement("div", {className: "inner-1_1f7b"}, [
 					_createElement("div", {className: "modal-3HOjGZ sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist Manager</h4></div><svg class='orrie-button-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
@@ -682,14 +674,13 @@ const TwitchStreamPanel = (function() {
 		getSettingsPanel() {
 			return createSettingsPanel();
 		}
-		// load, start and observer
-		load() {
-			console.info(`${script.name} v${script.version} loaded.`);
+		// start and observer
+		load() {}
+		start() {
+			console.info(`${script.name} v${script.version} started.`);
+			settingsLoad();
 			BdApi.clearCSS("orrie-plugin");
 			BdApi.injectCSS("orrie-plugin", script.css.shared);
-		}
-		start() {
-			settingsLoad();
 			BdApi.injectCSS(script.file, script.css.script);
 			if (typeof BDfunctionsDevilBro !== "object") {
 				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDfunctionsDevilBro.js"}));
