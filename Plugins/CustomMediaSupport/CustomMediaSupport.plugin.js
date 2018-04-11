@@ -295,7 +295,6 @@ const CustomMediaSupport = (function() {
 .cms-archive_delete:hover .close-3ejNTg, .cms-archive_clean:hover .close-3ejNTg {background-color: rgba(240, 71, 71, 0.5);}
 .cms-info-header {height: 24px; padding: 8px;}
 .cms-archive_container .customMedia.knittingboard .thread_head .thread_data {right: 30px;}
-.ndfHFb-c4YZDc-i5oIFb.ndfHFb-c4YZDc-e1YmVc .ndfHFb-c4YZDc-Wrql6b {display: none;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-2ohBEd {animation: animation-backdrop 250ms ease; animation-fill-mode: forwards; opacity: 0; background-color: rgb(0, 0, 0); transform: translateZ(0px);}
@@ -584,7 +583,7 @@ const CustomMediaSupport = (function() {
 						_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
 							onclick() {
 								if (fileMedia == "iframe") {
-									modalHandler(container.cloneNode(true), data);	
+									modalHandler(container.cloneNode(true), data);
 								}
 								else {
 									const video = this.parentNode.nextElementSibling;
