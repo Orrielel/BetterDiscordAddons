@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.5",
+		version: "2.4.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -171,17 +171,17 @@ const CustomMediaSupport = (function() {
 		settings: {embedding: true, api: true, loop: true, volume: 0.25, preload: true, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, imagePop: true, debug: false},
 		settingsMenu: {
 			//          localized                 type     description
-			embedding: ["Media Embedding",        "check", "Embeds supported elements"],
-			api:       ["Embedding API",          "check", "Use API embedding when possible -- might be \"heavy\" on the data -- data will be stored"],
+			embedding: ["Media Embedding",        "check", "Embeds or replaces supported elements:<br>mp4, m4v, ogv, ogm, webm, mov; mp3, ogg, oga, wav, wma, m4a, aac, flac; pdf"],
+			api:       ["Embedding API",          "check", "Use APIs for embedding when possible -- data will be stored per session"],
 			loop:      ["Loop",                   "check", "Loops media"],
 			volume:    ["Volume",                 "range", "Default volume &#8213; 25%"],
 			preload:   ["Preload",                "check", "Preload media"],
 			autoplay:  ["Autoplay",               "check", "Not recommended &#8213; RIP CPU"],
 			hoverPlay: ["Play on Hover",          "check", "Play media on mouse hover"],
-			board:     ["4chan",                  "check", "Embed 4chan thread links -- data will be stored"],
-			sadpanda:  ["Sadpanda",               "check", "Embed Sadpanda galleries -- data will be stored"],
+			board:     ["4chan",                  "check", "Embed 4chan thread links -- data will be stored indefinitely"],
+			sadpanda:  ["Sadpanda",               "check", "Embed Sadpanda galleries -- data will be stored indefinitely"],
 			greentext: ["Greentext",              "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
-			imagePop:  ["Full Resolution Images", "check", "Replaces images with full resolution ones whilst in popup mode.<br>Images larger than the visible screen will be clickable for pure native previews with scrolling"],
+			imagePop:  ["Full Resolution Images", "check", "Replaces images with full resolution ones whilst in popup mode.<br>Images larger than the visible screen will be clickable for pure native previews with scrolling.<br>Disables itself if you're using <a href='https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups' target='_blank'>BetterImagePopups</a>"],
 			debug:     ["Debug",                  "check", "Displays verbose stuff into the console"]
 		},
 		css: {
@@ -191,33 +191,33 @@ const CustomMediaSupport = (function() {
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
-.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh;}
-.customMedia.media-video.media-large-horizontal video {max-width: calc(100vw - 740px); height: 50vh;}
-.customMedia.media-video.media-large-vertical video {height: 70vh; max-width: unset; max-height: unset;}
-.customMedia .metadata-35KiYB {display: none;}
-.customMedia .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
+.customMedia .media-error-message {color: #F04747; max-width: 75vh; padding: 5px 10px;}
+.customMedia .metadata-35KiYB {display: flex; height: auto; padding: 10px 12px 35px; top: 0; z-index: auto;}
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
 .customMedia .metadataName-CJWo1Z a {color: #FFFFFF; opacity: 0.6;}
 .customMedia .metadataName-CJWo1Z:hover a {opacity: 1;}
-.customMedia .metadataZoomButton {cursor: pointer; font-size: 22px; font-weight: bold; opacity: 0.6; z-index: 1;}
+.customMedia .metadataZoomButton {cursor: pointer; font-size: 22px; font-weight: bold; margin-top: -2px; opacity: 0.6;}
 .customMedia .metadataZoomButton:hover {opacity: 1;}
-.customMedia.media-audio .wrapper-GhVnpx {display: flex; height: 75px;}
-.customMedia.media-audio .metadata-35KiYB {display: flex; z-index: auto;}
 .customMedia.media-audio .metadataZoomButton {display: none;}
-.customMedia.media-audio audio {align-self: flex-end; vertical-align: middle; width: 25vw; min-width: 400px;}
+.customMedia.media-audio audio {margin-top: 40px; vertical-align: middle; width: 25vw; min-width: 400px;}
 .customMedia.media-img .imageWrapper-38T7d9 img {position: static;}
-.customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
-.customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
-.customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-internal-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
-.customMedia ::-webkit-media-controls-play-button:hover, .customMedia ::-webkit-media-controls-fullscreen-button:hover, .customMedia ::-webkit-media-controls-mute-button:hover, .customMedia ::-internal-media-controls-download-button:hover {cursor: pointer; filter: brightness(2.5);}
-.customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
+.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh;}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
-.customMedia iframe {max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
-.CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh; width: 90vw; max-height: unset; max-width: unset; resize: none;}
-.CustomMediaSupportModal .customMedia.media-iframe .metadata-35KiYB {display: none;}
+.customMedia.media-video.media-large-horizontal video {max-width: calc(100vw - 740px); height: 50vh;}
+.customMedia.media-video.media-large-vertical video {height: 70vh; max-width: unset; max-height: unset;}
+.customMedia.media-video .metadata-35KiYB {display: none; z-index: 1;}
+.customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
+.customMedia.media-iframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
+.CustomMediaSupportModal .customMedia.media-video video {max-height: unset; max-width: unset;}
+.CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh !important; width: 90vw !important; max-height: unset; max-width: unset; resize: none;}
 .accessory.media-replace .customMedia.media-video video {width: 100%;}
 .accessory.media-replace .metadataZoomButton {display: none;}
-.customMedia .media-error-message {color: #F04747; max-width: 75vh; padding: 5px 10px;}
+.customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
+.customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
+.customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-internal-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
+.customMedia ::-webkit-media-controls-play-button:hover, .customMedia ::-webkit-media-controls-fullscreen-button:hover, .customMedia ::-webkit-media-controls-mute-button:hover, .customMedia ::-internal-media-controls-download-button:hover {cursor: pointer; filter: brightness(2.5);}
+.customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
+::-webkit-media-controls-fullscreen-button {display: none;}
 .media-toggled {display: none !important;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
@@ -366,7 +366,7 @@ const CustomMediaSupport = (function() {
 	},
 	modalHandler = function(modalContent, data) {
 		if (data) {
-			modalContent.appendChild(_createElement("div", {className: "description-3MVziF textCenter-1t1XXw userSelectText-wz4t4g", innerHTML: data.fileTitle}));
+			modalContent.appendChild(_createElement("div", {className: "description-3MVziF textCenter-1t1XXw userSelectText-wz4t4g", innerHTML: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
 		}
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
 			_createElement("div", {className: "backdrop-2ohBEd", onclick() {modal.remove();}}),
@@ -559,25 +559,16 @@ const CustomMediaSupport = (function() {
 			script.check.media = false;
 		}
 	},
-	mediaEmbedding = function(data) {
+	mediaEmbedding = function(data, mode) {
 		log("info", "mediaEmbedding", data);
 		const {fileId, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
 			_createElement("div", {className: "imageWrapper-38T7d9"}, [
 				_createElement("div", {className: "wrapper-GhVnpx"}, [
-					_createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a class='white-1yVmLu' href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
+					mode == "return" ? false : _createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a class='white-1yVmLu' href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
 						_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
 							onclick() {
-								if (fileMedia == "iframe") {
-									modalHandler(container.cloneNode(true), data);
-								}
-								else {
-									const video = this.parentNode.nextElementSibling;
-									container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
-									if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
-										container.parentNode.scrollIntoView(false);
-									}
-								}
+								modalHandler(mediaEmbedding(data, "return"), data);
 							}
 						})
 					]),
@@ -589,6 +580,7 @@ const CustomMediaSupport = (function() {
 									onclick() {if (this.paused) {this.play();} else {this.pause();}},
 									onloadedmetadata() {
 										if (fileMedia == "video") {
+											data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
 											if (script.settings.hoverPlay) {
 												this.onmouseover = function() {
 													if (this.paused) {
@@ -639,6 +631,9 @@ const CustomMediaSupport = (function() {
 				])
 			])
 		]);
+		if (mode == "return") {
+			return container;
+		}
 		if (script.media.replace.includes(hrefSplit[2])) {
 			const anchor = message.querySelector(`.accessory a[href*='${fileFilter}']`),
 			embed = anchor ? anchor.closest(".embedContent-AqkoYv").nextElementSibling : false;
@@ -964,7 +959,7 @@ const CustomMediaSupport = (function() {
 					}
 				})
 			]),
-			_createElement("div", {className: "orrie-centerText marginTop8-2gOa2N", innerHTML: "It's recommended to clean the database on a regular basis"}),
+			_createElement("div", {className: "orrie-centerText marginTop8-2gOa2N", innerHTML: "Use the Archive Manager to tidy up the database, or clean it alltogether"}),
 		]);
 	},
 	_createElement = function(tag, attributes, children) {
@@ -981,7 +976,9 @@ const CustomMediaSupport = (function() {
 			}
 			else {
 				for (let _c=0, _c_len=children.length; _c<_c_len; _c++) {
-					element.appendChild(children[_c]);
+					if (children[_c].nodeType) {
+						element.appendChild(children[_c]);
+					}
 				}
 			}
 		}
