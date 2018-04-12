@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.6",
+		version: "2.4.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -208,7 +208,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video .metadata-35KiYB {display: none; z-index: 1;}
 .customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
 .customMedia.media-iframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
-.CustomMediaSupportModal .customMedia.media-video video {max-height: unset; max-width: unset;}
+.CustomMediaSupportModal .customMedia.media-video video {max-height: 90vh; max-width: 90vw;}
 .CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh !important; width: 90vw !important; max-height: unset; max-width: unset; resize: none;}
 .accessory.media-replace .customMedia.media-video video {width: 100%;}
 .accessory.media-replace .metadataZoomButton {display: none;}
