@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.7",
+		version: "2.4.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -188,11 +188,12 @@ const CustomMediaSupport = (function() {
 			script: `
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,0.7);}
+.message-group .customMedia {display: inline-flex; margin-top: 8px; padding: 0; position: relative;}
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-2diOCQ {max-width: unset;}
-.customMedia .media-error-message {color: #F04747; max-width: 75vh; padding: 5px 10px;}
-.customMedia .metadata-35KiYB {display: flex; height: auto; padding: 10px 12px 35px; top: 0; z-index: auto;}
+.customMedia .media-error-message {color: #F04747; margin: 0; max-width: 75vh; padding: 5px 10px;}
+.customMedia .metadata-35KiYB {border-radius: 3px; display: flex; height: auto; margin: 0; padding: 10px 12px 35px; top: 0; z-index: auto;}
 .customMedia .metadataContent-3HYqEq {overflow: hidden;}
 .customMedia .metadataName-CJWo1Z a {color: #FFFFFF; opacity: 0.6;}
 .customMedia .metadataName-CJWo1Z:hover a {opacity: 1;}
@@ -201,19 +202,21 @@ const CustomMediaSupport = (function() {
 .customMedia.media-audio .metadataZoomButton {display: none;}
 .customMedia.media-audio audio {margin-top: 40px; vertical-align: middle; width: 25vw; min-width: 400px;}
 .customMedia.media-img .imageWrapper-38T7d9 img {position: static;}
-.customMedia.media-video video {cursor: pointer; border-radius: 2px 2px 0 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh;}
+.customMedia.media-video video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh;}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.media-video.media-large-horizontal video {max-width: calc(100vw - 740px); height: 50vh;}
-.customMedia.media-video.media-large-vertical video {height: 70vh; max-width: unset; max-height: unset;}
+.customMedia.media-video.media-large-vertical video {height: 60vh; max-width: unset; max-height: unset;}
 .customMedia.media-video .metadata-35KiYB {display: none; z-index: 1;}
-.customMedia.media-video .wrapper-GhVnpx:hover .metadata-35KiYB {display: flex;}
-.customMedia.media-iframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle;}
-.CustomMediaSupportModal .customMedia.media-video video {max-height: 90vh; max-width: 90vw;}
+.customMedia.media-video:hover .metadata-35KiYB {display: flex;}
+.customMedia.media-iframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle; z-index: 1;}
+.theme-dark .customMedia.media-iframe iframe {background-color: rgba(46,48,54,.3); border: 1px solid rgba(46,48,54,.6);}
+.theme-light .customMedia.media-iframe iframe {background: hsla(0,0%,98%,.3); border: 1px solid hsla(0,0%,80%,.3);}
+.CustomMediaSupportModal .customMedia.media-video video {max-height: 80vh; min-height: 50vh; max-width: 90vw;}
 .CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh !important; width: 90vw !important; max-height: unset; max-width: unset; resize: none;}
 .accessory.media-replace .customMedia.media-video video {width: 100%;}
 .accessory.media-replace .metadataZoomButton {display: none;}
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
-.customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 10px 10px; display: flex !important; opacity: 1 !important;}
+.customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 3px 3px; display: flex !important; opacity: 1 !important;}
 .customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-internal-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
 .customMedia ::-webkit-media-controls-play-button:hover, .customMedia ::-webkit-media-controls-fullscreen-button:hover, .customMedia ::-webkit-media-controls-mute-button:hover, .customMedia ::-internal-media-controls-download-button:hover {cursor: pointer; filter: brightness(2.5);}
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
@@ -305,9 +308,18 @@ const CustomMediaSupport = (function() {
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
 .orrie-toggled {display: none !important;}
+.orrie-overflow {overflow: visible;}
 .orrie-centerText {text-align: center;}
 .orrie-inputRequired::before {color: #F04747; content: "*"; font-size: 20px; font-weight: 700; margin-left: 2px; position: absolute; z-index: 1;}
 .theme-dark .orrie-plugin {color: #B0B6B9;}
+/* tooltips */
+.orrie-tooltip {position: relative;}
+.orrie-tooltip .orrie-tooltip_text {background-color: #3A71C1; border-radius: 6px; box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .2); color: #DCDDDE; font-size: 14px; font-weight: 500; opacity: 0; padding: 8px 12px; position: absolute; text-align: center; transition: opacity 0.3s; visibility: hidden; width: max-content; max-width: 160px; z-index: 1002;}
+.orrie-tooltip:hover .orrie-tooltip_text {opacity: 1; visibility: visible;}
+.orrie-tooltip_top {bottom: 165%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip_top::after {border-color: #3A71C1 transparent transparent transparent; border-style: solid; border-width: 5px; content: ""; left: 50%; margin-left: -5px; position: absolute; top: 100%;}
+.orrie-tooltip_bottom {left: 50%; top: 165%; transform: translateX(-50%);}
+.orrie-tooltip_bottom::after {border-color: transparent transparent #3A71C1 transparent; border-style: solid; border-width: 5px; bottom: 100%; content: ""; left: 50%; margin-left: -5px; position: absolute;}
 			`
 		},
 		db: {},
@@ -563,73 +575,78 @@ const CustomMediaSupport = (function() {
 		log("info", "mediaEmbedding", data);
 		const {fileId, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
-			_createElement("div", {className: "imageWrapper-38T7d9"}, [
-				_createElement("div", {className: "wrapper-GhVnpx"}, [
-					mode == "return" ? false : _createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a class='white-1yVmLu' href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
-						_createElement("div", {className: "metadataZoomButton", innerHTML: "❐",
-							onclick() {
-								modalHandler(mediaEmbedding(data, "return"), data);
-							}
-						})
-					]),
-					_createElement(fileMedia, (function() {
-						switch(fileMedia) {
-							case "video":
-							case "audio":
-								return {check: href, controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
-									onclick() {if (this.paused) {this.play();} else {this.pause();}},
-									onloadedmetadata() {
-										if (fileMedia == "video") {
-											data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
-											if (script.settings.hoverPlay) {
-												this.onmouseover = function() {
-													if (this.paused) {
-														this.play();
-													}
-												};
-												this.onmouseout = function() {
-													this.pause();
-												};
-											}
-										}
-										this.volume = script.settings.volume;
-										scrollElement(container.parentNode.scrollHeight, "messages");
-										// replace original accessory previews if they exist
-										if (!script.media.replace.includes(hrefSplit[2])) {
-											if (!script.db_filter.includes(fileFilter)) {
-												script.db_filter.push(fileFilter);
-											}
-											mediaReplace(message);
-										}
-									}
-								};
-							case "img":
-							case "iframe":
-								return {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, check: href, allowFullscreen: true};
-							default:
-								log("error", "mediaEmbed", href);
+			mode == "return" ? false : _createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a class='white-1yVmLu' href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
+				_createElement("div", {className: "metadataZoomButton orrie-tooltip", innerHTML: "&#128471;<div class='orrie-tooltip_text orrie-tooltip_top'>Popout Media</div>",
+					onclick() {
+						modalHandler(mediaEmbedding(data, "return"), data);
+					}
+				}),
+				fileMedia == "video" ? _createElement("div", {className: "metadataZoomButton orrie-tooltip", innerHTML: "&#128470<div class='orrie-tooltip_text orrie-tooltip_top'>Expand Media</div>",
+					onclick() {
+						const video = this.parentNode.nextElementSibling;
+						container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
+						if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
+							container.parentNode.scrollIntoView(false);
 						}
-					})(), [
-						_createElement("source", {src: href,
-							onerror() {
-								const proxy = script.db_proxy[fileFilter];
-								if (proxy) {
-									this.src = proxy;
-									this.parentNode.load();
-									delete script.db_proxy[fileFilter];
+					}
+				}) : false
+			]),
+			_createElement(fileMedia, (function() {
+				switch(fileMedia) {
+					case "video":
+					case "audio":
+						return {check: href, controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
+							onclick() {if (this.paused) {this.play();} else {this.pause();}},
+							onloadedmetadata() {
+								if (fileMedia == "video") {
+									data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
+									if (script.settings.hoverPlay) {
+										this.onmouseover = function() {
+											if (this.paused) {
+												this.play();
+											}
+										};
+										this.onmouseout = function() {
+											this.pause();
+										};
+									}
 								}
-								else {
-									script.db_proxy[fileFilter] = "ERROR";
-									this.id = `error_${fileFilter}`;
-									this.parentNode.classList.add("media-toggled");
-									this.parentNode.nextElementSibling.classList.remove("media-toggled");
+								this.volume = script.settings.volume;
+								scrollElement(container.parentNode.scrollHeight, "messages");
+								// replace original accessory previews if they exist
+								if (!script.media.replace.includes(hrefSplit[2])) {
+									if (!script.db_filter.includes(fileFilter)) {
+										script.db_filter.push(fileFilter);
+									}
+									mediaReplace(message);
 								}
 							}
-						})
-					]),
-					_createElement("div", {className: "media-error-message userSelectText-wz4t4g media-toggled", innerHTML: `Unable to embed link - ${href}`})
-				])
-			])
+						};
+					case "img":
+					case "iframe":
+						return {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, check: href, allowFullscreen: true};
+					default:
+						log("error", "mediaEmbed", href);
+				}
+			})(), [
+				_createElement("source", {src: href,
+					onerror() {
+						const proxy = script.db_proxy[fileFilter];
+						if (proxy) {
+							this.src = proxy;
+							this.parentNode.load();
+							delete script.db_proxy[fileFilter];
+						}
+						else {
+							script.db_proxy[fileFilter] = "ERROR";
+							this.id = `error_${fileFilter}`;
+							this.parentNode.classList.add("media-toggled");
+							this.parentNode.nextElementSibling.classList.remove("media-toggled");
+						}
+					}
+				})
+			]),
+			_createElement("div", {className: "media-error-message userSelectText-wz4t4g media-toggled", innerHTML: `Unable to embed link - ${href}`})
 		]);
 		if (mode == "return") {
 			return container;
@@ -654,6 +671,7 @@ const CustomMediaSupport = (function() {
 			}
 			mediaReplace(message);
 		}
+		scrollElement(container.parentNode.scrollHeight, "messages");
 	},
 	sadpandaHandler = function(resp) {
 		// fetch sadpanda gallery information
@@ -763,7 +781,7 @@ const CustomMediaSupport = (function() {
 			const key = _db_k[_db];
 			if (Number.isInteger(parseFloat(key[0]))) {
 				const container = _createElement("div", {className: "customMedia sadpanda cms-filter", innerHTML: script.db[key]}, [
-					_createElement("div", {className: "flex-3B1Tl4 cms-archive_delete", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {deletePreview(this, key, "cms-archive_sadpanda-counter");}})
+					_createElement("div", {className: "flex-3B1Tl4 cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_sadpanda-counter");}})
 				]);
 				container.className += (function(tags) {
 					let tagsString = "";
@@ -776,7 +794,7 @@ const CustomMediaSupport = (function() {
 			}
 			else {
 				chanFragment.appendChild(_createElement("div", {className: `customMedia knittingboard cms-filter ${key.match(/[a-z]+/)[0]}`, innerHTML: script.db[key]}, [
-					_createElement("div", {className: "flex-3B1Tl4 cms-archive_delete", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>", onclick() {deletePreview(this, key, "cms-archive_chan-counter");}})
+					_createElement("div", {className: "flex-3B1Tl4 cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_chan-counter");}})
 				]));
 			}
 		}
@@ -799,7 +817,7 @@ const CustomMediaSupport = (function() {
 					}
 				})
 			]),
-			_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w inner-tqJwAU border-39Cu-M cms-archive_filter", style: "flex: 0 0 auto;"}, [
+			_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w inner-tqJwAU border-39Cu-M cms-archive_filter orrie-overflow", style: "flex: 0 0 auto;"}, [
 				_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ"}, [
 					_createElement("input", {className: "input-2YozMi size16-3IvaX_", placeholder: "Filter Content (tags or board)", type: "text", value: "",
 						onchange() {
@@ -807,7 +825,7 @@ const CustomMediaSupport = (function() {
 							BdApi.injectCSS("cms-filters", `.cms-filter:not(.${this.value.replace(/\s+/g,"").split(",").join(", .")}) {display:none;}`);
 						}
 					}),
-					_createElement("div", {className: "flex-3B1Tl4 cms-archive_clean", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
+					_createElement("div", {className: "flex-3B1Tl4 cms-archive_clean orrie-tooltip", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Clean Filters</div>",
 						onclick() {
 							this.previousElementSibling.value = "";
 							BdApi.clearCSS("cms-filters");
@@ -864,6 +882,18 @@ const CustomMediaSupport = (function() {
 					this.onerror = undefined;
 				};
 			}
+		}
+	},
+	insertCustomMenu = function(className, tooltip) {
+		const menuAnchor = document.getElementsByClassName("titleText-2IfpkV")[0] ? document.getElementsByClassName("titleText-2IfpkV")[0].nextElementSibling.nextElementSibling : false;
+		if (menuAnchor) {
+			const menuIcon = menuAnchor.getElementsByClassName(className)[0];
+			if (menuIcon) {
+				menuIcon.remove();
+			}
+			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2Js7V9 icon-mr9wAc orrie-tooltip`, innerHTML: `<div class='orrie-tooltip_text orrie-tooltip_bottom'>${tooltip}</div>`,
+				onclick() {modalHandler(archiveHandler());}
+			}), menuAnchor.firstChild);
 		}
 	},
 	textParser = function(node) {
@@ -1029,16 +1059,7 @@ const CustomMediaSupport = (function() {
 			if (messages.length) {
 				mediaConvert("messages", messages[0]);
 				textParser(messages[0]);
-				const menuAnchor = document.getElementsByClassName("topic-1KFf6J")[0] ? document.getElementsByClassName("topic-1KFf6J")[0].nextElementSibling : false;
-				if (menuAnchor) {
-					const menuIcon = document.getElementsByClassName("cms-menuIcon")[0];
-					if (menuIcon) {
-						menuIcon.remove();
-					}
-					menuAnchor.insertBefore(_createElement("div", {className: "cms-menuIcon iconMargin-2Js7V9 icon-mr9wAc", title: "Custom Media Support Archive",
-						onclick() {modalHandler(archiveHandler());}
-					}), menuAnchor.firstChild);
-				}
+				insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
 			}
 		}
 		observer({addedNodes}) {
@@ -1050,12 +1071,7 @@ const CustomMediaSupport = (function() {
 						case "messages-wrapper":
 						case "content flex-spacer flex-horizontal":
 							if (!document.getElementsByClassName("cms-menuIcon")[0]) {
-								const menuAnchor = document.getElementsByClassName("topic-1KFf6J")[0] ? document.getElementsByClassName("topic-1KFf6J")[0].nextElementSibling : false;
-								if (menuAnchor) {
-									menuAnchor.insertBefore(_createElement("div", {className: "cms-menuIcon iconMargin-2Js7V9 icon-mr9wAc", title: "Custom Media Support Archive",
-										onclick() {modalHandler(archiveHandler());}
-									}), menuAnchor.firstChild);
-								}
+								insertCustomMenu("cms-menuIcon", `${script.name} Archive`)
 							}
 							/* falls through */
 						case "message-group hide-overflow":
