@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.4.8",
+		version: "2.4.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -578,6 +578,12 @@ const CustomMediaSupport = (function() {
 			mode == "return" ? false : _createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a class='white-1yVmLu' href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
 				_createElement("div", {className: "metadataZoomButton orrie-tooltip", innerHTML: "&#128471;<div class='orrie-tooltip_text orrie-tooltip_top'>Popout Media</div>",
 					onclick() {
+						if (fileMedia == "video") {
+							const video = this.parentNode.nextElementSibling
+							data.currentTime = video.currentTime;
+							data.playing = !video.paused;
+							video.pause();
+						} 
 						modalHandler(mediaEmbedding(data, "return"), data);
 					}
 				}),
@@ -609,6 +615,12 @@ const CustomMediaSupport = (function() {
 										this.onmouseout = function() {
 											this.pause();
 										};
+									}
+									if (data.currentTime) {
+										this.currentTime = data.currentTime;
+										if (data.playing) {
+											this.play();
+										}
 									}
 								}
 								this.volume = script.settings.volume;
