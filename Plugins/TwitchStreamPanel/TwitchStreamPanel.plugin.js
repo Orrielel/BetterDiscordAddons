@@ -659,11 +659,7 @@ const TwitchStreamPanel = (function() {
 				menuIcon.remove();
 			}
 			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2Js7V9 icon-mr9wAc orrie-relative orrie-tooltip`, innerHTML: `<div class='orrie-tooltip_text orrie-tooltip_bottom'>${tooltip}</div>`,
-				onclick() {
-					console.time("createStreamModal");
-					modalHandler(createStreamModal());
-					console.timeEnd("createStreamModal");
-				}
+				onclick() {modalHandler(createStreamModal());}
 			}), menuAnchor.firstChild);
 		}
 	},
