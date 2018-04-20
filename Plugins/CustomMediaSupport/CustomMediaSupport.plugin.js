@@ -910,11 +910,7 @@ const CustomMediaSupport = (function() {
 				menuIcon.remove();
 			}
 			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2Js7V9 icon-mr9wAc orrie-relative orrie-tooltip`, innerHTML: `<div class='orrie-tooltip_text orrie-tooltip_bottom'>${tooltip}</div>`,
-				onclick() {
-					console.time("archiveHandler");
-					modalHandler(archiveHandler());
-					console.timeEnd("archiveHandler");
-				}
+				onclick() {modalHandler(archiveHandler());}
 			}), menuAnchor.firstChild);
 		}
 	},
@@ -1071,7 +1067,7 @@ const CustomMediaSupport = (function() {
 			BdApi.injectCSS(script.file, script.css.script);
 			insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
 			const messages = document.getElementsByClassName("messages")[0];
-			if (messages.length) {
+			if (messages) {
 				mediaConvert("messages", messages);
 				textParser(messages);
 			}
