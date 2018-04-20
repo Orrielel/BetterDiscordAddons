@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.6.2",
+		version: "1.6.3",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -80,17 +80,23 @@ const TwitchStreamPanel = (function() {
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
 .orrie-toggled {display: none !important;}
 .orrie-overflow {overflow: visible;}
+.orrie-relative {position: relative;}
 .orrie-centerText {text-align: center;}
 .orrie-inputRequired::before {color: #F04747; content: "*"; font-size: 20px; font-weight: 700; margin-left: 2px; position: absolute; z-index: 1;}
 .theme-dark .orrie-plugin {color: #B0B6B9;}
 /* tooltips */
-.orrie-tooltip {position: relative;}
-.orrie-tooltip .orrie-tooltip_text {background-color: #3A71C1; border-radius: 6px; box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .2); color: #DCDDDE; font-size: 14px; font-weight: 500; opacity: 0; padding: 8px 12px; position: absolute; text-align: center; transition: opacity 0.3s; visibility: hidden; width: max-content; max-width: 160px; z-index: 1002;}
+.orrie-tooltip_text {background-color: #3A71C1; border-radius: 6px; box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .2); color: #DCDDDE; font-size: 14px; font-weight: 500; opacity: 0; padding: 8px 12px; position: absolute; text-align: center; transition: opacity 0.3s; visibility: hidden; width: max-content; max-width: 160px; z-index: 1002;}
 .orrie-tooltip:hover .orrie-tooltip_text {opacity: 1; visibility: visible;}
-.orrie-tooltip_top {bottom: 165%; left: 50%; transform: translateX(-50%);}
-.orrie-tooltip_top::after {border-color: #3A71C1 transparent transparent transparent; border-style: solid; border-width: 5px; content: ""; left: 50%; margin-left: -5px; position: absolute; top: 100%;}
-.orrie-tooltip_bottom {left: 50%; top: 165%; transform: translateX(-50%);}
-.orrie-tooltip_bottom::after {border-color: transparent transparent #3A71C1 transparent; border-style: solid; border-width: 5px; bottom: 100%; content: ""; left: 50%; margin-left: -5px; position: absolute;}
+.orrie-tooltip_top {bottom: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip_bottom {top: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip_right {left: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip_left {right: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip_text::after {border-color: transparent; border-style: solid; border-width: 5px; content: ""; position: absolute;}
+.orrie-tooltip_top::after {border-top-color: #3A71C1; left: 50%; margin-left: -5px; top: 100%;}
+.orrie-tooltip_bottom::after {border-bottom-color: #3A71C1; bottom: 100%; left: 50%; margin-left: -5px;}
+.orrie-tooltip_right::after {border-right-color: #3A71C1; margin-top: -5px; right: 100%; top: 50%;}
+.orrie-tooltip_left::after {border-left-color: #3A71C1; left: 100%; margin-top: -5px; top: 50%;}
+.orrie-tooltip_text:hover {opacity: 0 !important; visibility: hidden !important;}
 			`
 		}
 	},
@@ -144,15 +150,18 @@ const TwitchStreamPanel = (function() {
 		const parent = document.getElementsByClassName(parentClass)[0];
 		parent.scrollTop += elemHeight;
 	},
-	modalHandler = function(modal) {
-		const parent = document.getElementById("app-mount").lastElementChild;
-		modal.getElementsByClassName("backdrop-2ohBEd")[0].addEventListener('click', function() {
-			modal.remove()
-		}, false);
-		modal.getElementsByClassName("orrie-button-cancel")[0].addEventListener('click', function() {
-			modal.remove()
-		}, false);
-		parent.appendChild(modal);
+	modalHandler = function(modalContent) {
+		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
+			_createElement("div", {className: "backdrop-2ohBEd", onclick() {modal.remove();}}),
+			_createElement("div", {className: "modal-2LIEKY"},
+				_createElement("div", {className: "inner-1_1f7b"}, modalContent)
+			)
+		]),
+		button = modal.getElementsByClassName("orrie-button-cancel")[0];
+		if (button) {
+			button.addEventListener('click', function() {modal.remove();}, false);
+		}
+		document.getElementById("app-mount").lastElementChild.appendChild(modal);
 	},
 	streamTimer = function(length) {
 		const display = document.getElementById("tsp-timer");
@@ -193,11 +202,11 @@ const TwitchStreamPanel = (function() {
 		for (let _s_k = Object.keys(script.streamsActive), _s=0; _s<_s_k.length; _s++) {
 			const stream = script.streamsActive[_s_k[_s]];
 			streamString.push(stream[1]);
-			streamFragment.appendChild(_createElement("tr", {className: "tsp-stream_row tsp-stream_offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='tsp-stream_row_child tsp-stream_row_icon size14-1wjlWP' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='tsp-stream_row_child tsp-stream_row_anchor size14-1wjlWP orrie-tooltip'><div class='overflowEllipsis-3Rxxjf'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${stream[4] ? `style='color:${stream[4]} !important'` : ""}>${stream[0] ? stream[0] : stream[1]}</a></div></td><td class='size14-1wjlWP tsp-stream_row_child tsp-stream_row_status'></td>`}));
+			streamFragment.appendChild(_createElement("tr", {className: "tsp-stream_row tsp-stream_offline", id: `stream_${stream[1]}`, name: stream[0], innerHTML: `<td class='tsp-stream_row_child tsp-stream_row_icon size14-1wjlWP' ${stream[3] ? `style="background-image: url(${stream[3]})"` : ""}></td><td class='tsp-stream_row_child tsp-stream_row_anchor size14-1wjlWP orrie-relative orrie-tooltip'><div class='overflowEllipsis-3Rxxjf'><a href='https://www.twitch.tv/${stream[1]}' rel='noreferrer' target='_blank' ${stream[4] ? `style='color:${stream[4]} !important'` : ""}>${stream[0] ? stream[0] : stream[1]}</a></div></td><td class='size14-1wjlWP tsp-stream_row_child tsp-stream_row_status'></td>`}));
 		}
 		// insert stream table before requesting data
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
-			_createElement("div", {className: "containerDefault-1bbItS"}, [
+			_createElement("div", {className: "containerDefault-1bbItS"},
 				_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStart-pnSyE6 noWrap-v6g9vO wrapperDefault-1Dl4SS cursorPointer-3oKATS"}, [
 					_createElement("div", {className: `nameDefault-Lnjrwm colorTransition-2iZaYd tsp-streams_button`, innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85${!script.settings.state ? " closed-2Hef-I" : ""}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg>Streams`,
 					onclick() {
@@ -212,17 +221,17 @@ const TwitchStreamPanel = (function() {
 						onclick() {streamsUpdate("click");}
 					})
 				])
-			]),
-			_createElement("div", {className: `containerDefault-7RImuF${!script.settings.state ? " orrie-toggled" : ""}`}, [
+			),
+			_createElement("div", {className: `containerDefault-7RImuF${!script.settings.state ? " orrie-toggled" : ""}`},
 				_createElement("table", {className: "content-2mSKOj orrie-overflow", id: "tsp-stream_table", cellSpacing: 0, server: serverID}, streamFragment)
-			]),
-			_createElement("div", {className: `wrapperDefault-1Dl4SS tsp-footer_wrapper${!script.settings.state ? " orrie-toggled" : ""}`, innerHTML: `<div class='nameDefault-Lnjrwm tsp-time_text'><span id="tsp-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="tsp-timer">00:00</span></div>`}, [
+			),
+			_createElement("div", {className: `wrapperDefault-1Dl4SS tsp-footer_wrapper${!script.settings.state ? " orrie-toggled" : ""}`, innerHTML: `<div class='nameDefault-Lnjrwm tsp-time_text'><span id="tsp-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="tsp-timer">00:00</span></div>`},
 				_createElement("div", {className: "nameDefault-Lnjrwm cursorPointer-3oKATS tsp-edit_button", innerHTML: "Edit",
 					onclick() {
 						modalHandler(createStreamModal());
 					}
 				})
-			])
+			)
 		]);
 		if (script.settings.pos) {
 			channelContainer.insertBefore(streamContainer, channelContainer.firstChild);
@@ -342,12 +351,12 @@ const TwitchStreamPanel = (function() {
 					]);
 				case "range":
 					const value = `${(script.settings[key]*100).toFixed(0)}%`;
-					return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`}, [
+					return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`},
 						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
 							onchange() {settingsSave(key, this.value);},
 							oninput() {settingsAnimate(this, "range", this.value);}
 						})
-					]);
+					);
 				case "text":
 					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
 						onchange() {settingsSave(key, this.value);}
@@ -359,9 +368,9 @@ const TwitchStreamPanel = (function() {
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 			const setting = script.settingsMenu[_s_k[_s]];
 			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
-				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-3hwONl ui-flex-child'>${setting[0]}</h3>`}, [
+				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-3hwONl ui-flex-child'>${setting[0]}</h3>`},
 					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
-				]),
+				),
 				_createElement("div", {className: "ui-form-text style-description marginTop4-2rEBfJ", innerHTML: setting[2]})
 			]));
 		}
@@ -387,168 +396,159 @@ const TwitchStreamPanel = (function() {
 		]);
 	},
 	createStreamModal = function() {
-		return _createElement("span", {className: `${script.file}Modal orriePluginModal`, innerHTML: "<div class='backdrop-2ohBEd'></div>"}, [
-			_createElement("div", {className: "modal-2LIEKY"}, [
-				_createElement("div", {className: "inner-1_1f7b"}, [
-					_createElement("div", {className: "modal-3HOjGZ userSelectText-wz4t4g sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist Manager</h4></div><svg class='orrie-button-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
-						_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW"}, [
-							_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ border-39Cu-M tsp-content"}, createServerList())
+		return _createElement("div", {className: "modal-3HOjGZ userSelectText-wz4t4g sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Streamlist Manager</h4></div><svg class='orrie-button-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
+			_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW"},
+				_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ border-39Cu-M tsp-content"}, createServerList())
+			),
+			_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO inner-tqJwAU container-RYiLUQ border-39Cu-M tsp-menu", style: "flex: 0 0 auto;"},
+				_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO marginTop8-2gOa2N marginBottom8-1mABJ4", style: "flex: 0 0 100%;"}, [
+					_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyAround-1CVbTI", id: "tsp-stream_menu", style: "flex: 1 0 auto;"}, [
+						_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Add New Stream",
+							onclick() {
+								document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
+								document.getElementById("tsp-stream_input").classList.toggle("orrie-toggled");
+							}
+						}),
+						script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? _createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Import Colors from BRC",
+							onclick() {
+								const streamStatus = document.getElementById("tsp-stream_status"),
+								twitchStreamList = document.getElementsByClassName("tsp-content")[0],
+								streamsBackup = script.streams;
+								try {
+									for (let _st_k = Object.keys(script.streams), _st=0, _st_len=_st_k.length; _st<_st_len; _st++) {
+										const server = script.streams[_st_k[_st]];
+										for (let _se_k = Object.keys(server), _se=0, _se_len=_se_k.length; _se<_se_len; _se++) {
+											const stream = server[_se_k[_se]];
+											if (stream[2]) {
+												const member = BdApi.getPlugin('BetterRoleColors').GuildStore.getMember(_st_k[_st],stream[2]);
+												if (member) {
+													stream[4] = member.colorString;
+												}
+												else {
+													log("error", "Can't find member in server", stream[0]);
+												}
+											}
+										}
+									}
+									bdPluginStorage.set(script.file, "streams", script.streams);
+									twitchStreamList.innerHTML = "";
+									twitchStreamList.appendChild(createServerList());
+									streamStatus.classList.remove("buttonBrandLink-3csEAP");
+									streamStatus.classList.add("buttonGreenLink-211wfK");
+									streamStatus.textContent = "Imported Successfully!";
+									// remake streamlist
+									script.streamsCache = {};
+									streamsRemove();
+									streamsInsert();
+								} catch (e) {
+									log("error", "Error importing from BRC", e);
+									streamStatus.classList.remove("buttonBrandLink-3csEAP");
+									streamStatus.classList.add("buttonRedLink-3HNCDW");
+									streamStatus.textContent = "Oops, something went wrong??";
+									script.streams = streamsBackup;
+								}
+								setTimeout(function() {
+									streamStatus.classList.remove("buttonGreenLink-211wfK", "buttonRedLink-3HNCDW");
+									streamStatus.classList.add("buttonBrandLink-3csEAP");
+									streamStatus.textContent = "";
+								}, 2500);
+							}
+						}) : null,
+						_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Import List",
+							onclick() {
+								document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
+								document.getElementById("tsp-stream_import").classList.toggle("orrie-toggled");
+							}
+						}),
+						_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Export List",
+							onclick() {
+								const element = _createElement("textarea", {value: JSON.stringify(script.streams)}),
+								streamStatus = document.getElementById("tsp-stream_status");
+								document.body.appendChild(element);
+								element.focus();
+								element.setSelectionRange(0, element.value.length);
+								document.execCommand("copy");
+								element.remove();
+								streamStatus.classList.remove("buttonBrandLink-3csEAP");
+								streamStatus.classList.add("buttonGreenLink-211wfK");
+								streamStatus.textContent = "Exported Successfully!";
+								setTimeout(function() {
+									streamStatus.classList.remove("buttonGreenLink-211wfK");
+									streamStatus.classList.add("buttonBrandLink-3csEAP");
+									streamStatus.textContent = "";
+								}, 2500);
+							}
+						})
+					]),
+					_createElement("div", {className: "orrie-toggled", id: "tsp-stream_input", style: "flex: 0 1 100%;"}, [
+						_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyBetween-1d1Hto alignStart-pnSyE6 noWrap-v6g9vO marginBottom4-_yArcI"}, [
+							_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Add Stream",
+								onclick() {saveStream();}
+							}),
+							_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
+								onclick() {
+									document.getElementById("tsp-stream_input").classList.toggle("orrie-toggled");
+									document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
+								}
+							})
 						]),
-						_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO inner-tqJwAU container-RYiLUQ border-39Cu-M tsp-menu", style: "flex: 0 0 auto;"}, [
-							_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignStretch-1hwxMa noWrap-v6g9vO marginTop8-2gOa2N marginBottom8-1mABJ4", style: "flex: 0 0 100%;"}, [
-								_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyAround-1CVbTI", id: "tsp-stream_menu", style: "flex: 1 0 auto;"}, [
-									_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Add New Stream",
-										onclick() {
-											document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
-											document.getElementById("tsp-stream_input").classList.toggle("orrie-toggled");
+						_createElement("div", {className: "flex-3B1Tl4 directionColumn-2h-LPR marginBottom8-1mABJ4", innerHTML: "<div class='input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='discord_name' placeholder='Display Name  ― If left blank, plugin will use Twitch display name' type='text'></div><div class='input-2N4DTT orrie-inputRequired'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='twitch_name' placeholder='Twitch Username' type='text'></div><div class='input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='discord_id' placeholder='Discord ID  ― For coloring. Use dev mode; right click the user and copy ID' type='text'></div><div class='input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='icon' placeholder='Custom Icon  ― If left blank, plugin will use Twitch profile image when possible' type='text'></div><div class='input-2N4DTT'><input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='color' placeholder='Custom Color ― HEX and RGBA supported (Overrides BRC)' type='text'></div>"},
+							_createElement("div", {className: "flex-3B1Tl4 input-2N4DTT orrie-inputRequired", innerHTML: "<input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='server_id' placeholder='Server to Hook (ID) &#8213; Use dev mode; right click the server icon and copy ID' type='text'>"},
+								BDfunctionsDevilBro.getSelectedServer() ?
+									_createElement("div", {className: "flex-3B1Tl4 wrapper-P4PzYx input-2YozMi", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE grow-25YQ8u'><div class='contents-4L4hQM height24-2pMcnc'>Current Server</div></button>", onclick() {
+										const server = BDfunctionsDevilBro.getSelectedServer();
+										if (server) {
+											this.previousElementSibling.value = server.id;
 										}
-									}),
-									script.settings.colors && BdApi.getPlugin('BetterRoleColors') ? _createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Import Colors from BRC",
-										onclick() {
-											const streamStatus = document.getElementById("tsp-stream_status"),
-											twitchStreamList = document.getElementsByClassName("tsp-content")[0],
-											streamsBackup = script.streams;
-											try {
-												for (let _st_k = Object.keys(script.streams), _st=0, _st_len=_st_k.length; _st<_st_len; _st++) {
-													const server = script.streams[_st_k[_st]];
-													for (let _se_k = Object.keys(server), _se=0, _se_len=_se_k.length; _se<_se_len; _se++) {
-														const stream = server[_se_k[_se]];
-														if (stream[2]) {
-															const member = BdApi.getPlugin('BetterRoleColors').GuildStore.getMember(_st_k[_st],stream[2]);
-															if (member) {
-																stream[4] = member.colorString;
-															}
-															else {
-																log("error", "Can't find member in server", stream[0]);
-															}
-														}
-													}
-												}
-												bdPluginStorage.set(script.file, "streams", script.streams);
-												twitchStreamList.innerHTML = "";
-												twitchStreamList.appendChild(createServerList());
-												streamStatus.classList.remove("buttonBrandLink-3csEAP");
-												streamStatus.classList.add("buttonGreenLink-211wfK");
-												streamStatus.textContent = "Imported Successfully!";
-												// remake streamlist
-												script.streamsCache = {};
-												streamsRemove();
-												streamsInsert();
-											} catch (e) {
-												log("error", "Error importing from BRC", e);
-												streamStatus.classList.remove("buttonBrandLink-3csEAP");
-												streamStatus.classList.add("buttonRedLink-3HNCDW");
-												streamStatus.textContent = "Oops, something went wrong??";
-												script.streams = streamsBackup;
-											}
-											setTimeout(function() {
-												streamStatus.classList.remove("buttonGreenLink-211wfK", "buttonRedLink-3HNCDW");
-												streamStatus.classList.add("buttonBrandLink-3csEAP");
-												streamStatus.textContent = "";
-											}, 2500);
-										}
-									}) : null,
-									_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Import List",
-										onclick() {
-											document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
-											document.getElementById("tsp-stream_import").classList.toggle("orrie-toggled");
-										}
-									}),
-									_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Export List",
-										onclick() {
-											const element = _createElement("textarea", {value: JSON.stringify(script.streams)}),
-											streamStatus = document.getElementById("tsp-stream_status");
-											document.body.appendChild(element);
-											element.focus();
-											element.setSelectionRange(0, element.value.length);
-											document.execCommand("copy");
-											element.remove();
-											streamStatus.classList.remove("buttonBrandLink-3csEAP");
-											streamStatus.classList.add("buttonGreenLink-211wfK");
-											streamStatus.textContent = "Exported Successfully!";
-											setTimeout(function() {
-												streamStatus.classList.remove("buttonGreenLink-211wfK");
-												streamStatus.classList.add("buttonBrandLink-3csEAP");
-												streamStatus.textContent = "";
-											}, 2500);
-										}
-									})
-								]),
-								_createElement("div", {className: "orrie-toggled", id: "tsp-stream_input", style: "flex: 0 1 100%;"}, [
-									_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyBetween-1d1Hto alignStart-pnSyE6 noWrap-v6g9vO marginBottom4-_yArcI"}, [
-										_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Add Stream",
-											onclick() {saveStream();}
-										}),
-										_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
-											onclick() {
-												document.getElementById("tsp-stream_input").classList.toggle("orrie-toggled");
-												document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
-											}
-										})
-									]),
-									_createElement("div", {className: "flex-3B1Tl4 directionColumn-2h-LPR marginBottom8-1mABJ4"}, [
-										_createElement("div", {className: "input-2N4DTT", innerHTML: "<input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='discord_name' placeholder='Display Name  &#8213; If left blank, plugin will use Twitch display name' type='text'>"}),
-										_createElement("div", {className: "input-2N4DTT orrie-inputRequired", innerHTML: "<input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='twitch_name' placeholder='Twitch Username' type='text'>"}),
-										_createElement("div", {className: "input-2N4DTT", innerHTML: "<input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='discord_id' placeholder='Discord ID  &#8213; For coloring. Use dev mode; right click the user and copy ID' type='text'>"}),
-										_createElement("div", {className: "input-2N4DTT", innerHTML: "<input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='icon' placeholder='Custom Icon  &#8213; If left blank, plugin will use Twitch profile image when possible' type='text'>"}),
-										_createElement("div", {className: "input-2N4DTT", innerHTML: "<input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='color' placeholder='Custom Color &#8213; HEX and RGBA supported (Overrides BRC)' type='text'>"}),
-										_createElement("div", {className: "flex-3B1Tl4 input-2N4DTT orrie-inputRequired", innerHTML: "<input class='inputDefault-Y_U37D input-2YozMi size16-3IvaX_' name='server_id' placeholder='Server to Hook (ID) &#8213; Use dev mode; right click the server icon and copy ID' type='text'>"}, BDfunctionsDevilBro.getSelectedServer() ? [
-											_createElement("div", {className: "flex-3B1Tl4 wrapper-P4PzYx input-2YozMi", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE grow-25YQ8u'><div class='contents-4L4hQM height24-2pMcnc'>Current Server</div></button>", onclick() {
-												const server = BDfunctionsDevilBro.getSelectedServer();
-												if (server) {
-													this.previousElementSibling.value = server.id;
-												}
-											}})
-										] : "")
-									])
-								]),
-								_createElement("div", {className: "orrie-toggled", id: "tsp-stream_import", style: "flex: 0 1 100%;"}, [
-									_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyBetween-1d1Hto alignStart-pnSyE6 noWrap-v6g9vO marginBottom4-_yArcI"}, [
-										_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Import List",
-											onclick() {
-												const streamStatus = document.getElementById("tsp-stream_status"),
-												twitchStreamList = document.getElementsByClassName("tsp-content")[0],
-												streamsBackup = script.streams;
-												try {
-													script.streams = Object.assign(script.streams, JSON.parse(document.getElementById("tsp-stream_import-content").value));
-													bdPluginStorage.set(script.file, "streams", script.streams);
-													twitchStreamList.innerHTML = "";
-													twitchStreamList.appendChild(createServerList());
-													streamStatus.classList.remove("buttonBrandLink-3csEAP");
-													streamStatus.classList.add("buttonGreenLink-211wfK");
-													streamStatus.textContent = "Imported Successfully!";
-													// remake streamlist
-													script.streamsCache = {};
-													streamsRemove();
-													streamsInsert();
-												} catch (e) {
-													streamStatus.classList.remove("buttonBrandLink-3csEAP");
-													streamStatus.classList.add("buttonRedLink-3HNCDW");
-													streamStatus.textContent = "Input not JSON string";
-													script.streams = streamsBackup;
-												}
-												setTimeout(function() {
-													streamStatus.classList.remove("buttonGreenLink-211wfK", "buttonRedLink-3HNCDW");
-													streamStatus.classList.add("buttonBrandLink-3csEAP");
-													streamStatus.textContent = "";
-												}, 2500);
-											}
-										}),
-										_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
-											onclick() {
-												document.getElementById("tsp-stream_import").classList.toggle("orrie-toggled");
-												document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
-											}
-										})
-									]),
-									_createElement("div", {className: "inner-3if5cm flex-3B1Tl4 innerNoAutocomplete-kaUXJZ", innerHTML: "<textarea id='tsp-stream_import-content' class='textArea-20yzAH textArea-20yzAH card-3DriLT scrollbarGhostHairline-D_btXm scrollbar-11WJwo' style='flex: 1 1 auto; width: calc(100% - 25px); resize: vertical;'></textarea>"})
-								]),
-							])
+									}})
+								: false
+							)
+						)
+					]),
+					_createElement("div", {className: "orrie-toggled", id: "tsp-stream_import", style: "flex: 0 1 100%;"}, [
+						_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyBetween-1d1Hto alignStart-pnSyE6 noWrap-v6g9vO marginBottom4-_yArcI"}, [
+							_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u", innerHTML: "Import List",
+								onclick() {
+									const streamStatus = document.getElementById("tsp-stream_status"),
+									twitchStreamList = document.getElementsByClassName("tsp-content")[0],
+									streamsBackup = script.streams;
+									try {
+										script.streams = Object.assign(script.streams, JSON.parse(document.getElementById("tsp-stream_import-content").value));
+										bdPluginStorage.set(script.file, "streams", script.streams);
+										twitchStreamList.innerHTML = "";
+										twitchStreamList.appendChild(createServerList());
+										streamStatus.classList.remove("buttonBrandLink-3csEAP");
+										streamStatus.classList.add("buttonGreenLink-211wfK");
+										streamStatus.textContent = "Imported Successfully!";
+										// remake streamlist
+										script.streamsCache = {};
+										streamsRemove();
+										streamsInsert();
+									} catch (e) {
+										streamStatus.classList.remove("buttonBrandLink-3csEAP");
+										streamStatus.classList.add("buttonRedLink-3HNCDW");
+										streamStatus.textContent = "Input not JSON string";
+										script.streams = streamsBackup;
+									}
+									setTimeout(function() {
+										streamStatus.classList.remove("buttonGreenLink-211wfK", "buttonRedLink-3HNCDW");
+										streamStatus.classList.add("buttonBrandLink-3csEAP");
+										streamStatus.textContent = "";
+									}, 2500);
+								}
+							}),
+							_createElement("div", {className: "tsp-stream_close", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg>",
+								onclick() {
+									document.getElementById("tsp-stream_import").classList.toggle("orrie-toggled");
+									document.getElementById("tsp-stream_menu").classList.toggle("orrie-toggled");
+								}
+							})
 						]),
-						_createElement("div", {className: "contents-4L4hQM contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;' id='tsp-stream_status'></h3>", style: "flex: 0 0 auto;"})
-					])
+						_createElement("div", {className: "inner-3if5cm flex-3B1Tl4 innerNoAutocomplete-kaUXJZ", innerHTML: "<textarea id='tsp-stream_import-content' class='textArea-20yzAH textArea-20yzAH card-3DriLT scrollbarGhostHairline-D_btXm scrollbar-11WJwo' style='flex: 1 1 auto; width: calc(100% - 25px); resize: vertical;'></textarea>"})
+					]),
 				])
-			])
+			),
+			_createElement("div", {className: "contents-4L4hQM contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q' style='flex: 1 1 auto;' id='tsp-stream_status'></h3>", style: "flex: 0 0 auto;"})
 		]);
 	},
 	createServerList = function() {
@@ -561,9 +561,9 @@ const TwitchStreamPanel = (function() {
 				const streamFragment = document.createDocumentFragment();
 				for (let _b_k = Object.keys(streams), _b=0, _b_len = _b_k.length; _b<_b_len; _b++) {
 					const streamer = streams[_b_k[_b]];
-					streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-1wjlWP' ${streamer[4] ? `style='color:${streamer[4]} !important'` : ""}>${streamer[0]}</td><td class='size14-1wjlWP'>${streamer[1]}</td><td class='size14-1wjlWP'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td><td class='size14-1wjlWP'>${streamer[4] ? `<div style="color:${streamer[4]}">${streamer[4]}</div>` : "Default"}</td><td class='size14-1wjlWP'>${streamer[2]}</td>`}, [
-						_createElement("td", {className: "size14-1wjlWP"}, [
-							_createElement("button", {type: "button", className: "orrie-buttonRed orrie-tooltip", innerHTML: "✘<div class='orrie-tooltip_text orrie-tooltip_bottom'>Remove Stream</div>",
+					streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-1wjlWP' ${streamer[4] ? `style='color:${streamer[4]} !important'` : ""}>${streamer[0]}</td><td class='size14-1wjlWP'>${streamer[1]}</td><td class='size14-1wjlWP'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td><td class='size14-1wjlWP'>${streamer[4] ? `<div style="color:${streamer[4]}">${streamer[4]}</div>` : "Default"}</td><td class='size14-1wjlWP'>${streamer[2]}</td>`},
+						_createElement("td", {className: "size14-1wjlWP"},
+							_createElement("button", {type: "button", className: "orrie-buttonRed orrie-relative orrie-tooltip", innerHTML: "✘<div class='orrie-tooltip_text orrie-tooltip_left'>Remove Stream</div>",
 								onclick() {
 									delete streams[streamer[1]];
 									script.streamsCache[server.id] = {};
@@ -581,8 +581,8 @@ const TwitchStreamPanel = (function() {
 									this.parentNode.parentNode.remove();
 								}
 							})
-						])
-					]));
+						)
+					));
 				}
 				serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server", id: `tsp_${server.id}`}, [
 					_createElement("div", {className: "defaultColor-v22dK1 app-XZYfmp cursorPointer-3oKATS orrie-centerText", innerHTML: `<svg class='iconDefault-xzclSQ iconTransition-VhWJ85$ closed-2Hef-I' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-ZM4Qv-'>${server.name}</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-2Hef-I");}}),
@@ -658,19 +658,18 @@ const TwitchStreamPanel = (function() {
 			if (menuIcon) {
 				menuIcon.remove();
 			}
-			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2Js7V9 icon-mr9wAc orrie-tooltip`, innerHTML: `<div class='orrie-tooltip_text orrie-tooltip_bottom'>${tooltip}</div>`,
-				onclick() {modalHandler(createStreamModal());}
+			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2Js7V9 icon-mr9wAc orrie-relative orrie-tooltip`, innerHTML: `<div class='orrie-tooltip_text orrie-tooltip_bottom'>${tooltip}</div>`,
+				onclick() {
+					console.time("createStreamModal");
+					modalHandler(createStreamModal());
+					console.timeEnd("createStreamModal");
+				}
 			}), menuAnchor.firstChild);
 		}
 	},
 	_createElement = function(tag, attributes, children) {
 		// element creation
-		const element = document.createElement(tag);
-		if (attributes) {
-			for (let _e_k = Object.keys(attributes), _e=_e_k.length; _e--;) {
-				element[_e_k[_e]] = attributes[_e_k[_e]];
-			}
-		}
+		const element = Object.assign(document.createElement(tag), attributes);
 		if (children) {
 			if (children.nodeType) {
 				element.appendChild(children);
