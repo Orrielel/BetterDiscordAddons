@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.5.1",
+		version: "2.5.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -29,8 +29,8 @@ const CustomMediaSupport = (function() {
 			sites: {
 				"imgur.com": {
 					data({href, message, fileMedia}) {
-						const check = message.querySelector(`a.embedTitleLink-1IGDvg[href='${href.replace("//m.","//")}']`);
-						if (check && check.closest(".embedContent-AqkoYv").nextElementSibling && /\.jpg|\.jpeg|\.png|\.gif$/.test(check.closest(".embedContent-AqkoYv").nextElementSibling.getAttribute("href"))) {
+						const check = message.querySelector(`a.embedTitleLink-1Zla9e[href='${href.replace("//m.","//")}']`);
+						if (check && check.closest(".embedContent-3fnYWm").nextElementSibling && /\.jpg|\.jpeg|\.png|\.gif$/.test(check.closest(".embedContent-3fnYWm").nextElementSibling.getAttribute("href"))) {
 							return {fileMedia: "ignore", fileReplace: false, href};
 						}
 						else {
@@ -192,24 +192,24 @@ const CustomMediaSupport = (function() {
 .message-group .customMedia {display: inline-flex; margin-top: 8px; padding: 0; position: relative;}
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
-.customMedia .embed-2diOCQ {max-width: unset;}
+.customMedia .embed-IeVjo6 {max-width: unset;}
 .customMedia .media-error-message {color: #F04747; margin: 0; max-width: 75vh; padding: 5px 10px;}
-.customMedia .metadata-35KiYB {border-radius: 3px; display: flex; height: auto; margin: 0; padding: 10px 12px 35px; top: 0; z-index: auto;}
-.customMedia .metadataContent-3HYqEq {overflow: hidden;}
-.customMedia .metadataName-CJWo1Z a {color: #FFFFFF; opacity: 0.6;}
-.customMedia .metadataName-CJWo1Z:hover a {opacity: 1;}
+.customMedia .metadata-13NcHb {border-radius: 3px; display: flex; height: auto; margin: 0; padding: 10px 12px 35px; top: 0; z-index: auto;}
+.customMedia .metadataContent-3c_ZXw {overflow: hidden;}
+.customMedia .metadataName-14STf- a {color: #FFFFFF; opacity: 0.6;}
+.customMedia .metadataName-14STf-:hover a {opacity: 1;}
 .customMedia .metadataButton {cursor: pointer; font-size: 22px; font-weight: bold; margin-top: -2px; opacity: 0.6;}
 .customMedia .metadataButton:hover {opacity: 1;}
 .customMedia.media-audio .metadataButton {display: none;}
 .customMedia.media-audio audio {margin-top: 40px; vertical-align: middle; width: 25vw; min-width: 400px;}
-.customMedia.media-img img {margin-top: 40px;}
-.customMedia.media-img .imageWrapper-38T7d9 img {position: static;}
+.customMedia.media-img img {margin-top: 40px; min-height: 50px; min-width: 400px;}
+.customMedia.media-img .imageWrapper-2p5ogY img {position: static;}
 .customMedia.media-video video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 225px;}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.media-video.media-large-horizontal video {max-width: calc(100vw - 740px); height: 50vh;}
 .customMedia.media-video.media-large-vertical video {height: 60vh; max-width: unset; max-height: unset;}
-.customMedia.media-video .metadata-35KiYB {display: none; z-index: 1;}
-.customMedia.media-video:hover .metadata-35KiYB {display: flex;}
+.customMedia.media-video .metadata-13NcHb {display: none; z-index: 1;}
+.customMedia.media-video:hover .metadata-13NcHb {display: flex;}
 .customMedia.media-iframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle; z-index: 1;}
 .theme-dark .customMedia.media-iframe iframe {background-color: rgba(46,48,54,.3); border: 1px solid rgba(46,48,54,.6);}
 .theme-light .customMedia.media-iframe iframe {background: hsla(0,0%,98%,.3); border: 1px solid hsla(0,0%,80%,.3);}
@@ -232,17 +232,17 @@ const CustomMediaSupport = (function() {
 .customMedia.sadpanda .gallery_info .tag:last-child:after {content: '';}
 .customMedia.sadpanda .gallery_preview {padding: 0; width: 1px;}
 .customMedia.sadpanda .gallery_preview img {max-height: 250px;}
-.customMedia.sadpanda .embed-2diOCQ {max-width: 750px;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Doujinshi {background-color: #FF2525;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Manga {background-color: #FFB225;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Artistcg {background-color: #E8D825;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Gamecg {background-color: #259225;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Western {background-color: #9AFF38;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Non-H {background-color: #38ACFF;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Imageset {background-color: #2525FF;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Cosplay {background-color: #652594;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Asianporn {background-color: #F2A7F2;}
-.customMedia.sadpanda .embedPill-3sYS1X.cat-Misc {background-colorcolor: #D3D3D3;}
+.customMedia.sadpanda .embed-IeVjo6 {max-width: 750px;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Doujinshi {background-color: #FF2525;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Manga {background-color: #FFB225;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Artistcg {background-color: #E8D825;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Gamecg {background-color: #259225;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Western {background-color: #9AFF38;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Non-H {background-color: #38ACFF;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Imageset {background-color: #2525FF;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Cosplay {background-color: #652594;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Asianporn {background-color: #F2A7F2;}
+.customMedia.sadpanda .embedPill-1Zntps.cat-Misc {background-colorcolor: #D3D3D3;}
 .customMedia.sadpanda .gallery_info .cat-Doujinshi {color: #FF2525;}
 .customMedia.sadpanda .gallery_info .cat-Manga {color: #FFB225;}
 .customMedia.sadpanda .gallery_info .cat-Artistcg {color: #E8D825;}
@@ -255,9 +255,9 @@ const CustomMediaSupport = (function() {
 .customMedia.sadpanda .gallery_info .cat-Misc {color: #D3D3D3;}
 /* 4chan previews */
 .customMedia.knittingboard {color: #AAAAAA;}
-.customMedia.knittingboard .embed-2diOCQ {max-width: 640px; min-width: 520px;}
-.customMedia.knittingboard .embed-2diOCQ .board-sfw {background-color: #9099D0;}
-.customMedia.knittingboard .embed-2diOCQ .board-nsfw {background-color: #FFBEAF;}
+.customMedia.knittingboard .embed-IeVjo6 {max-width: 640px; min-width: 520px;}
+.customMedia.knittingboard .embed-IeVjo6 .board-sfw {background-color: #9099D0;}
+.customMedia.knittingboard .embed-IeVjo6 .board-nsfw {background-color: #FFBEAF;}
 .customMedia.knittingboard .thread_head {position: relative;}
 .customMedia.knittingboard .thread_head .thread_posttype {font-weight: bold; line-height: 30px; margin: 0 5px;}
 .customMedia.knittingboard .thread_head .thread_data {display: inline; position: absolute; right: 0;}
@@ -280,35 +280,35 @@ const CustomMediaSupport = (function() {
 .customMedia .spoiler:hover {background-color: unset; color: #ADADAD !important;}
 .customMedia .spoiler::before {display: inline; content: "Spoiler:"; font-family: inherit; padding: 0 2px;}
 /* BetterImagePopups */
-.bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
-.bip-container .imageWrapper-38T7d9 {display: table; margin: 0 auto;}
-.bip-container .imageWrapper-38T7d9 img {position: static;}
+.bip-container .scrollerWrap-2lJEkd {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
+.bip-container .imageWrapper-2p5ogY {display: table; margin: 0 auto;}
+.bip-container .imageWrapper-2p5ogY img {position: static;}
 .bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow: auto;}
 .bip-container .bip-scroller img {margin-bottom: -5px;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
 .bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto;}
-.bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
+.bip-container .downloadLink-2oSgiF {text-transform: capitalize;}
 /* archive manager */
 .cms-menuIcon {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAASCAYAAABrXO8xAAABfElEQVR42rWSu4rCQBiF51n2VVJsZSVEkWjjXQOCooUajeJdtLNR8QJaKYiCl85SEDvxCbb3BbY4y5nCDSiSxoGTGf7/fJOTnwguj8fz5XK5rtFoFKFQ6KXYc7vdV3olpKrqdzwevw8GA3S7XXQ6nZdibzgcQtf1OxkRDAZ/1+s1NpsNuL/Rw0NGRCIRtNttZLNZGIbxVrlcDq1WS8aWYLPZRLlcZqS3qlQqqNfrHwALhcIjHs+feSOHw8Z0OkWv1+P5Sfl8/h/ko9FoIBAIyOJiscB+v8dut8N4PJZJEokEwuHwwxOLxSBY5G2KomA0GklwuVxiu93ifD7jdrvJfT6fw+fzoVQqgYxIp9MoFotwOp0S7Pf7mEwmmM1mWK1WOBwOOB6PuFwujCoHRkbw21KpFGFbopc/gjBNE5lMhlOzJXoZV9RqNSvI349Ttoo1KygHJFhk9mq1SslzMpm06qnPC4SmaSe/3//Dm+yIXjKCy+FwmF6vF3ZEL5k/rZRshi+9vygAAAAASUVORK5CYII=) no-repeat center; opacity: 0.6;}
 .cms-menuIcon:hover {opacity: 1;}
 .cms-content {background-color: unset;}
 .cms-archive_header > div {margin: 0 5px; width: 195px;}
 .cms-archive_filter {padding-bottom: 8px;}
-.cms-archive_filter .input-2YozMi {padding: 0 10px; width: 250px;}
-.cms-archive_active .divider-1G01Z9 {background-color: #a5a5a5;}
+.cms-archive_filter .input-cIJ7To {padding: 0 10px; width: 250px;}
+.cms-archive_active .divider-3573oO {background-color: #a5a5a5;}
 .cms-archive_container .customMedia {margin: 5px; position: relative;}
-.cms-archive_container .customMedia .embed-2diOCQ {max-width: unset;}
+.cms-archive_container .customMedia .embed-IeVjo6 {max-width: unset;}
 .cms-archive_delete {position: absolute; top: 3px; right: 3px;}
-.cms-archive_delete:hover .close-3ejNTg, .cms-archive_clean:hover .close-3ejNTg {background-color: rgba(240, 71, 71, 0.5);}
+.cms-archive_delete:hover .close-18n9bP, .cms-archive_clean:hover .close-18n9bP {background-color: rgba(240, 71, 71, 0.5);}
 .cms-info-header {height: 24px; padding: 8px;}
 .cms-archive_container .customMedia.knittingboard .thread_head .thread_data {right: 30px;}
 			`,
 			shared: `
-.orriePluginModal .backdrop-2ohBEd {background-color: #000000; opacity: 0.85;}
-.orriePluginModal .modal-2LIEKY {opacity: 1;}
-.orriePluginModal .modal-3HOjGZ {padding: 0 20px; width: 800px;}
-.orriePluginModal .description-3MVziF {font-size: 16px; line-height: 24px;}
+.orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
+.orriePluginModal .modal-1UGdnR {opacity: 1;}
+.orriePluginModal .modal-3HD5ck {padding: 0 20px; width: 800px;}
+.orriePluginModal .description-3_Ncsb {font-size: 16px; line-height: 24px;}
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
@@ -342,14 +342,22 @@ const CustomMediaSupport = (function() {
 	},
 	settingsLoad = function() {
 		// load settings
-		const storage = bdPluginStorage.get(script.file, "settings");
+		const storage = bdPluginStorage.get(script.file, "settings"),
+		archive_version = bdPluginStorage.get(script.file, "db_version");
 		if (storage) {
 			script.settings = storage;
 		}
 		else {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
-		script.db.archive = bdPluginStorage.get(script.file, "db") || {};
+		if (!archive_version || (archive_version && script.version.replace(/\./g,"") < 251)) {
+			console.log("delete archive");
+			bdPluginStorage.set(script.file, "db", {})
+		}
+		else {
+			script.db.archive = bdPluginStorage.get(script.file, "db"),
+			bdPluginStorage.set(script.file, "db_version", Number(script.version.replace(/\./g,"")));
+		}
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
 		}
@@ -391,12 +399,12 @@ const CustomMediaSupport = (function() {
 	},
 	modalHandler = function(modalContent, data) {
 		if (data) {
-			modalContent.appendChild(_createElement("div", {className: "description-3MVziF textCenter-1t1XXw userSelectText-wz4t4g", innerHTML: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
+			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb textCenter-3lyOAo userSelectText-1o1dQ7", innerHTML: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
 		}
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
-			_createElement("div", {className: "backdrop-2ohBEd", onclick() {modal.remove();}}),
-			_createElement("div", {className: "modal-2LIEKY"},
-				_createElement("div", {className: "inner-1_1f7b"}, modalContent)
+			_createElement("div", {className: "backdrop-1ocfXc", onclick() {modal.remove();}}),
+			_createElement("div", {className: "modal-1UGdnR"},
+				_createElement("div", {className: "inner-1JeGVc"}, modalContent)
 			)
 		]),
 		button = modal.getElementsByClassName("orrie-button-cancel")[0];
@@ -420,13 +428,13 @@ const CustomMediaSupport = (function() {
 		return true;
 	},
 	mediaReplace  = function(message) {
-		const mediaAll = message.querySelectorAll(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a:not(.imageWrapper-38T7d9)`);
+		const mediaAll = message.querySelectorAll(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a:not(.imageWrapper-2p5ogY)`);
 		for (let _rm=mediaAll.length; _rm--;) {
 			const media = mediaAll[_rm],
 			url = media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href"),
 			fileFilter = url.split("/").slice(-2).join("/");
 			if (media && script.db.filter.includes(fileFilter)) {
-				let wrapper = media.classList.contains("fileNameLink-342ZEF") ? media.closest(".attachment-1Vom9D") : media.closest(".imageWrapper-38T7d9");
+				let wrapper = media.classList.contains("fileNameLink-9GuxCo") ? media.closest(".attachment-33OFj0") : media.closest(".imageWrapper-2p5ogY");
 				if (wrapper && wrapper.parentNode.classList.contains("accessory")) {
 					wrapper.classList.add("media-toggled");
 				}
@@ -474,8 +482,8 @@ const CustomMediaSupport = (function() {
 		if (!script.check.media) {
 			script.check.media = true;
 			const types = {
-				messages: ".markup > a:not(.cms-ignore), .metadataDownload-1eyTml:not(.cms-ignore), .fileNameLink-342ZEF:not(.cms-ignore)",
-				message: ".accessory:not(.media-replace) .embedTitleLink-1IGDvg, .accessory:not(.media-replace) .metadataDownload-1eyTml"
+				messages: ".markup > a:not(.cms-ignore), .metadataDownload-1fk90V:not(.cms-ignore), .fileNameLink-9GuxCo:not(.cms-ignore)",
+				message: ".accessory:not(.media-replace) .embedTitleLink-1Zla9e, .accessory:not(.media-replace) .metadataDownload-1fk90V"
 			},
 			gallery = {"method": "gdata", "gidlist": [], "namespace": 1},
 			links = (type !== "messages" ? node.closest(".message") : node).querySelectorAll(types[type]);
@@ -544,8 +552,8 @@ const CustomMediaSupport = (function() {
 									const fileFilter = hrefSplit.slice(-2).join("/");
 									let data = {
 										fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
-										fileTitle: message.getElementsByClassName("embedTitleLink-1IGDvg")[0] ? message.getElementsByClassName("embedTitleLink-1IGDvg")[0].innerHTML : decodeURIComponent(hrefSplit[hrefSplit.length-1]),
-										fileSize: message.getElementsByClassName("metadataSize-L0PFDT")[0] ? message.getElementsByClassName("metadataSize-L0PFDT")[0].textContent : "",
+										fileTitle: message.getElementsByClassName("embedTitleLink-1Zla9e")[0] ? message.getElementsByClassName("embedTitleLink-1Zla9e")[0].innerHTML : decodeURIComponent(hrefSplit[hrefSplit.length-1]),
+										fileSize: message.getElementsByClassName("metadataSize-2UOOLK")[0] ? message.getElementsByClassName("metadataSize-2UOOLK")[0].textContent : "",
 										fileReplace: false,
 										filePoster: "",
 										fileId, fileType, fileFilter, href, hrefSplit, message, message_body
@@ -589,7 +597,7 @@ const CustomMediaSupport = (function() {
 		const {fileId, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		previewReplace = script.media.replace.includes(hrefSplit[2]),
 		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
-			mode == "return" ? false : _createElement("div", {className: "metadata-35KiYB", innerHTML: `<div class='metadataContent-3HYqEq userSelectText-wz4t4g'><div class='metadataName-CJWo1Z'><a class='white-1yVmLu' href='${href}'>${fileTitle}</a></div><div class='metadataSize-L0PFDT'>${fileSize}</div></div>`}, [
+			mode == "return" ? false : _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
 				_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='orrie-tooltip_text orrie-tooltip_${previewReplace ? "left" : "top"}'>Popout Media</div>`,
 					onclick() {
 						if (fileMedia == "video") {
@@ -672,14 +680,14 @@ const CustomMediaSupport = (function() {
 					}
 				})
 			),
-			_createElement("div", {className: "media-error-message userSelectText-wz4t4g media-toggled", innerHTML: `Unable to embed link - ${href}`})
+			_createElement("div", {className: "media-error-message userSelectText-1o1dQ7 media-toggled", innerHTML: `Unable to embed link - ${href}`})
 		]);
 		if (mode == "return") {
 			return container;
 		}
 		if (previewReplace) {
 			const anchor = message.querySelector(`.accessory a[href*='${fileFilter}']`),
-			embed = anchor ? anchor.closest(".embedContent-AqkoYv").nextElementSibling : false;
+			embed = anchor ? anchor.closest(".embedContent-3fnYWm").nextElementSibling : false;
 			if (embed) {
 				anchor.closest(".accessory").classList.add("media-replace");
 				embed.firstElementChild.classList.add("media-toggled");
@@ -734,7 +742,7 @@ const CustomMediaSupport = (function() {
 				for (let _a=gallery_anchors.length; _a--;) {
 					const element_message = gallery_anchors[_a].closest(".message");
 					if (!element_message.getElementsByClassName(`gallery_${gallery_id}`).length) {
-						container = _createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X cat-${gallery.category}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='2'><div><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2rEBfJ marginBottom4-_yArcI'><a class='embedTitleLink-1IGDvg embedLink-2Cft4i embedTitle-2e667Z size14-1wjlWP weightMedium-13x9Y8 cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+						container = _createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
 						element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 						scrollElement(container.parentNode.scrollHeight, "messages");
 						gallery_anchors[_a].classList.remove("fetchingMedia");
@@ -778,7 +786,7 @@ const CustomMediaSupport = (function() {
 		for (let _a=chan_anchors.length; _a--;) {
 			const element_message = chan_anchors[_a].closest(".message");
 			if (!element_message.getElementsByClassName(`post_${thread_id}`).length) {
-				container = _createElement("div", {className: `accessory customMedia knittingboard post_${thread_id}`, innerHTML: `<div class='embed-2diOCQ flex-3B1Tl4 embed'><div class='embedPill-3sYS1X ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-t4ag7g'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-1KNREX size12-1IGJl9 weightNormal-3gw0Lm cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2rEBfJ '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-1wjlWP weightMedium-13x9Y8 custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2rEBfJ marginBottom4-_yArcI'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+				container = _createElement("div", {className: `accessory customMedia knittingboard post_${thread_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
 				element_message.insertBefore(container, element_message.firstElementChild.nextSibling);
 				scrollElement(container.parentNode.scrollHeight, "messages");
 				chan_anchors[_a].classList.remove("fetchingMedia");
@@ -807,7 +815,7 @@ const CustomMediaSupport = (function() {
 			const key = _db_k[_db];
 			if (Number.isInteger(parseFloat(key[0]))) {
 				const container = _createElement("div", {className: "customMedia sadpanda cms-filter", innerHTML: script.db.archive[key]},
-					_createElement("div", {className: "flex-3B1Tl4 cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_sadpanda-counter");}})
+					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_sadpanda-counter");}})
 				);
 				container.className += (function(tags) {
 					let tagsString = "";
@@ -820,13 +828,13 @@ const CustomMediaSupport = (function() {
 			}
 			else {
 				chanFragment.appendChild(_createElement("div", {className: `customMedia knittingboard cms-filter ${key.split("_")[0]}`, innerHTML: script.db.archive[key]},
-					_createElement("div", {className: "flex-3B1Tl4 cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_chan-counter");}})
+					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_chan-counter");}})
 				));
 			}
 		}
-		return _createElement("div", {className: "modal-3HOjGZ userSelectText-wz4t4g sizeMedium-1-2BNS", innerHTML: "<div class='flex-3B1Tl4 directionRow-yNbSvJ justifyStart-2yIZo0 alignCenter-3VxkQP noWrap-v6g9vO header-3sp3cE' style='flex: 0 0 auto;'><div class='flexChild-1KGW5q' style='flex: 1 1 auto;'><h4 class='h4-2IXpeI title-1pmpPr size16-3IvaX_ height20-165WbF weightSemiBold-T8sxWH defaultColor-v22dK1 defaultMarginh4-jAopYe marginReset-3hwONl'>Archive Manager</h4></div><svg class='orrie-button-cancel close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
-			_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w inner-tqJwAU cms-archive_header", style: "flex: 0 0 auto;"}, [
-				_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>ExHentai (<span id='cms-archive_sadpanda-counter'>${sadpandaFragment.children.length}</span>)</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`,
+		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Archive Manager</h4></div><svg class='orrie-button-cancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
+			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 cms-archive_header", style: "flex: 0 0 auto;"}, [
+				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>ExHentai (<span id='cms-archive_sadpanda-counter'>${sadpandaFragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`,
 					onclick() {
 						document.getElementById("cms-archive_sadpanda").classList.toggle("orrie-toggled");
 						document.getElementById("cms-archive_chan").classList.add("orrie-toggled");
@@ -834,7 +842,7 @@ const CustomMediaSupport = (function() {
 						this.nextElementSibling.classList.remove("cms-archive_active");
 					}
 				}),
-				_createElement("div", {className: "defaultColor-v22dK1 cursorPointer-3oKATS orrie-centerText", innerHTML: `<div class='size18-ZM4Qv-'>4chan (<span id='cms-archive_chan-counter'>${chanFragment.children.length}</span>)</div><div class='divider-1G01Z9 marginTop8-2gOa2N marginBottom8-1mABJ4'></div>`,
+				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>4chan (<span id='cms-archive_chan-counter'>${chanFragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`,
 					onclick() {
 						document.getElementById("cms-archive_sadpanda").classList.add("orrie-toggled");
 						document.getElementById("cms-archive_chan").classList.toggle("orrie-toggled");
@@ -843,15 +851,15 @@ const CustomMediaSupport = (function() {
 					}
 				})
 			]),
-			_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ justifyCenter-29N31w inner-tqJwAU border-39Cu-M cms-archive_filter orrie-overflow", style: "flex: 0 0 auto;"},
-				_createElement("div", {className: "flex-3B1Tl4 directionRow-yNbSvJ"}, [
-					_createElement("input", {className: "input-2YozMi size16-3IvaX_", placeholder: "Filter Content (tags or board)", type: "text", value: "",
+			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 border-2AhmKo cms-archive_filter orrie-overflow", style: "flex: 0 0 auto;"},
+				_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG"}, [
+					_createElement("input", {className: "input-cIJ7To size16-14cGz5", placeholder: "Filter Content (tags or board)", type: "text", value: "",
 						onchange() {
 							BdApi.clearCSS("cms-filters");
 							BdApi.injectCSS("cms-filters", `.cms-filter:not(.${this.value.replace(/\s+/g,"").split(",").join(", .")}) {display:none;}`);
 						}
 					}),
-					_createElement("div", {className: "flex-3B1Tl4 cms-archive_clean orrie-tooltip orrie-relative", innerHTML: "<svg class='close-3ejNTg flexChild-1KGW5q' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Clean Filters</div>",
+					_createElement("div", {className: "flex-1O1GKY cms-archive_clean orrie-tooltip orrie-relative", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Clean Filters</div>",
 						onclick() {
 							this.previousElementSibling.value = "";
 							BdApi.clearCSS("cms-filters");
@@ -859,15 +867,15 @@ const CustomMediaSupport = (function() {
 					})
 				])
 			),
-			_createElement("div", {className: "scrollerWrap-2uBjct content-1Cut5s scrollerThemed-19vinI themeGhostHairline-2H8SiW border-39Cu-M"},
-				_createElement("div", {className: "scroller-fzNley inner-tqJwAU container-RYiLUQ cms-content"},
+			_createElement("div", {className: "scrollerWrap-2lJEkd content-2BXhLs scrollerThemed-2oenus themeGhostHairline-DBD-2d border-2AhmKo"},
+				_createElement("div", {className: "scroller-2FKFPG inner-3wn6Q5 container-PNkimc cms-content"},
 					_createElement("div", {className: "cms-archive_container"}, [
-						_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_sadpanda"}, sadpandaFragment.children.length ? sadpandaFragment : _createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
-						_createElement("div", {className: "orrie-toggled flex-3B1Tl4 directionColumn-2h-LPR", id: "cms-archive_chan"}, chanFragment.children.length ? chanFragment : _createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
+						_createElement("div", {className: "orrie-toggled flex-1O1GKY directionColumn-35P_nr", id: "cms-archive_sadpanda"}, sadpandaFragment.children.length ? sadpandaFragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
+						_createElement("div", {className: "orrie-toggled flex-1O1GKY directionColumn-35P_nr", id: "cms-archive_chan"}, chanFragment.children.length ? chanFragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
 					])
 				)
 			),
-			_createElement("div", {className: "contents-4L4hQM", innerHTML: "<h3 class='titleDefault-1CWM9y buttonBrandLink-3csEAP marginReset-3hwONl weightMedium-13x9Y8 size16-3IvaX_ height24-2pMcnc flexChild-1KGW5q cms-info-header' style='flex: 1 1 auto;'></h3>", style: "flex: 0 0 auto;"})
+			_createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 cms-info-header' style='flex: 1 1 auto;'></h3>", style: "flex: 0 0 auto;"})
 		]);
 	},
 	imagePopHandler = function(wrapper) {
@@ -889,7 +897,7 @@ const CustomMediaSupport = (function() {
 					html = `${img.naturalWidth}px × ${img.naturalHeight}px${scaling ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`,
 					next = wrapper.nextElementSibling;
 					if (!next.classList.contains("bip-description")) {
-						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF userSelectText-wz4t4g'>${html}</div>`);
+						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3_Ncsb userSelectText-1o1dQ7'>${html}</div>`);
 					}
 					else {
 						next.innerHTML = html;
@@ -898,8 +906,8 @@ const CustomMediaSupport = (function() {
 						this.addEventListener("click", function() {
 							this.classList.toggle("bip-center");
 							wrapper.classList.toggle("bip-scroller");
-							wrapper.classList.toggle("scroller-fzNley");
-							wrapper.parentNode.classList.toggle("scrollerWrap-2uBjct");
+							wrapper.classList.toggle("scroller-2FKFPG");
+							wrapper.parentNode.classList.toggle("scrollerWrap-2lJEkd");
 						}, false);
 					}
 				};
@@ -911,13 +919,13 @@ const CustomMediaSupport = (function() {
 		}
 	},
 	insertCustomMenu = function(className, tooltip) {
-		const menuAnchor = document.getElementsByClassName("titleText-2IfpkV")[0] ? document.getElementsByClassName("titleText-2IfpkV")[0].nextElementSibling.nextElementSibling : false;
+		const menuAnchor = document.getElementsByClassName("titleText-3X-zRE")[0] ? document.getElementsByClassName("titleText-3X-zRE")[0].nextElementSibling.nextElementSibling : false;
 		if (menuAnchor) {
 			const menuIcon = menuAnchor.getElementsByClassName(className)[0];
 			if (menuIcon) {
 				menuIcon.remove();
 			}
-			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2Js7V9 icon-mr9wAc orrie-relative orrie-tooltip`, innerHTML: `<div class='orrie-tooltip_text orrie-tooltip_bottom'>${tooltip}</div>`,
+			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='orrie-tooltip_text orrie-tooltip_bottom'>${tooltip}</div>`,
 				onclick() {modalHandler(archiveHandler());}
 			}), menuAnchor.firstChild);
 		}
@@ -989,21 +997,21 @@ const CustomMediaSupport = (function() {
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 			const setting = script.settingsMenu[_s_k[_s]];
 			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
-				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-3hwONl ui-flex-child'>${setting[0]}</h3>`},
+				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-236NPn ui-flex-child'>${setting[0]}</h3>`},
 					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
 				),
-				_createElement("div", {className: "ui-form-text style-description marginTop4-2rEBfJ", innerHTML: setting[2]})
+				_createElement("div", {className: "ui-form-text style-description marginTop4-2BNfKC", innerHTML: setting[2]})
 			]));
 		}
 		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
 			_createElement("div", {className: "ops-plugin_wrapper"}, [
-				_createElement("h2", {className: "h5-3KssQU title-1pmpPr marginReset-3hwONl height16-1qXrGy weightSemiBold-T8sxWH defaultMarginh5-2UwwFY marginBottom8-1mABJ4", innerHTML: "Settings"}),
+				_createElement("h2", {className: "h5-18_1nd title-3sZWYQ marginReset-236NPn height16-2Lv3qA weightSemiBold-NJexzi defaultMarginh5-2mL-bP marginBottom8-AtZOdT", innerHTML: "Settings"}),
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
-			_createElement("div", {className: "flex-3B1Tl4 justifyAround-1CVbTI"}, [
-				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Support (Discord)</button>"}),
-				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Updates</button>"}),
-				_createElement("button", {type: "button", className: "button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db.archive).length || 0})`,
+			_createElement("div", {className: "flex-1O1GKY justifyAround-1n1pnI"}, [
+				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
+				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Updates</button>"}),
+				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db.archive).length || 0})`,
 					onclick() {
 						// clean database
 						script.db.archive = {};
@@ -1012,7 +1020,7 @@ const CustomMediaSupport = (function() {
 					}
 				})
 			]),
-			_createElement("div", {className: "orrie-centerText marginTop8-2gOa2N", innerHTML: "Use the Archive Manager to tidy up the database, or clean it alltogether"}),
+			_createElement("div", {className: "orrie-centerText marginTop8-1DLZ1n", innerHTML: "Use the Archive Manager to tidy up the database, or clean it alltogether"}),
 		]);
 	},
 	_createElement = function(tag, attributes, children) {
@@ -1069,7 +1077,10 @@ const CustomMediaSupport = (function() {
 			return createSettingsPanel();
 		}
 		// start and observer
-		load() {}
+		load() {
+			console.info(`${script.name} v${script.version} started.`);
+			insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
+		}
 		start() {
 			console.info(`${script.name} v${script.version} started.`);
 			settingsLoad();
@@ -1084,8 +1095,7 @@ const CustomMediaSupport = (function() {
 			}
 		}
 		observer({addedNodes}) {
-			const messages = document.getElementsByClassName("messages");
-			if (addedNodes.length > 0 && messages.length) {
+			if (addedNodes.length > 0 && document.getElementsByClassName("messages").length) {
 				const node = addedNodes[0];
 				if (node.className) {
 					switch(node.className) {
@@ -1100,8 +1110,8 @@ const CustomMediaSupport = (function() {
 							mediaConvert("messages", node);
 							textParser(node);
 							break;
-						case "embed-2diOCQ flex-3B1Tl4 embed":
-						case "wrapperPaused-3y2mev wrapper-GhVnpx":
+						case "embed-IeVjo6 flex-1O1GKY embed":
+						case "wrapperPaused-19pWuK wrapper-2TxpI8":
 							mediaConvert("message", node);
 							mediaReplace(node);
 							break;
@@ -1109,17 +1119,17 @@ const CustomMediaSupport = (function() {
 						case "edited":
 							textParser(node);
 							break;
-						case "modal-2LIEKY":
+						case "modal-1UGdnR":
 							if (script.settings.imagePop && !(BdApi.getPlugin('Better Image Popups') && BdApi.getPlugin('Better Image Popups').active)) {
-								const wrapper = node.getElementsByClassName("imageWrapper-38T7d9")[0];
-								if (wrapper && !node.getElementsByClassName("uploadModal-2KN6Mm")[0]) {
+								const wrapper = node.getElementsByClassName("imageWrapper-2p5ogY")[0];
+								if (wrapper && !node.getElementsByClassName("uploadModal-2ifh8j")[0]) {
 									const wrapperObserver = new MutationObserver(function(mutations) {
 										if (mutations[1].addedNodes.length) {
 											imagePopHandler(wrapper);
 											wrapperObserver.disconnect();
 										}
 									});
-									if (node.getElementsByClassName("imageWrapperInner-BRGZ7A")[0]) {
+									if (node.getElementsByClassName("imageWrapperInner-3_dNk0")[0]) {
 										wrapperObserver.observe(wrapper,{childList: true});
 									}
 									else {
