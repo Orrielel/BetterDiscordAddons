@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.6.4",
+		version: "1.6.5",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -39,7 +39,7 @@ const TwitchStreamPanel = (function() {
 .TwitchStreamPanel .tsp-update_button {display: inline-block; padding-left: 0; width: auto;}
 .TwitchStreamPanel .nameDefault-2DI02H:hover {color: #B9BBBE;}
 .TwitchStreamPanel .nameDefault-2DI02H:hover svg {color: #B9BBBE;}
-.TwitchStreamPanel .content-2mSKOj {display: table; margin: 0; padding: 1px 0px 1px 16px; width: 100%;}
+.TwitchStreamPanel .content-20Aix8 {display: table; margin: 0; padding: 1px 0px 1px 16px; width: 100%;}
 .TwitchStreamPanel .tsp-stream_row {font-weight: 500; line-height: 24px;}
 .TwitchStreamPanel .tsp-stream_row:hover {background-color: rgba(0,0,0,0.2);}
 .TwitchStreamPanel .tsp-stream_row_child {vertical-align: middle;}
@@ -57,7 +57,7 @@ const TwitchStreamPanel = (function() {
 .TwitchStreamPanel .tsp-edit_button {display: inline-block; float: right; padding-left: 0; width: auto;}
 .tsp-menuIcon {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABN0lEQVR4AWMAgST7hUdTHJf+Jxs7Le1mSLKao57suOQfSCDBdt7KBLt584nF8XZzV8ANSrRb2AwzOdCsQ4aBBOBuVCUJNyjFYckmmhsE9KpTisPS6P8M/xlB/DT7pRop9ksSom1nSJJkUKL9/E1Ag77U2+9nAfFTHZZmgdRFWk52HzUIApLsFvglOy3NqWeoZwIb7LhIH5jmCmOtZ8pRMfr/MyY5LG4D6Ut2INMgUHJIdlzUCjFk8aNEm7lKKAaFmvfYeJvUK4Gwj3GRCEiTh8pEdhAfGUNdgjAECOAGoWNgPloQ47qIG5ih96LLwQyJc1ygDDKDgEHzVic6LNqHLo7uEkQ2sFtQlWg3fwMc2y+4BFX8D6YRKLYXJp9gv2AN2CWEQIzN7Dxk24Ga2xjIAbE2s3LJMQQAZ9SV6n4xp1sAAAAASUVORK5CYII=) no-repeat center; opacity: 0.6;}
 .tsp-menuIcon:hover {opacity: 1;}
-.orriePluginModal .tsp-menu .content-2mSKOj {height: auto;}
+.orriePluginModal .tsp-menu .content-20Aix8 {height: auto;}
 .orriePluginModal .tsp-content svg {top: 0; left: 0;}
 .orriePluginModal .tsp-content .cardPrimary-1Hv-to {border-radius: 5px; display: table; width: 100%;}
 .orriePluginModal .tsp-content .cardPrimary-1Hv-to img {height: 20px; vertical-align: text-bottom;}
@@ -223,7 +223,7 @@ const TwitchStreamPanel = (function() {
 				])
 			),
 			_createElement("div", {className: `containerDefault-1ZnADq${!script.settings.state ? " orrie-toggled" : ""}`},
-				_createElement("table", {className: "content-2mSKOj orrie-overflow", id: "tsp-stream_table", cellSpacing: 0, server: serverID}, streamFragment)
+				_createElement("table", {className: "content-20Aix8 orrie-overflow", id: "tsp-stream_table", cellSpacing: 0, server: serverID}, streamFragment)
 			),
 			_createElement("div", {className: `wrapperDefault-10Jfvz tsp-footer_wrapper${!script.settings.state ? " orrie-toggled" : ""}`, innerHTML: `<div class='nameDefault-2DI02H tsp-time_text'><span id="tsp-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="tsp-timer">00:00</span></div>`},
 				_createElement("div", {className: "nameDefault-2DI02H cursorPointer-1ajlYk tsp-edit_button", innerHTML: "Edit",
@@ -396,11 +396,11 @@ const TwitchStreamPanel = (function() {
 		]);
 	},
 	createStreamModal = function() {
-		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-3VxkQP noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Streamlist Manager</h4></div><svg class='orrie-button-cancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
-			_createElement("div", {className: "scrollerWrap-2lJEkd content-2BXhLs scrollerThemed-19vinI themeGhostHairline-2H8SiW"},
-				_createElement("div", {className: "scroller-2FKFPG inner-3wn6Q5 container-PNkimc border-39Cu-M tsp-content"}, createServerList())
+		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Streamlist Manager</h4></div><svg class='orrie-button-cancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
+			_createElement("div", {className: "scrollerWrap-2lJEkd content-2BXhLs scrollerThemed-2oenus themeGhostHairline-DBD-2d"},
+				_createElement("div", {className: "scroller-2FKFPG inner-3wn6Q5 container-PNkimc border-2AhmKo tsp-content"}, createServerList())
 			),
-			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-3VxkQP noWrap-3jynv6 inner-3wn6Q5 container-PNkimc border-39Cu-M tsp-menu", style: "flex: 0 0 auto;"},
+			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 inner-3wn6Q5 container-PNkimc border-2AhmKo tsp-menu", style: "flex: 0 0 auto;"},
 				_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignStretch-1hwxMa noWrap-3jynv6 marginTop8-1DLZ1n marginBottom8-AtZOdT", style: "flex: 0 0 100%;"}, [
 					_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyAround-1n1pnI", id: "tsp-stream_menu", style: "flex: 1 0 auto;"}, [
 						_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN", innerHTML: "Add New Stream",
@@ -481,7 +481,7 @@ const TwitchStreamPanel = (function() {
 						})
 					]),
 					_createElement("div", {className: "orrie-toggled", id: "tsp-stream_input", style: "flex: 0 1 100%;"}, [
-						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyBetween-2tTqYu alignStart-H-X2h- noWrap-3jynv6 marginBottom4-_yArcI"}, [
+						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyBetween-2tTqYu alignStart-H-X2h- noWrap-3jynv6 marginBottom4-2qk4Hy"}, [
 							_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN", innerHTML: "Add Stream",
 								onclick() {saveStream();}
 							}),
@@ -506,7 +506,7 @@ const TwitchStreamPanel = (function() {
 						)
 					]),
 					_createElement("div", {className: "orrie-toggled", id: "tsp-stream_import", style: "flex: 0 1 100%;"}, [
-						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyBetween-2tTqYu alignStart-H-X2h- noWrap-3jynv6 marginBottom4-_yArcI"}, [
+						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyBetween-2tTqYu alignStart-H-X2h- noWrap-3jynv6 marginBottom4-2qk4Hy"}, [
 							_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN", innerHTML: "Import List",
 								onclick() {
 									const streamStatus = document.getElementById("tsp-stream_status"),
@@ -544,7 +544,7 @@ const TwitchStreamPanel = (function() {
 								}
 							})
 						]),
-						_createElement("div", {className: "inner-3if5cm flex-1O1GKY innerNoAutocomplete-kaUXJZ", innerHTML: "<textarea id='tsp-stream_import-content' class='textArea-2Spzkt card-30dMrN scrollbarGhostHairline-1mSOM1 scrollbar-3dvm_9' style='flex: 1 1 auto; width: calc(100% - 25px); resize: vertical;'></textarea>"})
+						_createElement("div", {className: "inner-zqa7da flex-1O1GKY innerNoAutocomplete-1WpcVO", innerHTML: "<textarea id='tsp-stream_import-content' class='textArea-2Spzkt card-30dMrN scrollbarGhostHairline-1mSOM1 scrollbar-3dvm_9' style='flex: 1 1 auto; width: calc(100% - 25px); resize: vertical;'></textarea>"})
 					]),
 				])
 			),
