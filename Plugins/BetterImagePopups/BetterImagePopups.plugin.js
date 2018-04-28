@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.2.5",
+		version: "1.2.6",
 		author: "Orrie",
 		desc: "Show full sized images in image popup. Zooming is possible if the image is bigger than Discord window size",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -27,16 +27,16 @@ const BetterImagePopups = (function() {	// plugin settings
 			debug:   ["Debug",                  "check", "Displays verbose stuff into the console"]
 		},
 		css: `
-.bip-container .scrollerWrap-2uBjct {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
-.bip-container .imageWrapper-38T7d9 {display: table; margin: 0 auto;}
-.bip-container .imageWrapper-38T7d9 img {position: static;}
+.bip-container .scrollerWrap-2lJEkd {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
+.bip-container .imageWrapper-2p5ogY {display: table; margin: 0 auto;}
+.bip-container .imageWrapper-2p5ogY img {position: static;}
 .bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow: auto;}
 .bip-container .bip-scroller img {margin-bottom: -5px;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
 .bip-container .bip-description {font-size: 16px; line-height: 24px;}
 .bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto;}
-.bip-container .downloadLink-wANcd8 {text-transform: capitalize;}
+.bip-container .downloadLink-2oSgiF {text-transform: capitalize;}
 		`
 	},
 	settingsLoad = function() {
@@ -105,7 +105,7 @@ const BetterImagePopups = (function() {	// plugin settings
 					html = `${img.naturalWidth}px × ${img.naturalHeight}px${scaling ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`,
 					next = wrapper.nextElementSibling;
 					if (!next.classList.contains("bip-description")) {
-						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3MVziF selectable-prgIYK'>${html}</div>`);
+						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3_Ncsb selectable-x8iAUj'>${html}</div>`);
 					}
 					else {
 						next.innerHTML = html;
@@ -114,8 +114,8 @@ const BetterImagePopups = (function() {	// plugin settings
 						this.addEventListener("click", function() {
 							this.classList.toggle("bip-center");
 							wrapper.classList.toggle("bip-scroller");
-							wrapper.classList.toggle("scroller-fzNley");
-							wrapper.parentNode.classList.toggle("scrollerWrap-2uBjct");
+							wrapper.classList.toggle("scroller-2FKFPG");
+							wrapper.parentNode.classList.toggle("scrollerWrap-2lJEkd");
 						}, false);
 					}
 				};
@@ -161,20 +161,20 @@ const BetterImagePopups = (function() {	// plugin settings
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 			const setting = script.settingsMenu[_s_k[_s]];
 			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
-				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-3hwONl ui-flex-child'>${setting[0]}</h3>`}, [
+				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-236NPn ui-flex-child'>${setting[0]}</h3>`}, [
 					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
 				]),
-				_createElement("div", {className: "ui-form-text style-description marginTop4-2rEBfJ", innerHTML: setting[2]})
+				_createElement("div", {className: "ui-form-text style-description marginTop4-2BNfKC", innerHTML: setting[2]})
 			]));
 		}
 		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
 			_createElement("div", {className: "ops-plugin_wrapper"}, [
-				_createElement("h2", {className: "h5-3KssQU title-1pmpPr marginReset-3hwONl height16-1qXrGy weightSemiBold-T8sxWH defaultMarginh5-2UwwFY marginBottom8-1mABJ4", innerHTML: "Settings"}),
+				_createElement("h2", {className: "h5-18_1nd title-3sZWYQ marginReset-236NPn height16-2Lv3qA weightSemiBold-NJexzi defaultMarginh5-2mL-bP marginBottom8-AtZOdT", innerHTML: "Settings"}),
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
-			_createElement("div", {className: "flex-3B1Tl4 justifyAround-1CVbTI"}, [
-				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Support (Discord)</button>"}),
-				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-2t3of8 lookFilled-luDKDo colorBrand-3PmwCE sizeSmall-3g6RX8 grow-25YQ8u'>Updates</button>"})
+			_createElement("div", {className: "flex-1O1GKY justifyAround-1n1pnI"}, [
+				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
+				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Updates</button>"})
 			])
 		]);
 	},
@@ -217,16 +217,16 @@ const BetterImagePopups = (function() {	// plugin settings
 		observer({addedNodes}) {
 			if (addedNodes.length > 0) {
 				const node = addedNodes[0];
-				if (node.className == "modal-2LIEKY") {
-					const wrapper = node.getElementsByClassName("imageWrapper-38T7d9")[0];
-					if (wrapper && !node.getElementsByClassName("uploadModal-2KN6Mm")[0]) {
+				if (node.className == "modal-1UGdnR") {
+					const wrapper = node.getElementsByClassName("imageWrapper-2p5ogY")[0];
+					if (wrapper && !node.getElementsByClassName("uploadModal-2ifh8j")[0]) {
 						const wrapperObserver = new MutationObserver(function(mutations) {
 							if (mutations[1].addedNodes.length) {
 								imagePopHandler(wrapper);
 								wrapperObserver.disconnect();
 							}
 						});
-						if (node.getElementsByClassName("imageWrapperInner-BRGZ7A")[0]) {
+						if (node.getElementsByClassName("imageWrapperInner-3_dNk0")[0]) {
 							wrapperObserver.observe(wrapper,{childList: true});
 						}
 						else {
