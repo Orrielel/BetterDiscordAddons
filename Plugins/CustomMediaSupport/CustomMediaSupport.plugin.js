@@ -353,7 +353,6 @@ const CustomMediaSupport = (function() {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
 		if (!archive_version || (archive_version && script.version.replace(/\./g,"") < 251)) {
-			console.log("delete archive");
 			bdPluginStorage.set(script.file, "db", {});
 		}
 		else {
@@ -435,7 +434,6 @@ const CustomMediaSupport = (function() {
 			const media = mediaAll[_rm],
 			url = media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href"),
 			fileFilter = url.split("/").slice(-2).join("/");
-			console.log(media);
 			if (media && script.db.filter.includes(fileFilter)) {
 				let wrapper = media.closest(".accessory");
 				if (wrapper) {
