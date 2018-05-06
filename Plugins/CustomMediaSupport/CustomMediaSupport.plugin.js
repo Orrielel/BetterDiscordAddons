@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.5.2",
+		version: "2.5.3",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -201,7 +201,7 @@ const CustomMediaSupport = (function() {
 .customMedia .metadataButton {cursor: pointer; font-size: 22px; font-weight: bold; margin-top: -2px; opacity: 0.6;}
 .customMedia .metadataButton:hover {opacity: 1;}
 .customMedia.media-audio .metadataButton {display: none;}
-.customMedia.media-audio audio {margin-top: 40px; vertical-align: middle; width: 25vw; min-width: 400px;}
+.customMedia.media-audio audio {margin-top: 5px; vertical-align: middle; width: 25vw; min-width: 500px;}
 .customMedia.media-img img {margin-top: 40px; min-height: 50px; min-width: 400px;}
 .customMedia.media-img .imageWrapper-2p5ogY img {position: static;}
 .customMedia.media-video video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 225px;}
@@ -224,6 +224,13 @@ const CustomMediaSupport = (function() {
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
 ::-webkit-media-controls-fullscreen-button {display: none;}
 .media-toggled {display: none !important;}
+.customMedia ::-webkit-media-controls {
+    overflow: hidden !important
+}
+.customMedia ::-webkit-media-controls-enclosure {
+    width: calc(100% + 32px);
+    margin-left: auto;
+}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
 .customMedia.sadpanda .gallery_info .desc {color: #FFFFFF;}
@@ -319,18 +326,13 @@ const CustomMediaSupport = (function() {
 .orrie-inputRequired::before {color: #F04747; content: "*"; font-size: 20px; font-weight: 700; margin-left: 2px; position: absolute; z-index: 1;}
 .theme-dark .orrie-plugin {color: #B0B6B9;}
 /* tooltips */
-.orrie-tooltip_text {background-color: #3A71C1; border-radius: 6px; box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .2); color: #DCDDDE; font-size: 14px; font-weight: 500; opacity: 0; padding: 8px 12px; position: absolute; text-align: center; transition: opacity 0.3s; visibility: hidden; width: max-content; max-width: 160px; z-index: 1002;}
-.orrie-tooltip:hover .orrie-tooltip_text {opacity: 1; visibility: visible;}
-.orrie-tooltip_top {bottom: 135%; left: 50%; transform: translateX(-50%);}
-.orrie-tooltip_bottom {left: 50%; top: 135%; transform: translateX(-50%);}
-.orrie-tooltip_right {top: 50%; transform: translateY(-50%);}
-.orrie-tooltip_left {right: 135%; top: 50%; transform: translateY(-50%);}
-.orrie-tooltip_text::after {border-color: transparent; border-style: solid; border-width: 5px; content: ""; position: absolute;}
-.orrie-tooltip_top::after {border-top-color: #3A71C1; left: 50%; margin-left: -5px; top: 100%;}
-.orrie-tooltip_bottom::after {border-bottom-color: #3A71C1; bottom: 100%; left: 50%; margin-left: -5px;}
-.orrie-tooltip_right::after {border-right-color: #3A71C1; margin-top: -5px; right: 100%; top: 50%;}
-.orrie-tooltip_left::after {border-left-color: #3A71C1; left: 100%; margin-top: -5px; top: 50%;}
-.orrie-tooltip_text:hover {opacity: 0 !important; visibility: hidden !important;}
+.orrie-tooltip:hover .tooltip {display: initial;}
+.orrie-tooltip .tooltip {display: none; margin: 0; text-align: center; width: max-content;}
+.orrie-tooltip .tooltip-top {bottom: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip .tooltip-bottom {top: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip .tooltip-right {left: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip .tooltip-left {right: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip .tooltip:hover {display: none;}
 			`
 		},
 		db: {
@@ -352,7 +354,7 @@ const CustomMediaSupport = (function() {
 		}
 		if (!archive_version || (archive_version && script.version.replace(/\./g,"") < 251)) {
 			console.log("delete archive");
-			bdPluginStorage.set(script.file, "db", {})
+			bdPluginStorage.set(script.file, "db", {});
 		}
 		else {
 			script.db.archive = bdPluginStorage.get(script.file, "db"),
@@ -433,16 +435,11 @@ const CustomMediaSupport = (function() {
 			const media = mediaAll[_rm],
 			url = media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href"),
 			fileFilter = url.split("/").slice(-2).join("/");
+			console.log(media);
 			if (media && script.db.filter.includes(fileFilter)) {
-				let wrapper = media.classList.contains("fileNameLink-9GuxCo") ? media.closest(".attachment-33OFj0") : media.closest(".imageWrapper-2p5ogY");
-				if (wrapper && wrapper.parentNode.classList.contains("accessory")) {
+				let wrapper = media.closest(".accessory");
+				if (wrapper) {
 					wrapper.classList.add("media-toggled");
-				}
-				else {
-					wrapper = media.closest(".embed");
-					if (wrapper) {
-						wrapper.classList.add("media-toggled");
-					}
 				}
 				if (script.db.proxy[fileFilter] == "ERROR") {
 					const source = document.getElementById(`error_${fileFilter}`);
@@ -595,93 +592,118 @@ const CustomMediaSupport = (function() {
 	mediaEmbedding = function(data, mode) {
 		log("info", "mediaEmbedding", data);
 		const {fileId, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
+		wrapperName = {
+			video: "imageWrapper-2p5ogY orrie-overflow",
+			audio: "wrapperAudio-1jDe0Q wrapper-2TxpI8",
+			img: "imageWrapper",
+			iframe: "iframeWrapper"
+		},
 		previewReplace = script.media.replace.includes(hrefSplit[2]),
-		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
-			mode == "return" ? false : _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
-				_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='orrie-tooltip_text orrie-tooltip_${previewReplace ? "left" : "top"}'>Popout Media</div>`,
-					onclick() {
-						if (fileMedia == "video") {
-							const video = this.parentNode.nextElementSibling;
-							data.currentTime = video.currentTime;
-							data.playing = !video.paused;
-							video.pause();
-						}
-						modalHandler(mediaEmbedding(data, "return"), data);
-					}
-				}),
-				fileMedia == "video" ? _createElement("div", {className: "metadataButton metadataButton-expand orrie-tooltip orrie-relative", innerHTML: "&#128470<div class='orrie-tooltip_text orrie-tooltip_top'>Expand Media</div>",
-					onclick() {
-						const video = this.parentNode.nextElementSibling;
-						container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
-						if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
-							container.parentNode.scrollIntoView(false);
-						}
-					}
-				}) : false
-			]),
-			_createElement(fileMedia, (function() {
-				switch(fileMedia) {
-					case "video":
-					case "audio":
-						return {check: href, controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
-							onclick() {if (this.paused) {this.play();} else {this.pause();}},
-							onloadedmetadata() {
-								if (fileMedia == "video") {
-									data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
-									if (script.settings.hoverPlay) {
-										this.onmouseover = function() {
-											if (this.paused) {
-												this.play();
-											}
-										};
-										this.onmouseout = function() {
-											this.pause();
-										};
+		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter},
+			_createElement("div", {className: wrapperName[fileMedia], check: fileFilter}, [
+				mode == "return" ? false : (function() {
+					switch(fileMedia) {
+						case "video":
+							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 cms-ignore' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
+								_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
+								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Popout Media</div>`,
+									onclick() {
+										const video = this.parentNode.nextElementSibling;
+										data.currentTime = video.currentTime;
+										data.playing = !video.paused;
+										video.pause();
+										modalHandler(mediaEmbedding(data, "return"), data);
 									}
-									if (data.currentTime) {
-										this.currentTime = data.currentTime;
-										if (data.playing) {
-											this.play();
+								}),
+								_createElement("div", {className: "metadataButton metadataButton-expand orrie-tooltip orrie-relative", innerHTML: "&#128470<div class='tooltip tooltip-top'>Expand Media</div>",
+									onclick() {
+										const video = this.parentNode.nextElementSibling;
+										container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
+										if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
+											container.parentNode.scrollIntoView(false);
 										}
 									}
-								}
-								this.volume = script.settings.volume;
-								scrollElement(container.parentNode.scrollHeight, "messages");
-								// replace original accessory previews if they exist
-								if (!script.media.replace.includes(hrefSplit[2])) {
-									if (!script.db.filter.includes(fileFilter)) {
-										script.db.filter.push(fileFilter);
+								})
+							]);
+						case "audio":
+							return _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf-  cms-ignore' href='${href}'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-top'>Download Audio</div></a>`});
+						case "img":
+						case "iframe":
+							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
+								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-top'>Popout Media</div>`,
+									onclick() {
+										modalHandler(mediaEmbedding(data, "return"), data);
 									}
-									mediaReplace(message);
-								}
-							}
-						};
-					case "img":
-					case "iframe":
-						return {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, check: href, allowFullscreen: true};
-					default:
-						log("error", "mediaEmbed", href);
-				}
-			})(),
-				_createElement("source", {src: href,
-					onerror() {
-						const proxy = script.db.proxy[fileFilter];
-						if (proxy) {
-							this.src = proxy;
-							this.parentNode.load();
-							delete script.db.proxy[fileFilter];
-						}
-						else {
-							script.db.proxy[fileFilter] = "ERROR";
-							this.id = `error_${fileFilter}`;
-							this.parentNode.classList.add("media-toggled");
-							this.parentNode.nextElementSibling.classList.remove("media-toggled");
-						}
+								})
+							]);
+						default:
+							log("error", "mediaEmbed", href);
 					}
-				})
-			),
-			_createElement("div", {className: "media-error-message userSelectText-1o1dQ7 media-toggled", innerHTML: `Unable to embed link - ${href}`})
-		]);
+				})(),
+				_createElement(fileMedia, (function() {
+					switch(fileMedia) {
+						case "video":
+						case "audio":
+							return {check: href, controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
+								onclick() {if (this.paused) {this.play();} else {this.pause();}},
+								onloadedmetadata() {
+									if (fileMedia == "video") {
+										data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
+										if (script.settings.hoverPlay) {
+											this.onmouseover = function() {
+												if (this.paused) {
+													this.play();
+												}
+											};
+											this.onmouseout = function() {
+												this.pause();
+											};
+										}
+										if (data.currentTime) {
+											this.currentTime = data.currentTime;
+											if (data.playing) {
+												this.play();
+											}
+										}
+									}
+									this.volume = script.settings.volume;
+									scrollElement(container.parentNode.scrollHeight, "messages");
+									// replace original accessory previews if they exist
+									if (!script.media.replace.includes(hrefSplit[2])) {
+										if (!script.db.filter.includes(fileFilter)) {
+											script.db.filter.push(fileFilter);
+										}
+										mediaReplace(message);
+									}
+								}
+							};
+						case "img":
+						case "iframe":
+							return {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, check: href, allowFullscreen: true};
+						default:
+							log("error", "mediaEmbed", href);
+					}
+				})(),
+					_createElement("source", {src: href,
+						onerror() {
+							const proxy = script.db.proxy[fileFilter];
+							if (proxy) {
+								this.src = proxy;
+								this.parentNode.load();
+								delete script.db.proxy[fileFilter];
+							}
+							else {
+								script.db.proxy[fileFilter] = "ERROR";
+								this.id = `error_${fileFilter}`;
+								this.parentNode.classList.add("media-toggled");
+								this.parentNode.nextElementSibling.classList.remove("media-toggled");
+							}
+						}
+					})
+				),
+				_createElement("div", {className: "media-error-message userSelectText-1o1dQ7 media-toggled", innerHTML: `Unable to embed link - ${href}`})
+			])
+		);
 		if (mode == "return") {
 			return container;
 		}
@@ -815,7 +837,7 @@ const CustomMediaSupport = (function() {
 			const key = _db_k[_db];
 			if (Number.isInteger(parseFloat(key[0]))) {
 				const container = _createElement("div", {className: "customMedia sadpanda cms-filter", innerHTML: script.db.archive[key]},
-					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_sadpanda-counter");}})
+					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_sadpanda-counter");}})
 				);
 				container.className += (function(tags) {
 					let tagsString = "";
@@ -828,7 +850,7 @@ const CustomMediaSupport = (function() {
 			}
 			else {
 				chanFragment.appendChild(_createElement("div", {className: `customMedia knittingboard cms-filter ${key.split("_")[0]}`, innerHTML: script.db.archive[key]},
-					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_chan-counter");}})
+					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_chan-counter");}})
 				));
 			}
 		}
@@ -859,7 +881,7 @@ const CustomMediaSupport = (function() {
 							BdApi.injectCSS("cms-filters", `.cms-filter:not(.${this.value.replace(/\s+/g,"").split(",").join(", .")}) {display:none;}`);
 						}
 					}),
-					_createElement("div", {className: "flex-1O1GKY cms-archive_clean orrie-tooltip orrie-relative", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='orrie-tooltip_text orrie-tooltip_bottom'>Clean Filters</div>",
+					_createElement("div", {className: "flex-1O1GKY cms-archive_clean orrie-tooltip orrie-relative", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-bottom'>Clean Filters</div>",
 						onclick() {
 							this.previousElementSibling.value = "";
 							BdApi.clearCSS("cms-filters");
@@ -925,7 +947,7 @@ const CustomMediaSupport = (function() {
 			if (menuIcon) {
 				menuIcon.remove();
 			}
-			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='orrie-tooltip_text orrie-tooltip_bottom'>${tooltip}</div>`,
+			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='tooltip tooltip-bottom'>${tooltip}</div>`,
 				onclick() {modalHandler(archiveHandler());}
 			}), menuAnchor.firstChild);
 		}
