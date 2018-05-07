@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.5.3",
+		version: "2.5.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -200,7 +200,6 @@ const CustomMediaSupport = (function() {
 .customMedia .metadataName-14STf-:hover a {opacity: 1;}
 .customMedia .metadataButton {cursor: pointer; font-size: 22px; font-weight: bold; margin-top: -2px; opacity: 0.6;}
 .customMedia .metadataButton:hover {opacity: 1;}
-.customMedia.media-audio .metadataButton {display: none;}
 .customMedia.media-audio audio {margin-top: 5px; vertical-align: middle; width: 25vw; min-width: 500px;}
 .customMedia.media-img img {margin-top: 40px; min-height: 50px; min-width: 400px;}
 .customMedia.media-img .imageWrapper-2p5ogY img {position: static;}
@@ -225,11 +224,11 @@ const CustomMediaSupport = (function() {
 ::-webkit-media-controls-fullscreen-button {display: none;}
 .media-toggled {display: none !important;}
 .customMedia ::-webkit-media-controls {
-    overflow: hidden !important
+	overflow: hidden !important
 }
 .customMedia ::-webkit-media-controls-enclosure {
-    width: calc(100% + 32px);
-    margin-left: auto;
+	width: calc(100% + 32px);
+	margin-left: auto;
 }
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
@@ -290,6 +289,7 @@ const CustomMediaSupport = (function() {
 .bip-container .scrollerWrap-2lJEkd {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
 .bip-container .imageWrapper-2p5ogY {display: table; margin: 0 auto;}
 .bip-container .imageWrapper-2p5ogY img {position: static;}
+.bip-container .spinner-2enMB9 {position: absolute;}
 .bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow: auto;}
 .bip-container .bip-scroller img {margin-bottom: -5px;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
@@ -435,7 +435,7 @@ const CustomMediaSupport = (function() {
 			url = media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href"),
 			fileFilter = url.split("/").slice(-2).join("/");
 			if (media && script.db.filter.includes(fileFilter)) {
-				let wrapper = media.closest(".accessory");
+				let wrapper = media.closest(".accessory > div");
 				if (wrapper) {
 					wrapper.classList.add("media-toggled");
 				}
@@ -604,7 +604,7 @@ const CustomMediaSupport = (function() {
 						case "video":
 							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 cms-ignore' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
 								_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
-								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Popout Media</div>`,
+								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Popout Video</div>`,
 									onclick() {
 										const video = this.parentNode.nextElementSibling;
 										data.currentTime = video.currentTime;
@@ -613,7 +613,7 @@ const CustomMediaSupport = (function() {
 										modalHandler(mediaEmbedding(data, "return"), data);
 									}
 								}),
-								_createElement("div", {className: "metadataButton metadataButton-expand orrie-tooltip orrie-relative", innerHTML: "&#128470<div class='tooltip tooltip-top'>Expand Media</div>",
+								_createElement("div", {className: "metadataButton metadataButton-expand orrie-tooltip orrie-relative", innerHTML: "&#128470<div class='tooltip tooltip-top'>Expand Video</div>",
 									onclick() {
 										const video = this.parentNode.nextElementSibling;
 										container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
@@ -1137,7 +1137,7 @@ const CustomMediaSupport = (function() {
 							break;
 						case "message-text":
 						case "edited":
-							textParser(node);
+							setTimeout(textParser(node), 2500);
 							break;
 						case "modal-1UGdnR":
 							if (script.settings.imagePop && !(BdApi.getPlugin('Better Image Popups') && BdApi.getPlugin('Better Image Popups').active)) {
