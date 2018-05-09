@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.5.4",
+		version: "2.5.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -189,7 +189,7 @@ const CustomMediaSupport = (function() {
 			script: `
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,0.7);}
-.message-group .customMedia {display: inline-flex; margin-top: 8px; padding: 0; position: relative;}
+.message-group .customMedia {display: flex; margin-top: 8px; padding: 0; position: relative;}
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-IeVjo6 {max-width: unset;}
@@ -205,10 +205,11 @@ const CustomMediaSupport = (function() {
 .customMedia.media-img .imageWrapper-2p5ogY img {position: static;}
 .customMedia.media-video video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 225px;}
 .customMedia.media-video video::-webkit-media-controls {padding-top: 32px;}
-.customMedia.media-video.media-large-horizontal video {max-width: calc(100vw - 740px); height: 50vh;}
+.customMedia.media-video.media-large-horizontal video {max-width: calc(100vw - 740px); min-height: 35vh;}
+.customMedia.media-video.media-large-horizontal .metadataButton-expand {color: #F95E00;}
 .customMedia.media-video.media-large-vertical video {height: 60vh; max-width: unset; max-height: unset;}
 .customMedia.media-video .metadata-13NcHb {display: none; z-index: 1;}
-.customMedia.media-video:hover .metadata-13NcHb {display: flex;}
+.customMedia.media-video .imageWrapper-2p5ogY:hover .metadata-13NcHb {display: flex;}
 .customMedia.media-iframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle; z-index: 1;}
 .theme-dark .customMedia.media-iframe iframe {background-color: rgba(46,48,54,.3); border: 1px solid rgba(46,48,54,.6);}
 .theme-light .customMedia.media-iframe iframe {background: hsla(0,0%,98%,.3); border: 1px solid hsla(0,0%,80%,.3);}
@@ -216,6 +217,7 @@ const CustomMediaSupport = (function() {
 .CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh !important; width: 90vw !important; max-height: unset; max-width: unset; resize: none;}
 .accessory.media-replace .customMedia.media-video video {object-fit: fill; width: 100%;}
 .accessory.media-replace .metadataButton-expand {display: none;}
+/* player style */
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 3px 3px; display: flex !important; opacity: 1 !important;}
 .customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-internal-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
@@ -223,13 +225,9 @@ const CustomMediaSupport = (function() {
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
 ::-webkit-media-controls-fullscreen-button {display: none;}
 .media-toggled {display: none !important;}
-.customMedia ::-webkit-media-controls {
-	overflow: hidden !important
-}
-.customMedia ::-webkit-media-controls-enclosure {
-	width: calc(100% + 32px);
-	margin-left: auto;
-}
+/* hide download button */
+.customMedia ::-webkit-media-controls {overflow: hidden !important}
+.customMedia ::-webkit-media-controls-enclosure {width: calc(100% + 32px);margin-left: auto;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
 .customMedia.sadpanda .gallery_info .desc {color: #FFFFFF;}
@@ -597,12 +595,12 @@ const CustomMediaSupport = (function() {
 			iframe: "iframeWrapper"
 		},
 		previewReplace = script.media.replace.includes(hrefSplit[2]),
-		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter},
+		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
 			_createElement("div", {className: wrapperName[fileMedia], check: fileFilter}, [
 				mode == "return" ? false : (function() {
 					switch(fileMedia) {
 						case "video":
-							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 cms-ignore' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
+							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 cms-ignore' href='${href}' target='_blank'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
 								_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
 								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Popout Video</div>`,
 									onclick() {
@@ -624,7 +622,7 @@ const CustomMediaSupport = (function() {
 								})
 							]);
 						case "audio":
-							return _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf-  cms-ignore' href='${href}'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-top'>Download Audio</div></a>`});
+							return _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf-  cms-ignore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-top'>Download Audio</div></a>`});
 						case "img":
 						case "iframe":
 							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
@@ -694,14 +692,14 @@ const CustomMediaSupport = (function() {
 								script.db.proxy[fileFilter] = "ERROR";
 								this.id = `error_${fileFilter}`;
 								this.parentNode.classList.add("media-toggled");
-								this.parentNode.nextElementSibling.classList.remove("media-toggled");
+								this.parentNode.parentNode.nextElementSibling.classList.remove("media-toggled");
 							}
 						}
 					})
-				),
-				_createElement("div", {className: "media-error-message userSelectText-1o1dQ7 media-toggled", innerHTML: `Unable to embed link - ${href}`})
-			])
-		);
+				)
+			]),
+			_createElement("div", {className: "media-error-message userSelectText-1o1dQ7 media-toggled", innerHTML: `Unable to embed link - ${href}`})
+		]);
 		if (mode == "return") {
 			return container;
 		}
