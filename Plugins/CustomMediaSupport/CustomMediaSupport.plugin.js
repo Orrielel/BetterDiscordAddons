@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.5.5",
+		version: "2.5.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -169,7 +169,7 @@ const CustomMediaSupport = (function() {
 				"https://archive.loveisover.me": ["c","d","e","i","lgbt","t","u"]
 			}
 		},
-		settings: {embedding: true, api: true, loop: true, volume: 0.25, preload: true, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, imagePop: true, debug: false},
+		settings: {embedding: true, api: true, loop: true, volume: 0.25, preload: true, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, debug: false},
 		settingsMenu: {
 			//          localized                 type     description
 			embedding: ["Media Embedding",        "check", "Embeds or replaces supported elements:<br>mp4, m4v, ogv, ogm, webm, mov; mp3, ogg, oga, wav, wma, m4a, aac, flac; pdf"],
@@ -182,7 +182,7 @@ const CustomMediaSupport = (function() {
 			board:     ["4chan",                  "check", "Embed 4chan thread links -- data will be stored indefinitely"],
 			sadpanda:  ["Sadpanda",               "check", "Embed Sadpanda galleries -- data will be stored indefinitely"],
 			greentext: ["Greentext",              "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
-			imagePop:  ["Full Resolution Images", "check", "Replaces images with full resolution ones whilst in popup mode.<br>Images larger than the visible screen will be clickable for pure native previews with scrolling.<br>Disables itself if you're using <a href='https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups' target='_blank'>BetterImagePopups</a>"],
+			imagePop:  ["Full Resolution Images", "check", "Only in dedicated script: <a href='https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups' target='_blank'>BetterImagePopups</a>"],
 			debug:     ["Debug",                  "check", "Displays verbose stuff into the console"]
 		},
 		css: {
@@ -283,17 +283,6 @@ const CustomMediaSupport = (function() {
 .customMedia .spoiler {background: #1D1D1D;}
 .customMedia .spoiler:hover {background-color: unset; color: #ADADAD !important;}
 .customMedia .spoiler::before {display: inline; content: "Spoiler:"; font-family: inherit; padding: 0 2px;}
-/* BetterImagePopups */
-.bip-container .scrollerWrap-2lJEkd {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
-.bip-container .imageWrapper-2p5ogY {display: table; margin: 0 auto;}
-.bip-container .imageWrapper-2p5ogY img {position: static;}
-.bip-container .spinner-2enMB9 {position: absolute;}
-.bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 140px); max-width: calc(100vw - 160px); overflow: auto;}
-.bip-container .bip-scroller img {margin-bottom: -5px;}
-.bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
-.bip-container .bip-center {max-height: calc(100vh - 140px); max-width: calc(100vw - 160px);}
-.bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto;}
-.bip-container .downloadLink-2oSgiF {text-transform: capitalize;}
 /* archive manager */
 .cms-menuIcon {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAASCAYAAABrXO8xAAABfElEQVR42rWSu4rCQBiF51n2VVJsZSVEkWjjXQOCooUajeJdtLNR8QJaKYiCl85SEDvxCbb3BbY4y5nCDSiSxoGTGf7/fJOTnwguj8fz5XK5rtFoFKFQ6KXYc7vdV3olpKrqdzwevw8GA3S7XXQ6nZdibzgcQtf1OxkRDAZ/1+s1NpsNuL/Rw0NGRCIRtNttZLNZGIbxVrlcDq1WS8aWYLPZRLlcZqS3qlQqqNfrHwALhcIjHs+feSOHw8Z0OkWv1+P5Sfl8/h/ko9FoIBAIyOJiscB+v8dut8N4PJZJEokEwuHwwxOLxSBY5G2KomA0GklwuVxiu93ifD7jdrvJfT6fw+fzoVQqgYxIp9MoFotwOp0S7Pf7mEwmmM1mWK1WOBwOOB6PuFwujCoHRkbw21KpFGFbopc/gjBNE5lMhlOzJXoZV9RqNSvI349Ttoo1KygHJFhk9mq1SslzMpm06qnPC4SmaSe/3//Dm+yIXjKCy+FwmF6vF3ZEL5k/rZRshi+9vygAAAAASUVORK5CYII=) no-repeat center; opacity: 0.6;}
 .cms-menuIcon:hover {opacity: 1;}
@@ -896,46 +885,6 @@ const CustomMediaSupport = (function() {
 			_createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 cms-info-header' style='flex: 1 1 auto;'></h3>", style: "flex: 0 0 auto;"})
 		]);
 	},
-	imagePopHandler = function(wrapper) {
-		log("info", "imagePop", wrapper);
-		const img = wrapper.lastElementChild;
-		if (img.src) {
-			const proxy = img.src.split("?")[0];
-			if (!/\.gif$/.test(proxy)) {
-				const fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
-				wrapper.href = fullSrc;
-				wrapper.style.cssText = "";
-				wrapper.removeAttribute("target");
-				wrapper.nextElementSibling.classList.add("bip-actions");
-				img.classList.add("bip-center");
-				img.src = fullSrc;
-				img.style.cssText = "";
-				img.onload = function() {
-					const scaling = this.naturalHeight > window.innerHeight*1.15 || this.naturalWidth > window.innerWidth*1.15,
-					html = `${img.naturalWidth}px × ${img.naturalHeight}px${scaling ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}`,
-					next = wrapper.nextElementSibling;
-					if (!next.classList.contains("bip-description")) {
-						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3_Ncsb userSelectText-1o1dQ7'>${html}</div>`);
-					}
-					else {
-						next.innerHTML = html;
-					}
-					if (scaling) {
-						this.addEventListener("click", function() {
-							this.classList.toggle("bip-center");
-							wrapper.classList.toggle("bip-scroller");
-							wrapper.classList.toggle("scroller-2FKFPG");
-							wrapper.parentNode.classList.toggle("scrollerWrap-2lJEkd");
-						}, false);
-					}
-				};
-				img.onerror = function() {
-					this.src = proxy;
-					this.onerror = undefined;
-				};
-			}
-		}
-	},
 	insertCustomMenu = function(className, tooltip) {
 		const menuAnchor = document.getElementsByClassName("titleText-3X-zRE")[0] ? document.getElementsByClassName("titleText-3X-zRE")[0].nextElementSibling.nextElementSibling : false;
 		if (menuAnchor) {
@@ -1136,26 +1085,6 @@ const CustomMediaSupport = (function() {
 						case "message-text":
 						case "edited":
 							setTimeout(textParser(node), 2500);
-							break;
-						case "modal-1UGdnR":
-							if (script.settings.imagePop && !(BdApi.getPlugin('Better Image Popups') && BdApi.getPlugin('Better Image Popups').active)) {
-								const wrapper = node.getElementsByClassName("imageWrapper-2p5ogY")[0];
-								if (wrapper && !node.getElementsByClassName("uploadModal-2ifh8j")[0]) {
-									const wrapperObserver = new MutationObserver(function(mutations) {
-										if (mutations[1].addedNodes.length) {
-											imagePopHandler(wrapper);
-											wrapperObserver.disconnect();
-										}
-									});
-									if (node.getElementsByClassName("imageWrapperInner-3_dNk0")[0]) {
-										wrapperObserver.observe(wrapper,{childList: true});
-									}
-									else {
-										imagePopHandler(wrapper);
-									}
-									node.classList.add("bip-container");
-								}
-							}
 							break;
 					}
 				}
