@@ -1,4 +1,4 @@
-//META{"name":"TwitchStreamPanel", "pname":"Twitch Stream Panel"}*//
+//META{"name":"TwitchStreamPanel","website":"https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel","source":"https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/TwitchStreamPanel/TwitchStreamPanel.plugin.js"}*//
 
 /* global bdPluginStorage, BdApi, BDfunctionsDevilBro */
 
@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.6.6",
+		version: "1.6.7",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -128,10 +128,7 @@ const TwitchStreamPanel = (function() {
 				previousElementSibling.textContent = value;
 				style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
 				break;
-			case "text":
-				break;
-			default:
-				break;
+			// case "text":
 		}
 	},
 	log = function(method, title, data) {
@@ -356,8 +353,6 @@ const TwitchStreamPanel = (function() {
 					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
 						onchange() {settingsSave(key, this.value);}
 					});
-				default:
-					return "";
 			}
 		};
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
@@ -376,7 +371,7 @@ const TwitchStreamPanel = (function() {
 			]),
 			_createElement("div", {className: "flex-1O1GKY justifyAround-1n1pnI"}, [
 				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
-				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Updates</button>"}),
+				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"}),
 				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN", innerHTML: "Edit Streamlist",
 					onclick() {modalHandler(createStreamModal());}
 				}),
@@ -667,7 +662,7 @@ const TwitchStreamPanel = (function() {
 			}
 			else {
 				for (let _c=0, _c_len=children.length; _c<_c_len; _c++) {
-					if (children[_c]) {
+					if (children[_c].nodeType) {
 						element.appendChild(children[_c]);
 					}
 				}
@@ -681,6 +676,9 @@ const TwitchStreamPanel = (function() {
 		getVersion() {return script.version;}
 		getAuthor() {return script.author;}
 		getDescription() {return script.desc;}
+		constructor() {
+			this.script = script;
+		}
 		// create settings panel
 		getSettingsPanel() {
 			return createSettingsPanel();
