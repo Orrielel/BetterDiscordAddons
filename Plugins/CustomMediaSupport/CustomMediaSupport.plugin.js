@@ -1,4 +1,4 @@
-//META{"name":"CustomMediaSupport", "pname":"Custom Media Support"}*//
+//META{"name":"CustomMediaSupport","website":"https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport","source":"https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/CustomMediaSupport/CustomMediaSupport.plugin.js"}*//
 
 /* global bdPluginStorage, BdApi */
 
@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.5.6",
+		version: "2.5.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -387,7 +387,7 @@ const CustomMediaSupport = (function() {
 	},
 	modalHandler = function(modalContent, data) {
 		if (data) {
-			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb textCenter-3lyOAo userSelectText-1o1dQ7", innerHTML: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
+			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb textCenter-3lyOAo userSelectText-1o1dQ7", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
 		}
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
 			_createElement("div", {className: "backdrop-1ocfXc", onclick() {modal.remove();}}),
@@ -687,7 +687,7 @@ const CustomMediaSupport = (function() {
 					})
 				)
 			]),
-			_createElement("div", {className: "media-error-message userSelectText-1o1dQ7 media-toggled", innerHTML: `Unable to embed link - ${href}`})
+			_createElement("div", {className: "media-error-message userSelectText-1o1dQ7 media-toggled", textContent: `Unable to embed link - ${href}`})
 		]);
 		if (mode == "return") {
 			return container;
@@ -972,22 +972,22 @@ const CustomMediaSupport = (function() {
 		}
 		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
 			_createElement("div", {className: "ops-plugin_wrapper"}, [
-				_createElement("h2", {className: "h5-18_1nd title-3sZWYQ marginReset-236NPn height16-2Lv3qA weightSemiBold-NJexzi defaultMarginh5-2mL-bP marginBottom8-AtZOdT", innerHTML: "Settings"}),
+				_createElement("h2", {className: "h5-18_1nd title-3sZWYQ marginReset-236NPn height16-2Lv3qA weightSemiBold-NJexzi defaultMarginh5-2mL-bP marginBottom8-AtZOdT", textContent: "Settings"}),
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
 			_createElement("div", {className: "flex-1O1GKY justifyAround-1n1pnI"}, [
 				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
-				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Updates</button>"}),
-				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", innerHTML: `Clean Database (${Object.keys(script.db.archive).length || 0})`,
+				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"}),
+				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", textContent: `Clean Database (${Object.keys(script.db.archive).length || 0})`,
 					onclick() {
 						// clean database
 						script.db.archive = {};
 						bdPluginStorage.set(script.file, "db", {});
-						this.innerHTML = "Clean Database (0)";
+						this.textContent = "Clean Database (0)";
 					}
 				})
 			]),
-			_createElement("div", {className: "orrie-centerText marginTop8-1DLZ1n", innerHTML: "Use the Archive Manager to tidy up the database, or clean it alltogether"}),
+			_createElement("div", {className: "orrie-centerText marginTop8-1DLZ1n", textContent: "Use the Archive Manager to tidy up the database, or clean it alltogether"}),
 		]);
 	},
 	_createElement = function(tag, attributes, children) {
