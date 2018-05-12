@@ -6,19 +6,12 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.2.7",
+		version: "1.2.8",
 		author: "Orrie",
 		desc: "Show full sized images in image popup. Zooming is possible if the image is bigger than Discord window size",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
 		raw: "https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/BetterImagePopups/BetterImagePopups.plugin.js",
 		discord: "https://discord.gg/YEZkpkj",
-		check: {
-			version: false,
-			media: false,
-			sadpanda: false,
-			chan: false,
-			textParser: false
-		},
 		settings: {fullRes: true, scale: 0.15, zoom: false, minSize: false, height: "auto", width: "auto", debug: false},
 		settingsMenu: {
 			//          localized                 type     description
@@ -26,27 +19,27 @@ const BetterImagePopups = (function() {	// plugin settings
 			scale:   ["Scaling Threshold",       "range", "The maximum threshold between the image and viewport before adding zooming. Default is 15% bigger than viewport"],
 			zoom:    ["Always Zoom",             "check", "Force zooming when clicking on previewed image"],
 			minSize: ["Minimum Size for Images", "check", "Use a minimum height/width for images"],
-			height:  ["Height",                  "text",  "Image height (use auto no minimum limit)"],
-			width:   ["Width",                   "text",  "Image width (use auto no minimum limit)"],
+			height:  ["Height",                  "text",  "Image height (use auto for no minimum limit)"],
+			width:   ["Width",                   "text",  "Image width (use auto for no minimum limit)"],
 			debug:   ["Debug",                   "check", "Displays verbose stuff into the console"]
 		},
 		css: `
-.bip-container .scrollerWrap-2lJEkd {display: unset; position: unset; height: unset; min-height: unset; flex: unset;}
-.bip-container .imageWrapper-2p5ogY {display: table; margin: 0 auto;}
+.bip-container {text-align: center;}
+.bip-container .scrollerWrap-2lJEkd {flex-direction: column; min-height: unset;}
 .bip-container .imageWrapper-2p5ogY img {position: static;}
 .bip-container .spinner-2enMB9 {position: absolute;}
-.bip-container .bip-scroller {display: inline-block; max-height: calc(100vh - 160px); max-width: calc(100vw - 160px); overflow: auto;}
-.bip-container .bip-scroller img {margin-bottom: -5px;}
+.bip-container .bip-scroller {margin-bottom: 6px; max-height: calc(100vh - 160px); max-width: calc(100vw - 160px); overflow: auto;}
+.bip-container .bip-scroller img {vertical-align: middle;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 160px); max-width: calc(100vw - 160px);}
 .bip-container .bip-description {font-size: 16px; line-height: 24px;}
-.bip-container .bip-actions, .bip-container .bip-description {display: table; margin: 0 auto;}
+.bip-container .bip-description span {margin: 0 4px;}
 .bip-container .downloadLink-2oSgiF {text-transform: capitalize;}
-.bip-container .bip-controls {display: none; margin: 0 auto; padding: 10px 25px 50px;}
-.bip-container.bip-scaling .bip-controls {display: table;}
+.bip-container .bip-controls {margin: 0 auto; padding: 10px 25px; visibility: hidden;}
+.bip-container.bip-scaling .bip-controls {visibility: visible;}
 .bip-container .bip-controls > div {display: inline-block;}
 .bip-container .bip-zoom {border-radius: 5px; border: 2px solid; cursor: pointer; line-height: 20px; margin: 0 10px; padding: 0px 5px; text-align: center; width: 10px;}
-.bip-loading {opacity: 0; position: absolute !important;}
+.bip-loading {opacity: 0; width: 0; height: 0;}
 .bip-toggled {display: none !important;}
 		`,
 		zoom: 100
@@ -98,11 +91,11 @@ const BetterImagePopups = (function() {	// plugin settings
 		if (img.src) {
 			const proxy = img.src.split("?")[0];
 			if (!/\.gif$/.test(proxy)) {
-				const fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
+				const container = wrapper.parentNode,
+				fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
 				wrapper.href = fullSrc;
 				wrapper.style.cssText = "";
 				wrapper.removeAttribute("target");
-				wrapper.nextElementSibling.classList.add("bip-actions");
 				if (script.settings.fullRes) {
 					wrapper.appendChild(_createElement("img", {className: "bip-loading", src: fullSrc,
 						onload() {this.previousElementSibling.setAttribute("src", fullSrc); this.remove();}
@@ -110,15 +103,6 @@ const BetterImagePopups = (function() {	// plugin settings
 				}
 				node.classList.add("bip-container");
 				node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb"}, [
-					_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", innerHTML: "+",
-						onclick() {
-							script.zoom += 25;
-							BdApi.clearCSS(`${script.file}-zoom`);
-							BdApi.injectCSS(`${script.file}-zoom`, `.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%`);
-							this.nextElementSibling.innerHTML = `${script.zoom}%`;
-						}
-					}),
-					_createElement("div", {className: "bip-zoom-level", innerHTML: "100%"}),
 					_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", innerHTML: "-",
 						onclick() {
 							if (script.zoom !== 25) {
@@ -126,31 +110,42 @@ const BetterImagePopups = (function() {	// plugin settings
 							}
 							BdApi.clearCSS(`${script.file}-zoom`);
 							BdApi.injectCSS(`${script.file}-zoom`, `.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%}`);
+							this.nextElementSibling.innerHTML = `${script.zoom}%`;
+							document.getElementById("bip-zoom").innerHTML = `Zoomed to ${img.width*(script.zoom/100)}px × ${img.height*(script.zoom/100)}px`
+						}
+					}),
+					_createElement("div", {className: "bip-zoom-level", innerHTML: "100%"}),
+					_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", innerHTML: "+",
+						onclick() {
+							script.zoom += 25;
+							BdApi.clearCSS(`${script.file}-zoom`);
+							BdApi.injectCSS(`${script.file}-zoom`, `.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%`);
 							this.previousElementSibling.innerHTML = `${script.zoom}%`;
+							document.getElementById("bip-zoom").innerHTML = `Zoomed to ${img.width*(script.zoom/100)} × ${img.height*(script.zoom/100)}`
 						}
 					})
 				]));
+				container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'>Loading...</span><span id='bip-scale' class='bip-toggled'></span><span id='bip-forced' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to ${img.width*(script.zoom/100)} × ${img.height*(script.zoom/100)}</span>`}), container.lastElementChild);
 				img.classList.add("bip-center");
 				img.style.cssText = "";
+				img.onclick = function() {
+					this.classList.toggle("bip-center");
+					wrapper.classList.toggle("bip-scroller");
+					wrapper.classList.toggle("scroller-2FKFPG");
+					container.classList.toggle("scrollerWrap-2lJEkd");
+					node.classList.toggle("bip-scaling");
+					document.getElementById("bip-zoom").classList.toggle("bip-toggled");
+				};
 				img.onload = function() {
-					const scale = 1+parseFloat(script.settings.scale),
-					scaling = this.naturalHeight > window.innerHeight*scale || this.naturalWidth > window.innerWidth*scale,
-					html = `${img.naturalWidth}px × ${img.naturalHeight}px${scaling ? ` (scaled to ${img.width}px × ${img.height}px)` : ""}${script.settings.minSize ? ` - Size forced to minimum '${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`} × ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}'` : ""}`,
-					next = wrapper.nextElementSibling;
-					if (!next.classList.contains("bip-description")) {
-						wrapper.insertAdjacentHTML("afterend", `<div class='bip-description description-3_Ncsb userSelectText-1o1dQ7'>${html}</div>`);
+					const scale = 1+parseFloat(script.settings.scale);
+					document.getElementById("bip-info").textContent = `${img.naturalWidth}px × ${img.naturalHeight}px`;
+					if (this.naturalHeight > window.innerHeight*scale || this.naturalWidth > window.innerWidth*scale) {
+						document.getElementById("bip-scale").textContent = `Scaled to ${img.width}px × ${img.height}px`;
+						document.getElementById("bip-scale").classList.remove("bip-toggled");
 					}
-					else {
-						next.innerHTML = html;
-					}
-					if (scaling || script.settings.zoom) {
-						this.addEventListener("click", function() {
-							this.classList.toggle("bip-center");
-							wrapper.classList.toggle("bip-scroller");
-							wrapper.classList.toggle("scroller-2FKFPG");
-							wrapper.parentNode.classList.toggle("scrollerWrap-2lJEkd");
-							node.classList.toggle("bip-scaling");
-						}, false);
+					if (script.settings.minSize) {
+						document.getElementById("bip-forced").textContent = `Size forced to minimum '${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`} × ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}'`;
+						document.getElementById("bip-forced").classList.remove("bip-toggled");
 					}
 				};
 				img.onerror = function() {
@@ -291,4 +286,3 @@ const BetterImagePopups = (function() {	// plugin settings
 		}
 	};
 })();
-
