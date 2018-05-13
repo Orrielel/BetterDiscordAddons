@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.6.7",
+		version: "1.6.8",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -79,7 +79,6 @@ const TwitchStreamPanel = (function() {
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
 .orrie-toggled {display: none !important;}
-.orrie-overflow {overflow: visible;}
 .orrie-relative {position: relative;}
 .orrie-centerText {text-align: center;}
 .orrie-inputRequired::before {color: #F04747; content: "*"; font-size: 20px; font-weight: 700; margin-left: 2px; position: absolute; z-index: 1;}
@@ -215,7 +214,7 @@ const TwitchStreamPanel = (function() {
 				])
 			),
 			_createElement("div", {className: `containerDefault-1ZnADq${!script.settings.state ? " orrie-toggled" : ""}`},
-				_createElement("table", {className: "content-20Aix8 orrie-overflow", id: "tsp-stream_table", cellSpacing: 0, server: serverID}, streamFragment)
+				_createElement("table", {className: "content-20Aix8 noScroll-1Ep7Tu", id: "tsp-stream_table", cellSpacing: 0, server: serverID}, streamFragment)
 			),
 			_createElement("div", {className: `wrapperDefault-10Jfvz tsp-footer_wrapper${!script.settings.state ? " orrie-toggled" : ""}`, innerHTML: `<div class='nameDefault-2DI02H tsp-time_text'><span id="tsp-timestamp">${new Date().toLocaleTimeString("en-GB")}</span><span id="tsp-timer">00:00</span></div>`},
 				_createElement("div", {className: "nameDefault-2DI02H cursorPointer-1ajlYk tsp-edit_button", innerHTML: "Edit",
@@ -365,7 +364,7 @@ const TwitchStreamPanel = (function() {
 			]));
 		}
 		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
-			_createElement("div", {className: "ops-plugin_wrapper"}, [
+			_createElement("div", {className: "plugin_wrapper"}, [
 				_createElement("h2", {className: "h5-18_1nd title-3sZWYQ marginReset-236NPn height16-2Lv3qA weightSemiBold-NJexzi defaultMarginh5-2mL-bP marginBottom8-AtZOdT", innerHTML: "Settings"}),
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
