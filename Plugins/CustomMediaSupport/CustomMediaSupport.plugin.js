@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.5.7",
+		version: "2.5.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -307,7 +307,6 @@ const CustomMediaSupport = (function() {
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
 .orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
 .orrie-toggled {display: none !important;}
-.orrie-overflow {overflow: visible;}
 .orrie-relative {position: relative;}
 .orrie-centerText {text-align: center;}
 .orrie-inputRequired::before {color: #F04747; content: "*"; font-size: 20px; font-weight: 700; margin-left: 2px; position: absolute; z-index: 1;}
@@ -387,7 +386,7 @@ const CustomMediaSupport = (function() {
 	},
 	modalHandler = function(modalContent, data) {
 		if (data) {
-			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb textCenter-3lyOAo userSelectText-1o1dQ7", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
+			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb orrie-centerText userSelectText-1o1dQ7", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
 		}
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
 			_createElement("div", {className: "backdrop-1ocfXc", onclick() {modal.remove();}}),
@@ -578,7 +577,7 @@ const CustomMediaSupport = (function() {
 		log("info", "mediaEmbedding", data);
 		const {fileId, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		wrapperName = {
-			video: "imageWrapper-2p5ogY orrie-overflow",
+			video: "imageWrapper-2p5ogY noScroll-1Ep7Tu",
 			audio: "wrapperAudio-1jDe0Q wrapper-2TxpI8",
 			img: "imageWrapper",
 			iframe: "iframeWrapper"
@@ -858,7 +857,7 @@ const CustomMediaSupport = (function() {
 					}
 				})
 			]),
-			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 border-2AhmKo cms-archive_filter orrie-overflow", style: "flex: 0 0 auto;"},
+			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 border-2AhmKo cms-archive_filter noScroll-1Ep7Tu", style: "flex: 0 0 auto;"},
 				_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG"}, [
 					_createElement("input", {className: "input-cIJ7To size16-14cGz5", placeholder: "Filter Content (tags or board)", type: "text", value: "",
 						onchange() {
@@ -971,7 +970,7 @@ const CustomMediaSupport = (function() {
 			]));
 		}
 		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
-			_createElement("div", {className: "ops-plugin_wrapper"}, [
+			_createElement("div", {className: "plugin_wrapper"}, [
 				_createElement("h2", {className: "h5-18_1nd title-3sZWYQ marginReset-236NPn height16-2Lv3qA weightSemiBold-NJexzi defaultMarginh5-2mL-bP marginBottom8-AtZOdT", textContent: "Settings"}),
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
