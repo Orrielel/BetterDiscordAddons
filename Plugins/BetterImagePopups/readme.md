@@ -13,4 +13,5 @@ Open the [latest](https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons
 Obviously requires [BetterDiscord](https://github.com/jiiks/betterdiscordapp) installed.
 
 ### Preview
-![Script](https://orrie.s-ul.eu/preview/S8X0l3XC)
+![Script](https://orrie.s-ul.eu/preview/PtRr1QGs)
+![Settings](https://orrie.s-ul.eu/preview/fwX7IJ0x)
