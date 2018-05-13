@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.1",
+		version: "1.3.2",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -124,8 +124,8 @@ const BetterImagePopups = (function() {	// plugin settings
 				wrapper.appendChild(_createElement("img", {className: "bip-loading", src: fullSrc,
 					onload() {
 						document.getElementById("bip-loading").classList.add("bip-toggled");
-						this.previousElementSibling.setAttribute("src", this.src);
-						this.remove();
+						/*this.previousElementSibling.setAttribute("src", this.src);
+						this.remove();*/
 					},
 					onerror() {
 						this.src = proxy;
@@ -200,6 +200,15 @@ const BetterImagePopups = (function() {	// plugin settings
 			.bip-zoom-width:after{content: '${width}';}
 			.bip-zoom-height:after{content: '${height}';}
 		`);
+	},
+	minImageSize = function() {
+		if (script.settings.minSize) {
+			BdApi.clearCSS(`${script.file}-imageSize`);
+			BdApi.injectCSS(`${script.file}-imageSize`, `.bip-container .imageWrapper-2p5ogY img:not(.bip-loading) {min-height: ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}; min-width: ${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`}`);
+		}
+		else {
+			BdApi.clearCSS(`${script.file}-imageSize`);
+		}
 	},
 	createSettingsPanel = function() {
 		// settings panel creation
@@ -287,13 +296,7 @@ const BetterImagePopups = (function() {	// plugin settings
 			BdApi.clearCSS("orrie-plugin");
 			BdApi.injectCSS("orrie-plugin", script.css.shared);
 			BdApi.injectCSS(script.file, script.css.script);
-			if (script.settings.minSize) {
-				BdApi.clearCSS(`${script.file}-imageSize`);
-				BdApi.injectCSS(`${script.file}-imageSize`, `.bip-container .imageWrapper-2p5ogY img {min-height: ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}; min-width: ${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`}`);
-			}
-			else {
-				BdApi.clearCSS(`${script.file}-imageSize`);
-			}
+			minImageSize();
 			this.active = true;
 		}
 		observer({addedNodes}) {
@@ -317,13 +320,7 @@ const BetterImagePopups = (function() {	// plugin settings
 							imagePopHandler(wrapper, node);
 						}
 					}
-					if (script.settings.minSize) {
-						BdApi.clearCSS(`${script.file}-imageSize`);
-						BdApi.injectCSS(`${script.file}-imageSize`, `.bip-container .imageWrapper-2p5ogY img {min-height: ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}; min-width: ${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`}`);
-					}
-					else {
-						BdApi.clearCSS(`${script.file}-imageSize`);
-					}
+					minImageSize();
 				}
 			}
 		}
