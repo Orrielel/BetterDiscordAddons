@@ -6,24 +6,23 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.2.9",
+		version: "1.3.0",
 		author: "Orrie",
-		desc: "Show full sized images in image popup. Zooming is possible if the image is bigger than Discord window size",
+		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
 		raw: "https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/BetterImagePopups/BetterImagePopups.plugin.js",
 		discord: "https://discord.gg/YEZkpkj",
-		settings: {fullRes: true, scale: 0.15, zoom: false, minSize: false, height: "auto", width: "auto", debug: false},
+		settings: {fullRes: true, minSize: false, height: "auto", width: "auto", debug: false},
 		settingsMenu: {
 			//          localized                 type     description
-			fullRes: ["Full Resolution Images",  "check", "Replaces images with full resolution ones whilst in popup mode"],
-			scale:   ["Scaling Threshold",       "range", "The maximum threshold ratio between the image and viewport before adding zooming.<br>Default is 15% bigger than viewport"],
-			zoom:    ["Always Zoom on Click",             "check", "Force zooming when clicking on the previewed image, disregarding the scaling threshold or size of image"],
+			fullRes: ["Full Resolution Images",  "check", "Replaces images with full resolution.<br>NOTE: Zooming is always possible. Default is 25% per click.<br>Use CTRL (100%), SHIFT (50%) and ALT (200%) to manipulate the zooming clicks."],
 			minSize: ["Minimum Size for Images", "check", "Use a minimum height/width for images (use 'auto' for no minimum limit)"],
 			height:  ["Height",                  "text",  "In pixels"],
 			width:   ["Width",                   "text",  "In pixels"],
 			debug:   ["Debug",                   "check", "Displays verbose stuff into the console"]
 		},
-		css: `
+		css: {
+			script:`
 .bip-container {text-align: center;}
 .bip-container .scrollerWrap-2lJEkd {flex-direction: column; min-height: unset;}
 .bip-container .imageWrapper-2p5ogY img {position: static;}
@@ -33,8 +32,8 @@ const BetterImagePopups = (function() {	// plugin settings
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 160px); max-width: calc(100vw - 160px);}
 .bip-container .bip-description {font-size: 16px; line-height: 24px;}
-.bip-container .bip-description span {margin-left: 4px;}
-.bip-container .bip-description span+span:before {content: "–"; font-weight: bold; margin-right: 4px;}
+.bip-container .bip-description > span {margin-left: 4px;}
+.bip-container .bip-description > span+span:before {content: "–"; font-weight: bold; margin-right: 4px;}
 .bip-container .downloadLink-2oSgiF {text-transform: capitalize;}
 .bip-container .bip-controls {margin: 0 auto; padding: 10px 25px; visibility: hidden;}
 .bip-container.bip-scaling .bip-controls {visibility: visible;}
@@ -42,7 +41,30 @@ const BetterImagePopups = (function() {	// plugin settings
 .bip-container .bip-zoom {border-radius: 5px; border: 2px solid; cursor: pointer; line-height: 20px; margin: 0 10px; padding: 0px 5px; text-align: center; width: 10px;}
 .bip-loading {opacity: 0; width: 0; height: 0;}
 .bip-toggled {display: none !important;}
-		`,
+			`,
+			shared: `
+.orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
+.orriePluginModal .modal-1UGdnR {opacity: 1;}
+.orriePluginModal .modal-3HD5ck {padding: 0 20px; width: 800px;}
+.orriePluginModal .description-3_Ncsb {font-size: 16px; line-height: 24px;}
+.orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
+.orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
+.orrie-buttonRed:hover, .bda-slist .orrie-buttonRed:hover {background-color: #FD5D5D !important;}
+.orrie-toggled {display: none !important;}
+.orrie-relative {position: relative;}
+.orrie-centerText {text-align: center;}
+.orrie-inputRequired::before {color: #F04747; content: "*"; font-size: 20px; font-weight: 700; margin-left: 2px; position: absolute; z-index: 1;}
+.theme-dark .orrie-plugin {color: #B0B6B9;}
+/* tooltips */
+.orrie-tooltip:hover .tooltip {display: initial;}
+.orrie-tooltip .tooltip {display: none; margin: 0; text-align: center; width: max-content;}
+.orrie-tooltip .tooltip-top {bottom: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip .tooltip-bottom {top: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip .tooltip-right {left: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip .tooltip-left {right: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip .tooltip:hover {display: none;}
+			`
+		},
 		zoom: 100
 	},
 	settingsLoad = function() {
@@ -90,75 +112,90 @@ const BetterImagePopups = (function() {	// plugin settings
 		log("info", "imagePop", wrapper);
 		const img = wrapper.lastElementChild;
 		if (img.src) {
-			const proxy = img.src.split("?")[0];
-			if (!/\.gif$/.test(proxy)) {
-				const container = wrapper.parentNode,
-				fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
-				wrapper.href = fullSrc;
-				wrapper.style.cssText = "";
-				wrapper.removeAttribute("target");
-				if (script.settings.fullRes) {
-					wrapper.appendChild(_createElement("img", {className: "bip-loading", src: fullSrc,
-						onload() {
-							document.getElementById("bip-loading").classList.add("bip-toggled");
-							this.previousElementSibling.setAttribute("src", this.src);
-							this.remove();
-						},
-						onerror() {
-							this.src = proxy;
-							this.onerror = undefined;
-						}
-					}));
-				}
-				node.classList.add("bip-container");
-				node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb"}, [
-					_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", textContent: "-",
-						onclick() {
-							if (script.zoom !== 25) {
-								script.zoom -= 25;
-							}
-							BdApi.clearCSS(`${script.file}-zoom`);
-							BdApi.injectCSS(`${script.file}-zoom`, `.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%}`);
-							this.nextElementSibling.textContent = `${script.zoom}%`;
-							document.getElementById("bip-zoom").textContent = `Zoomed to ${img.width*(script.zoom/100)}px × ${img.height*(script.zoom/100)}px`
-						}
-					}),
-					_createElement("div", {className: "bip-zoom-level", textContent: "100%"}),
-					_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", textContent: "+",
-						onclick() {
-							script.zoom += 25;
-							BdApi.clearCSS(`${script.file}-zoom`);
-							BdApi.injectCSS(`${script.file}-zoom`, `.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%`);
-							this.previousElementSibling.textContent = `${script.zoom}%`;
-							document.getElementById("bip-zoom").textContent = `Zoomed to ${img.width*(script.zoom/100)}px × ${img.height*(script.zoom/100)}px`
-						}
-					})
-				]));
-				container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-forced' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to ${img.width*(script.zoom/100)}px × ${img.height*(script.zoom/100)}px</span><span id='bip-loading'>Loading Full Resolution</span>`}), container.lastElementChild);
-				img.classList.add("bip-center");
-				img.style.cssText = "";
-				img.onclick = function() {
-					this.classList.toggle("bip-center");
-					wrapper.classList.toggle("bip-scroller");
-					wrapper.classList.toggle("scroller-2FKFPG");
-					container.classList.toggle("scrollerWrap-2lJEkd");
-					node.classList.toggle("bip-scaling");
-					document.getElementById("bip-zoom").classList.toggle("bip-toggled");
-				};
-				img.onload = function() {
-					const scale = 1+parseFloat(script.settings.scale);
-					document.getElementById("bip-info").textContent = `${img.naturalWidth}px × ${img.naturalHeight}px`;
-					if (this.naturalHeight > window.innerHeight*scale || this.naturalWidth > window.innerWidth*scale) {
-						document.getElementById("bip-scale").textContent = `Scaled to ${img.width}px × ${img.height}px`;
-						document.getElementById("bip-scale").classList.remove("bip-toggled");
+			const proxy = img.src.split("?")[0],
+			container = wrapper.parentNode,
+			fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
+			wrapper.href = fullSrc;
+			wrapper.style.cssText = "";
+			wrapper.removeAttribute("target");
+			if (script.settings.fullRes) {
+				wrapper.appendChild(_createElement("img", {className: "bip-loading", src: fullSrc,
+					onload() {
+						document.getElementById("bip-loading").classList.add("bip-toggled");
+						this.previousElementSibling.setAttribute("src", this.src);
+						this.remove();
+					},
+					onerror() {
+						this.src = proxy;
+						this.onerror = undefined;
 					}
-					if (script.settings.minSize) {
-						document.getElementById("bip-forced").textContent = `Size forced to minimum '${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`} × ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}'`;
-						document.getElementById("bip-forced").classList.remove("bip-toggled");
-					}
-				};
+				}));
 			}
+			node.classList.add("bip-container");
+			node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb"}, [
+				_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", textContent: "-",
+					onclick(click) {
+						zoomImage(click, "out", img, wrapper);
+					}
+				}),
+				_createElement("div", {className: "bip-zoom-level"}),
+				_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", textContent: "+",
+					onclick(click) {
+						zoomImage(click, "in", img, wrapper);
+					}
+				})
+			]));
+			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-loading'>${script.settings.fullRes ? "Loading Full Resolution": ""}</span>`}), container.lastElementChild);
+			img.classList.add("bip-center");
+			img.style.cssText = "";
+			img.onclick = function() {
+				this.classList.toggle("bip-center");
+				wrapper.classList.toggle("bip-scroller");
+				wrapper.classList.toggle("scroller-2FKFPG");
+				container.classList.toggle("scrollerWrap-2lJEkd");
+				node.classList.toggle("bip-scaling");
+				document.getElementById("bip-zoom").classList.toggle("bip-toggled");
+				if (img.scaled) {
+					document.getElementById("bip-scale").classList.toggle("bip-toggled");
+				}
+				BdApi.clearCSS(`${script.file}-zoom`);
+				BdApi.injectCSS(`${script.file}-zoom`, `
+					.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%}
+					.bip-zoom-level:after{content: '${script.zoom}%';}
+					.bip-zoom-width:after{content: '${img.width*(script.zoom/100)}';}
+					.bip-zoom-height:after{content: '${img.height*(script.zoom/100)}';}
+				`);
+			};
+			img.onload = function() {
+				document.getElementById("bip-info").textContent = `${this.naturalWidth}px × ${this.naturalHeight}px`;
+				if (this.naturalHeight > window.innerHeight || this.naturalWidth > window.innerWidth || (script.settings.minSize && this.naturalHeight !== this.height && this.naturalWidth !== this.width)) {
+					document.getElementById("bip-scale").textContent = `Scaled to ${this.width}px × ${this.height}px`;
+					document.getElementById("bip-scale").classList.remove("bip-toggled");
+					img.scaled = true;
+				}
+			};
 		}
+	},
+	zoomImage = function({altKey, ctrlKey, shiftKey}, mode, img, wrapper) {
+		let steps = 25;
+		if (altKey) {steps = 200;}
+		else if (ctrlKey) {steps = 100;}
+		else if (shiftKey) {steps = 50;}
+		if (mode == "out"&& script.zoom > steps) {
+			script.zoom -= steps;
+		}
+		else {
+			script.zoom += steps;
+		}
+		const width = img.width*(script.zoom/100),
+		height = img.height*(script.zoom/100);
+		BdApi.clearCSS(`${script.file}-zoom`);
+		BdApi.injectCSS(`${script.file}-zoom`, `
+			.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%}
+			.bip-zoom-level:after{content: '${script.zoom}%';}
+			.bip-zoom-width:after{content: '${width}';}
+			.bip-zoom-height:after{content: '${height}';}
+		`);
 	},
 	createSettingsPanel = function() {
 		// settings panel creation
@@ -200,7 +237,7 @@ const BetterImagePopups = (function() {	// plugin settings
 			]));
 		}
 		return _createElement("div", {className: `${script.file} orrie-plugin`}, [
-			_createElement("div", {className: "ops-plugin_wrapper"}, [
+			_createElement("div", {className: "plugin_wrapper"}, [
 				_createElement("h2", {className: "h5-18_1nd title-3sZWYQ marginReset-236NPn height16-2Lv3qA weightSemiBold-NJexzi defaultMarginh5-2mL-bP marginBottom8-AtZOdT", textContent: "Settings"}),
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
@@ -243,7 +280,9 @@ const BetterImagePopups = (function() {	// plugin settings
 		load() {}
 		start() {
 			settingsLoad();
-			BdApi.injectCSS(script.file, script.css);
+			BdApi.clearCSS("orrie-plugin");
+			BdApi.injectCSS("orrie-plugin", script.css.shared);
+			BdApi.injectCSS(script.file, script.css.script);
 			if (script.settings.minSize) {
 				BdApi.clearCSS(`${script.file}-imageSize`);
 				BdApi.injectCSS(`${script.file}-imageSize`, `.bip-container .imageWrapper-2p5ogY img {min-height: ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}; min-width: ${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`}`);
@@ -287,6 +326,8 @@ const BetterImagePopups = (function() {	// plugin settings
 		// stop script
 		stop() {
 			BdApi.clearCSS(script.file);
+			BdApi.clearCSS(`${script.file}-imageSize`);
+			BdApi.clearCSS(`${script.file}-zoom`);
 			this.active = false;
 		}
 	};
