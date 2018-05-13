@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.0",
+		version: "1.3.1",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -41,6 +41,8 @@ const BetterImagePopups = (function() {	// plugin settings
 .bip-container .bip-zoom {border-radius: 5px; border: 2px solid; cursor: pointer; line-height: 20px; margin: 0 10px; padding: 0px 5px; text-align: center; width: 10px;}
 .bip-loading {opacity: 0; width: 0; height: 0;}
 .bip-toggled {display: none !important;}
+.bip-container .orrie-tooltip .tooltip-top {bottom: calc(100% + 10px);}
+.bip-container.bip-scaling .tooltip {display: none;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
@@ -145,7 +147,9 @@ const BetterImagePopups = (function() {	// plugin settings
 					}
 				})
 			]));
+			container.classList.add("orrie-tooltip", "orrie-relative");
 			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-loading'>${script.settings.fullRes ? "Loading Full Resolution": ""}</span>`}), container.lastElementChild);
+			container.appendChild(_createElement("div", {className: "tooltip tooltip-top", textContent: "Click the image to zoom"}));
 			img.classList.add("bip-center");
 			img.style.cssText = "";
 			img.onclick = function() {
