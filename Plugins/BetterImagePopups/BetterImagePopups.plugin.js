@@ -148,7 +148,7 @@ const BetterImagePopups = (function() {	// plugin settings
 				})
 			]));
 			container.classList.add("orrie-tooltip", "orrie-relative");
-			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-loading'>${script.settings.fullRes ? "Loading Full Resolution": ""}</span>`}), container.lastElementChild);
+			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span>${script.settings.fullRes ? "<span id='bip-loading'>Loading Full Resolution</span>": ""}`}), container.lastElementChild);
 			container.appendChild(_createElement("div", {className: "tooltip tooltip-top", textContent: "Click the image to zoom"}));
 			img.classList.add("bip-center");
 			img.style.cssText = "";
