@@ -124,8 +124,8 @@ const BetterImagePopups = (function() {	// plugin settings
 				wrapper.appendChild(_createElement("img", {className: "bip-loading", src: fullSrc,
 					onload() {
 						document.getElementById("bip-loading").classList.add("bip-toggled");
-						/*this.previousElementSibling.setAttribute("src", this.src);
-						this.remove();*/
+						this.previousElementSibling.setAttribute("src", this.src);
+						this.remove();
 					},
 					onerror() {
 						this.src = proxy;
