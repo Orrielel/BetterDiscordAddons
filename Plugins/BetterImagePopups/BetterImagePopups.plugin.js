@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.2",
+		version: "1.3.3",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -31,18 +31,22 @@ const BetterImagePopups = (function() {	// plugin settings
 .bip-container .bip-scroller img {vertical-align: middle;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 160px); max-width: calc(100vw - 160px);}
+.bip-container #bip-progress {height: unset; position: absolute; bottom: 60px; width: 100%;}
+.bip-container #bip-progress .progress-2XXRYo {border-top: 2px solid #000000; opacity: 0.25;}
+.bip-container #bip-progress .large-3EPlRk {height: 20px;}
+.bip-container #bip-progress .bip-loading {color: #1B1B1B; font-size: 16px; font-weight: bold; line-height: 20px; position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap;}
 .bip-container .bip-description {font-size: 16px; line-height: 24px;}
 .bip-container .bip-description > span {margin-left: 4px;}
 .bip-container .bip-description > span+span:before {content: "–"; font-weight: bold; margin-right: 4px;}
 .bip-container .downloadLink-2oSgiF {text-transform: capitalize;}
 .bip-container .bip-controls {margin: 0 auto; padding: 10px 25px; visibility: hidden;}
 .bip-container.bip-scaling .bip-controls {visibility: visible;}
-.bip-container .bip-controls > div {display: inline-block;}
+.bip-container .bip-controls > div:not(.tooltip) {display: inline-block;}
 .bip-container .bip-zoom {border-radius: 5px; border: 2px solid; cursor: pointer; line-height: 20px; margin: 0 10px; padding: 0px 5px; text-align: center; width: 10px;}
-.bip-loading {opacity: 0; width: 0; height: 0;}
 .bip-toggled {display: none !important;}
 .bip-container .orrie-tooltip .tooltip-top {bottom: calc(100% + 10px);}
-.bip-container.bip-scaling .tooltip {display: none;}
+.bip-container .orrie-tooltip .tooltip-bottom {top: 100%;}
+.bip-container.bip-scaling .scrollerWrap-2lJEkd .tooltip {display: none;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
@@ -110,6 +114,46 @@ const BetterImagePopups = (function() {	// plugin settings
 			console[method](`%c[${script.file}]%c ${title}`, "color: purple; font-weight: bold;", "", new Date().toLocaleTimeString("en-GB"), data ? data : "");
 		}
 	},
+	mediaSize = function(fileSize) {
+		let l = 0;
+		while(fileSize >= 1024) {
+			fileSize = fileSize/1024;
+			l++;
+		}
+		return fileSize ? `${fileSize.toFixed(3)} ${["Bytes","KB","MB","GB"][l]}` : "ERROR";
+	},
+	imageLoad = function(imageUrl, onprogress) {
+		return new Promise(function(resolve, reject) {
+			const xhr = new XMLHttpRequest();
+			let notifiedNotComputable = false;
+			xhr.open("GET", `https://cors-anywhere.herokuapp.com/${imageUrl}`, true);
+			xhr.responseType = 'arraybuffer';
+			xhr.onprogress = function({lengthComputable, loaded, total}) {
+				if (lengthComputable) {
+					onprogress(parseInt((loaded / total) * 100));
+				}
+				else {
+					if (!notifiedNotComputable) {
+						notifiedNotComputable = true;
+						onprogress(-1);
+					}
+				}
+			};
+			xhr.onloadend = function() {
+				if (!xhr.status.toString().match(/^2/)) {
+					reject(xhr);
+				}
+				else {
+					if (!notifiedNotComputable) {
+						onprogress(100);
+					}
+					const type = xhr.getAllResponseHeaders().match(/^Content-Type\:\s*(.*?)$/mi);
+					resolve(new Blob([this.response], {type: type && type[1] ? type[1] : ""}));
+				}
+			};
+			xhr.send();
+		});
+	},
 	imagePopHandler = function(wrapper, node) {
 		log("info", "imagePop", wrapper);
 		const img = wrapper.lastElementChild;
@@ -121,20 +165,30 @@ const BetterImagePopups = (function() {	// plugin settings
 			wrapper.style.cssText = "";
 			wrapper.removeAttribute("target");
 			if (script.settings.fullRes) {
-				wrapper.appendChild(_createElement("img", {className: "bip-loading", src: fullSrc,
-					onload() {
-						document.getElementById("bip-loading").classList.add("bip-toggled");
-						this.previousElementSibling.setAttribute("src", this.src);
-						this.remove();
-					},
-					onerror() {
-						this.src = proxy;
-						this.onerror = undefined;
+				imageLoad(fullSrc, function(ratio) {
+					const progress = document.getElementById("bip-progress_bar");
+					if (ratio == -1) {
+						progress.style.width = 0;
 					}
-				}));
+					else {
+						progress.style.width = `${ratio}%`;
+					}
+				}).then(function(blob) {
+					document.getElementById("bip-progress").classList.add("bip-toggled");
+					document.getElementById("bip-size").textContent = mediaSize(blob.size);
+					document.getElementById("bip-size").classList.remove("bip-toggled");
+					img.src = window.URL.createObjectURL(blob);
+				}, function(error) {
+					img.src = proxy;
+					document.getElementById("bip-progress").classList.add("bip-toggled");
+					document.getElementById("bip-error").classList.add("bip-toggled");
+					document.getElementById("bip-error").textContent = `${error.status} ${error.statusText}`
+					log("error", "imageLoad", error);
+				});
+				container.appendChild(_createElement("div", {className: "progressContainer-3ao-eu size12-3R0845 weightLight-3heiur height16-2Lv3qA", id: "bip-progress", innerHTML: "<div class='progress-2XXRYo large-3EPlRk' style='background-color: rgb(233, 231, 231);'><div id='bip-progress_bar' class='progressBar-3u8FBM large-3EPlRk' style='background-color: rgb(114, 137, 218); width: 0;'></div></div><div class='bip-loading'>Loading High Resolution</div>"}));
 			}
 			node.classList.add("bip-container");
-			node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb"}, [
+			node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb orrie-tooltip orrie-relative"}, [
 				_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", textContent: "-",
 					onclick(click) {
 						zoomImage(click, "out", img, wrapper);
@@ -145,10 +199,11 @@ const BetterImagePopups = (function() {	// plugin settings
 					onclick(click) {
 						zoomImage(click, "in", img, wrapper);
 					}
-				})
+				}),
+				_createElement("div", {className: "tooltip tooltip-bottom", textContent: "Shift = 50%, Ctrl = 100% and Alt = 200%"})
 			]));
 			container.classList.add("orrie-tooltip", "orrie-relative");
-			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span>${script.settings.fullRes ? "<span id='bip-loading'>Loading Full Resolution</span>": ""}`}), container.lastElementChild);
+			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-size' class='bip-toggled'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-error' class='bip-toggled'></span></span>`}), container.lastElementChild);
 			container.appendChild(_createElement("div", {className: "tooltip tooltip-top", textContent: "Click the image to zoom"}));
 			img.classList.add("bip-center");
 			img.style.cssText = "";
@@ -204,7 +259,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	minImageSize = function() {
 		if (script.settings.minSize) {
 			BdApi.clearCSS(`${script.file}-imageSize`);
-			BdApi.injectCSS(`${script.file}-imageSize`, `.bip-container .imageWrapper-2p5ogY img:not(.bip-loading) {min-height: ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}; min-width: ${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`}`);
+			BdApi.injectCSS(`${script.file}-imageSize`, `.bip-container .imageWrapper-2p5ogY {min-height: ${isNaN(script.settings.height) ? "auto" : `${script.settings.height}px`}; min-width: ${isNaN(script.settings.width) ? "auto" : `${script.settings.width}px`}`);
 		}
 		else {
 			BdApi.clearCSS(`${script.file}-imageSize`);
