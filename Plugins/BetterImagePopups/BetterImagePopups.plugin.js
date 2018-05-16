@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.3",
+		version: "1.3.4",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -14,7 +14,7 @@ const BetterImagePopups = (function() {	// plugin settings
 		discord: "https://discord.gg/YEZkpkj",
 		settings: {fullRes: true, minSize: false, height: "auto", width: "auto", debug: false},
 		settingsMenu: {
-			//          localized                 type     description
+			//        localized                  type     description
 			fullRes: ["Full Resolution Images",  "check", "Replaces images with full resolution.<br>NOTE: Zooming is always possible. Default is 25% per click.<br>Use CTRL (100%), SHIFT (50%) and ALT (200%) to manipulate the zooming clicks."],
 			minSize: ["Minimum Size for Images", "check", "Use a minimum height/width for images (use 'auto' for no minimum limit)"],
 			height:  ["Height",                  "text",  "In pixels"],
@@ -31,10 +31,6 @@ const BetterImagePopups = (function() {	// plugin settings
 .bip-container .bip-scroller img {vertical-align: middle;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
 .bip-container .bip-center {max-height: calc(100vh - 160px); max-width: calc(100vw - 160px);}
-.bip-container #bip-progress {height: unset; position: absolute; bottom: 60px; width: 100%;}
-.bip-container #bip-progress .progress-2XXRYo {border-top: 2px solid #000000; opacity: 0.25;}
-.bip-container #bip-progress .large-3EPlRk {height: 20px;}
-.bip-container #bip-progress .bip-loading {color: #1B1B1B; font-size: 16px; font-weight: bold; line-height: 20px; position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap;}
 .bip-container .bip-description {font-size: 16px; line-height: 24px;}
 .bip-container .bip-description > span {margin-left: 4px;}
 .bip-container .bip-description > span+span:before {content: "–"; font-weight: bold; margin-right: 4px;}
@@ -47,6 +43,11 @@ const BetterImagePopups = (function() {	// plugin settings
 .bip-container .orrie-tooltip .tooltip-top {bottom: calc(100% + 10px);}
 .bip-container .orrie-tooltip .tooltip-bottom {top: 100%;}
 .bip-container.bip-scaling .scrollerWrap-2lJEkd .tooltip {display: none;}
+// progress bar
+@-webkit-keyframes progress-bar-stripes {from {background-position: 40px 0;} to {background-position: 0 0;}}
+@keyframes progress-bar-stripes {from { background-position: 40px 0;} to { background-position: 0 0;}}
+.bip-progress {background-color: rgba(0, 0, 0, 0.25); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,.1); height: 24px; overflow: hidden; bottom: 60px; position: absolute; width: 100%;}
+.bip-progress_bar {animation: progress-bar-stripes 2s linear infinite; background-color: #5CB85C; background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 40px 40px; box-shadow: inset 0 -1px 0 rgba(0,0,0,.15); color: #FFFFFF; float: left; font-size: 14px; font-weight: 500; height: 100%; line-height: 24px; text-align: center; transition: width .6s ease; width: 0; white-space: nowrap;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
@@ -157,7 +158,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	imagePopHandler = function(wrapper, node) {
 		log("info", "imagePop", wrapper);
 		const img = wrapper.lastElementChild;
-		if (img.src) {
+		if (img.src && wrapper.getElementsByTagName("VIDEO").length === 0) {
 			const proxy = img.src.split("?")[0],
 			container = wrapper.parentNode,
 			fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
@@ -166,26 +167,44 @@ const BetterImagePopups = (function() {	// plugin settings
 			wrapper.removeAttribute("target");
 			if (script.settings.fullRes) {
 				imageLoad(fullSrc, function(ratio) {
-					const progress = document.getElementById("bip-progress_bar");
-					if (ratio == -1) {
-						progress.style.width = 0;
-					}
-					else {
-						progress.style.width = `${ratio}%`;
+					const progress_bar_id = document.getElementById("bip-progress_bar");
+					if (progress_bar_id) {
+						if (ratio == -1) {
+							progress_bar_id.style.width = 0;
+						}
+						else {
+							progress_bar_id.style.width = `${ratio}%`;
+						}
 					}
 				}).then(function(blob) {
-					document.getElementById("bip-progress").classList.add("bip-toggled");
-					document.getElementById("bip-size").textContent = mediaSize(blob.size);
-					document.getElementById("bip-size").classList.remove("bip-toggled");
-					img.src = window.URL.createObjectURL(blob);
+					const progress_id = document.getElementById("bip-progress"),
+					size_id = document.getElementById("bip-size");
+					if (progress_id) {
+						progress_id.classList.add("bip-toggled");
+					}
+					if (size_id) {
+						size_id.textContent = mediaSize(blob.size);
+						size_id.classList.remove("bip-toggled");
+					}
+					if (img) {
+						img.src = window.URL.createObjectURL(blob);
+					}
 				}, function(error) {
-					img.src = proxy;
-					document.getElementById("bip-progress").classList.add("bip-toggled");
-					document.getElementById("bip-error").classList.add("bip-toggled");
-					document.getElementById("bip-error").textContent = `${error.status} ${error.statusText}`
+					const progress_id = document.getElementById("bip-progress"),
+					error_id = document.getElementById("bip-error");
+					if (progress_id) {
+						progress_id.classList.add("bip-toggled");
+					}
+					if (error_id) {
+						error_id.classList.add("bip-toggled");
+						error_id.textContent = `${error.status} ${error.statusText}`;
+					}
+					if (img) {
+						img.src = proxy;
+					}
 					log("error", "imageLoad", error);
 				});
-				container.appendChild(_createElement("div", {className: "progressContainer-3ao-eu size12-3R0845 weightLight-3heiur height16-2Lv3qA", id: "bip-progress", innerHTML: "<div class='progress-2XXRYo large-3EPlRk' style='background-color: rgb(233, 231, 231);'><div id='bip-progress_bar' class='progressBar-3u8FBM large-3EPlRk' style='background-color: rgb(114, 137, 218); width: 0;'></div></div><div class='bip-loading'>Loading High Resolution</div>"}));
+				container.appendChild(_createElement("div", {className: "bip-progress", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution</div>"}));
 			}
 			node.classList.add("bip-container");
 			node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb orrie-tooltip orrie-relative"}, [
@@ -226,10 +245,16 @@ const BetterImagePopups = (function() {	// plugin settings
 				`);
 			};
 			img.onload = function() {
-				document.getElementById("bip-info").textContent = `${this.naturalWidth}px × ${this.naturalHeight}px`;
+				const info_id = document.getElementById("bip-info");
+				if (info_id) {
+					info_id.textContent = `${this.naturalWidth}px × ${this.naturalHeight}px`;
+				}
 				if (this.naturalHeight > window.innerHeight || this.naturalWidth > window.innerWidth || (script.settings.minSize && this.naturalHeight !== this.height && this.naturalWidth !== this.width)) {
-					document.getElementById("bip-scale").textContent = `Scaled to ${this.width}px × ${this.height}px`;
-					document.getElementById("bip-scale").classList.remove("bip-toggled");
+					const scale_id = document.getElementById("bip-scale");
+					if (scale_id) {
+						scale_id.textContent = `Scaled to ${this.width}px × ${this.height}px`;
+						scale_id.classList.remove("bip-toggled");
+					}
 					img.scaled = true;
 				}
 			};
