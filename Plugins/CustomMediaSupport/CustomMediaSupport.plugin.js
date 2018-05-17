@@ -551,7 +551,7 @@ const CustomMediaSupport = (function() {
 									const fileFilter = hrefSplit.slice(-2).join("/");
 									let data = {
 										fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
-										fileName: hrefSplit[hrefSplit.length-1].match(/[\w\s]+/)[0],
+										fileName: hrefSplit[hrefSplit.length-1] ? hrefSplit[hrefSplit.length-1].match(/[\w\s]+/)[0] : "",
 										filePoster: "",
 										fileReplace: false,
 										fileSize: message.getElementsByClassName("metadataSize-2UOOLK")[0] ? message.getElementsByClassName("metadataSize-2UOOLK")[0].textContent : "",
