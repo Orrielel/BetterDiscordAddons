@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.4",
+		version: "1.3.5",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -47,7 +47,7 @@ const BetterImagePopups = (function() {	// plugin settings
 @-webkit-keyframes progress-bar-stripes {from {background-position: 40px 0;} to {background-position: 0 0;}}
 @keyframes progress-bar-stripes {from { background-position: 40px 0;} to { background-position: 0 0;}}
 .bip-progress {background-color: rgba(0, 0, 0, 0.25); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,.1); height: 24px; overflow: hidden; bottom: 60px; position: absolute; width: 100%;}
-.bip-progress_bar {animation: progress-bar-stripes 2s linear infinite; background-color: #5CB85C; background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 40px 40px; box-shadow: inset 0 -1px 0 rgba(0,0,0,.15); color: #FFFFFF; float: left; font-size: 14px; font-weight: 500; height: 100%; line-height: 24px; text-align: center; transition: width .6s ease; width: 0; white-space: nowrap;}
+.bip-progress_bar {animation: progress-bar-stripes 2s linear infinite; background-color: #5CB85C; background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 40px 40px; box-shadow: inset 0 -1px 0 rgba(0,0,0,.15); color: #FFFFFF; float: left; font-size: 14px; font-weight: 500; height: 100%; line-height: 24px; opacity: 0.8; text-align: center; transition: width 0.6s ease; width: 0; white-space: nowrap;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
@@ -261,15 +261,16 @@ const BetterImagePopups = (function() {	// plugin settings
 		}
 	},
 	zoomImage = function({altKey, ctrlKey, shiftKey}, mode, img, wrapper) {
-		let steps = 25;
-		if (altKey) {steps = 200;}
-		else if (ctrlKey) {steps = 100;}
-		else if (shiftKey) {steps = 50;}
-		if (mode == "out"&& script.zoom > steps) {
-			script.zoom -= steps;
-		}
-		else {
-			script.zoom += steps;
+		let steps = altKey ? 200 : ctrlKey ? 100 : shiftKey ? 50 : 25;
+		switch(mode) {
+			case "out":
+				if (script.zoom > steps) {
+					script.zoom -= steps;
+				}
+				break;
+			case "in":
+				script.zoom += steps;
+				break;
 		}
 		const width = img.width*(script.zoom/100),
 		height = img.height*(script.zoom/100);
