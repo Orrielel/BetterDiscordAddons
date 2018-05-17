@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.5.8",
+		version: "2.5.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -28,7 +28,7 @@ const CustomMediaSupport = (function() {
 			},
 			sites: {
 				"imgur.com": {
-					data({href, message, fileMedia}) {
+					data({href, message, fileMedia, fileLink}) {
 						const check = message.querySelector(`a.embedTitleLink-1Zla9e[href='${href.replace("//m.","//")}']`);
 						if (check && check.closest(".embedContent-3fnYWm").nextElementSibling && /\.jpg|\.jpeg|\.png|\.gif$/.test(check.closest(".embedContent-3fnYWm").nextElementSibling.getAttribute("href"))) {
 							return {fileMedia: "ignore", fileReplace: false, href};
@@ -44,11 +44,17 @@ const CustomMediaSupport = (function() {
 									fileReplace: true, href: source, hrefSplit
 								};
 							}
+							if (/gifv/.test(fileLink)) {
+								parsedLink = fileLink.replace("https://i.","").replace(".gifv","");
+								if (!script.db.filter.includes(parsedLink)) {
+									script.db.filter.push(parsedLink);
+								}
+							}
 						}
 						return {fileMedia, fileReplace: false, href};
 					},
 					api(data) {
-						request("imgur", `https://cors-anywhere.herokuapp.com/https://api.imgur.com/3/image/${data.fileTitle.match(/(\w+)/)[0]}`, function(resp, data) {
+						request("imgur", `https://cors-anywhere.herokuapp.com/https://api.imgur.com/3/image/${data.fileName}`, function(resp, data) {
 							const item = resp.success ? resp.data : false;
 							if (item) {
 								data.href = item.mp4;
@@ -59,7 +65,7 @@ const CustomMediaSupport = (function() {
 								mediaEmbedding(data);
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
-									script.db.url[data.fileId] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+									script.db.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
 								}
 								else {
 									log("error", "imgur", item);
@@ -73,7 +79,7 @@ const CustomMediaSupport = (function() {
 						return {fileMedia: "video", fileReplace: true, href};
 					},
 					api(data) {
-						request("gfycat", `https://cors-anywhere.herokuapp.com/https://api.gfycat.com/v1/gfycats/${data.fileTitle.match(/(\w+)/)[0]}`, function({gfyItem}, data) {
+						request("gfycat", `https://cors-anywhere.herokuapp.com/https://api.gfycat.com/v1/gfycats/${data.fileName}`, function({gfyItem}, data) {
 							if (gfyItem) {
 								data.href = gfyItem.mp4Url;
 								data.fileTitle = gfyItem.gfyName;
@@ -82,13 +88,24 @@ const CustomMediaSupport = (function() {
 								mediaEmbedding(data);
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
-									script.db.url[data.fileId] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+									script.db.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
 								}
 								else {
-									log("error", "imgur", gfyItem);
+									log("error", "gfycat", gfyItem);
 								}
 							}
 						}, "GET", data);
+					}
+				},
+				"facebook.com": {
+					data({message}) {
+						if (message) {
+							return {
+								fileMedia: "video",
+								fileReplace: true,
+								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
+							};
+						}
 					}
 				},
 				"instagram.com": {
@@ -211,6 +228,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-video .metadata-13NcHb {display: none; z-index: 1;}
 .customMedia.media-video .imageWrapper-2p5ogY:hover .metadata-13NcHb {display: flex;}
 .customMedia.media-iframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle; z-index: 1;}
+.customMedia.media-iframe .metadata-13NcHb {max-width: 100%; min-width: 500px;}
 .theme-dark .customMedia.media-iframe iframe {background-color: rgba(46,48,54,.3); border: 1px solid rgba(46,48,54,.6);}
 .theme-light .customMedia.media-iframe iframe {background: hsla(0,0%,98%,.3); border: 1px solid hsla(0,0%,80%,.3);}
 .CustomMediaSupportModal .customMedia.media-video video {max-height: 80vh; min-height: 50vh; max-width: 90vw;}
@@ -472,11 +490,11 @@ const CustomMediaSupport = (function() {
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.getAttribute("href") || link.getAttribute("src")) {
-					const fileId = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href"),
-					href = decodeURI(encodeURI(fileId.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4"))),
+					const fileLink = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href"),
+					href = decodeURI(encodeURI(fileLink.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4"))),
 					fileType = href.match(/\.(\w+$)/) ? href.match(/\.(\w+$)/)[1] : false,
 					message = link.closest(".message");
-					if (message && fileType || /4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|wot-life.com|instagram.com|imgur.com|streamable.com|steampowered.com|ifunny.co/.test(href)) {
+					if (message && fileType || /4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|wot-life.com|facebook.com|instagram.com|imgur.com|streamable.com|steampowered.com|ifunny.co/.test(href)) {
 						const message_body = message.firstElementChild,
 						hrefSplit = href.split("/");
 						let container;
@@ -533,11 +551,12 @@ const CustomMediaSupport = (function() {
 									const fileFilter = hrefSplit.slice(-2).join("/");
 									let data = {
 										fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
-										fileTitle: message.getElementsByClassName("embedTitleLink-1Zla9e")[0] ? message.getElementsByClassName("embedTitleLink-1Zla9e")[0].innerHTML : decodeURIComponent(hrefSplit[hrefSplit.length-1]),
-										fileSize: message.getElementsByClassName("metadataSize-2UOOLK")[0] ? message.getElementsByClassName("metadataSize-2UOOLK")[0].textContent : "",
-										fileReplace: false,
+										fileName: hrefSplit[hrefSplit.length-1].match(/[\w\s]+/)[0],
 										filePoster: "",
-										fileId, fileType, fileFilter, href, hrefSplit, message, message_body
+										fileReplace: false,
+										fileSize: message.getElementsByClassName("metadataSize-2UOOLK")[0] ? message.getElementsByClassName("metadataSize-2UOOLK")[0].textContent : "",
+										fileTitle: message.getElementsByClassName("embedTitleLink-1Zla9e")[0] ? message.getElementsByClassName("embedTitleLink-1Zla9e")[0].innerHTML : decodeURIComponent(hrefSplit[hrefSplit.length-1]),
+										fileLink, fileType, fileFilter, href, hrefSplit, message, message_body
 									};
 									if (data.fileMedia == "ignore") {break;}
 									const fileSite = script.media.sites[hrefSplit[2].match(/([\w\-]+\.\w+)$/)[0]] || false;
@@ -547,8 +566,8 @@ const CustomMediaSupport = (function() {
 									// only continues if mediaCheck is true -- as in, the embedding doesn't already exist
 									if (data.href && data.fileMedia  && data.fileMedia !== "ignore" && mediaCheck(message, fileFilter)) {
 										link.classList.add("customMediaLink");
-										if (script.db.url[data.fileId]) {
-											mediaEmbedding(Object.assign(data, script.db.url[data.fileId]));
+										if (script.db.url[data.fileLink]) {
+											mediaEmbedding(Object.assign(data, script.db.url[data.fileLink]));
 										}
 										else if (script.settings.api && fileSite && fileSite.api) {
 											fileSite.api(data);
@@ -575,12 +594,12 @@ const CustomMediaSupport = (function() {
 	},
 	mediaEmbedding = function(data, mode) {
 		log("info", "mediaEmbedding", data);
-		const {fileId, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
+		const {fileLink, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		wrapperName = {
 			video: "imageWrapper-2p5ogY noScroll-1Ep7Tu",
 			audio: "wrapperAudio-1jDe0Q wrapper-2TxpI8",
-			img: "imageWrapper",
-			iframe: "iframeWrapper"
+			img: "imageWrapper-2p5ogY",
+			iframe: "imageWrapper-2p5ogY"
 		},
 		previewReplace = script.media.replace.includes(hrefSplit[2]),
 		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
