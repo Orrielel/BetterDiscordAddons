@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.6.0",
+		version: "2.6.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -35,17 +35,62 @@ const CustomMediaSupport = (function() {
 						if (script.settings.sadpanda) {
 							const gallery_id = `${data.hrefSplit[4]}_${data.hrefSplit[5]}`;
 							if (!data.message.getElementsByClassName(`gallery_${gallery_id}`).length) {
-								if (script.db.archive[gallery_id]) {
-									data.message.insertBefore(_createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: script.db.archive[gallery_id]}), data.message_body.nextSibling);
+								if (script.archive.sadpanda[gallery_id]) {
+									data.message.insertBefore(_createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: script.archive.sadpanda[gallery_id]}), data.message_body.nextSibling);
 									scrollElement(data.message.scrollHeight, "messages");
 								}
 								else {
 									script.check.sadpanda = true;
 									data.apiData = `{"method":"gdata","gidlist":[["${data.hrefSplit[4]}","${data.hrefSplit[5]}"]],"namespace":1}`;
-									request("sadpanda", "https://e-hentai.org/api.php", sadpandaHandler, "POST", data);
+									request("sadpanda", "https://e-hentai.org/api.php", function(resp, {message, message_body}) {
+										// fetch sadpanda gallery information
+										const gallery = resp.gmetadata[0];
+										if (gallery) {
+											const tagsParser = function(tags) {
+												const tagsOutput = {language: "", parody: "", character: "", group: "", artist: "", male: "", female: "", misc: ""};
+												let tagsString = "";
+												for (let _t=0, _t_len=tags.length; _t<_t_len; _t++) {
+													const tag = tags[_t].match(/([\w\s\.\-]+)/g),
+													tagOutput = `<div class='tag'><a class='cms-ignore' href='https://exhentai.org/tag/${tag.length == 2? `${tag[0]}:${tag[1].replace(/\s/g, "+")}` : tag[0].replace(/\s/g, "+")}' target='_blank' rel='noreferrer'>${tag[tag.length-1]}</a></div>`;
+													if (tag.length == 2) {
+														tagsOutput[tag[0]] += tagOutput;
+													}
+													else {
+														tagsOutput.misc += tagOutput;
+													}
+												}
+												for (let _to_k=Object.keys(tagsOutput), _to=0, _to_len=_to_k.length; _to<_to_len; _to++) {
+													const key = _to_k[_to],
+													tagOutput = tagsOutput[key];
+													if (tagOutput) {
+														tagsString += `<tr><td class='desc'>${key}:</td><td>${tagOutput}</td></tr>`;
+													}
+												}
+												return tagsString;
+											};
+											const gallery_id = `${gallery.gid}_${gallery.token}`,
+											container = _createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+											message.insertBefore(container, message_body.nextSibling);
+											scrollElement(message.scrollHeight, "messages");
+											// cache embed html in database and remove fetching tag
+											script.archive.sadpanda[gallery_id] = container.innerHTML;
+											bdPluginStorage.set(script.file, "archive", script.archive);
+											// remove sadpanda images
+											const sadpandas = document.getElementsByClassName("messages")[0].querySelectorAll("img[href*='exhentai.org']");
+											if (sadpandas[0]) {
+												while(sadpandas[0]) {
+													sadpandas[0].remove();
+												}
+											}
+										}
+										else {
+											log("error", "sadpandaFetch - galleries returns empty?", resp);
+										}
+										script.check.sadpanda = false;
+									}, "POST", data);
 								}
-								if (!script.db.filter.includes(gallery_id)) {
-									script.db.filter.push(gallery_id);
+								if (!script.archive.filter.includes(gallery_id)) {
+									script.archive.filter.push(gallery_id);
 								}
 							}
 						}
@@ -60,8 +105,8 @@ const CustomMediaSupport = (function() {
 							data.postnumber = data.hrefSplit[5].match(/\d+/g);
 							const thread_id = `${data.hrefSplit[3]}_${data.postnumber[1] ? data.hrefSplit[5].replace("#","_") : data.hrefSplit[5]}`;
 							if (!data.message.getElementsByClassName(`post_${thread_id}`).length) {
-								if (script.db.archive[thread_id]) {
-									data.message.insertBefore(_createElement("div", {className: `accessory customMedia knittingboard post_${thread_id}`, innerHTML: script.db.archive[thread_id]}), data.message_body.nextSibling);
+								if (script.archive.chan[thread_id]) {
+									data.message.insertBefore(_createElement("div", {className: `accessory customMedia chan post_${thread_id}`, innerHTML: script.archive.chan[thread_id]}), data.message_body.nextSibling);
 									scrollElement(data.message.scrollHeight, "messages");
 								}
 								else {
@@ -69,12 +114,36 @@ const CustomMediaSupport = (function() {
 										script.check.chan = true;
 										data.archive = archiveCheck(data.hrefSplit[3]);
 										if (data.archive) {
-											request("4chan", `https://cors-anywhere.herokuapp.com/${data.archive}/_/api/chan/thread/?board=${data.hrefSplit[3]}&num=${data.postnumber[0]}`, chanHandler, "GET", data);
+										request("4chan", `https://cors-anywhere.herokuapp.com/${data.archive}/_/api/chan/thread/?board=${data.hrefSplit[3]}&num=${data.postnumber[0]}`, function(resp, {archive, message, message_body, href, hrefSplit, postnumber}) {
+												// fetch knitting image board information
+												const thread = resp[postnumber[0]],
+												post = thread.posts && thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
+												thread_id = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
+												is_reply = thread.posts && thread.posts[postnumber[1]] ? true : false,
+												counts = thread.posts ? (function(posts) {
+													let reply = 0, media = 1;
+													for (let _p_k=Object.keys(posts), _p=_p_k.length; _p--;) {
+														reply++;
+														if (posts[_p_k[_p]].media) {
+															media++;
+														}
+													}
+													return [reply, media];
+												})(thread.posts) : [0,1],
+												container = _createElement("div", {className: `accessory customMedia chan post_${thread_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+												message.insertBefore(container, message_body.nextSibling);
+												scrollElement(message.scrollHeight, "messages");
+												mediaReplace(message);
+												// cache embed html in database and remove fetching tag
+												script.archive.chan[thread_id] = container.innerHTML;
+												bdPluginStorage.set(script.file, "archive", script.archive);
+												script.check.chan = false;
+											}, "GET", data);
 										}
 									}
 								}
-								if (!script.db.filter.includes(`thread/${data.postnumber[0]}`)) {
-									script.db.filter.push(`thread/${data.postnumber[0]}`);
+								if (!script.archive.filter.includes(`thread/${data.postnumber[0]}`)) {
+									script.archive.filter.push(`thread/${data.postnumber[0]}`);
 								}
 								mediaReplace(data.message);
 							}
@@ -100,8 +169,8 @@ const CustomMediaSupport = (function() {
 							}
 							if (/gifv/.test(fileLink)) {
 								const parsedLink = fileLink.replace("https://i.","").replace(".gifv","");
-								if (!script.db.filter.includes(parsedLink)) {
-									script.db.filter.push(parsedLink);
+								if (!script.archive.filter.includes(parsedLink)) {
+									script.archive.filter.push(parsedLink);
 								}
 							}
 						}
@@ -119,7 +188,7 @@ const CustomMediaSupport = (function() {
 								mediaEmbedding(data);
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
-									script.db.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+									script.archive.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
 								}
 								else {
 									log("error", "imgur", item);
@@ -142,7 +211,7 @@ const CustomMediaSupport = (function() {
 								mediaEmbedding(data);
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
-									script.db.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+									script.archive.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
 								}
 								else {
 									log("error", "gfycat", gfyItem);
@@ -157,21 +226,21 @@ const CustomMediaSupport = (function() {
 					},
 					api(data) {
 						const file_id = `steam_${data.fileTitle.match(/\d+/)[0]}`;
-						if (script.db.steam[file_id]) {
-							data.message.insertBefore(_createElement("div", {className: `accessory customMedia steam_workshop ${file_id}`, innerHTML: script.db.steam[file_id]}), data.message_body.nextSibling);
+						if (script.archive.steam[file_id]) {
+							data.message.insertBefore(_createElement("div", {className: `accessory customMedia steam_workshop ${file_id}`, innerHTML: script.archive.steam[file_id]}), data.message_body.nextSibling);
 							scrollElement(data.message.scrollHeight, "messages");
 						}
 						else {
 							data.apiData = `itemcount=1&publishedfileids[0]=${data.fileTitle.match(/\d+/)[0]}&format=json`;
-							request("steam_workshop", `https://cors-anywhere.herokuapp.com/https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/`, function({response}, data) {
+							request("steam_workshop", `https://cors-anywhere.herokuapp.com/https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/`, function({response}, {message, message_body}) {
 								// fetch knitting image board information
 								const file = response.publishedfiledetails[0],
 								container = _createElement("div", {className: `accessory customMedia steam_workshop ${file_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps'></div><div class='embedInner-1-fpTo'><div class='embedContent-3fnYWm flex-1O1GKY'><div class='embedContentInner-FBnk7v'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop</a></div><div class='embedMargin-UO5XwE marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink cms-ignore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d'><div class='scroller-2FKFPG embedDescription-1Cuq9a embedMargin-UO5XwE marginTop4-2BNfKC markup textParserProcessed'>${file.description}</div></div><div class='embedFields-2IPs5Z horizontal-2EEEnY flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy embedMargin-UO5XwE marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z horizontal-2EEEnY flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy embedMargin-UO5XwE marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div></div></div><div class='embedImage-2W1cML embedMarginLarge-YZDCEs marginTop8-1DLZ1n'><img class='image' src='${file.preview_url}'></div></div></div>`});
-								data.message.insertBefore(container, data.message_body.nextSibling);
-								scrollElement(data.message.scrollHeight, "messages");
-								mediaReplace(data.message);
+								message.insertBefore(container, message_body.nextSibling);
+								scrollElement(message.scrollHeight, "messages");
+								mediaReplace(message);
 								// cache embed html in database and remove fetching tag
-								script.db.steam[file_id] = container.innerHTML;
+								script.archive.steam[file_id] = container.innerHTML;
 							}, "POST", data);
 						}
 					}
@@ -355,24 +424,24 @@ const CustomMediaSupport = (function() {
 .customMedia.sadpanda .gallery_info .cat-Asianporn {color: #F2A7F2;}
 .customMedia.sadpanda .gallery_info .cat-Misc {color: #D3D3D3;}
 /* 4chan previews */
-.customMedia.knittingboard {color: #AAAAAA;}
-.customMedia.knittingboard .embed-IeVjo6 {max-width: 640px; min-width: 520px;}
-.customMedia.knittingboard .embed-IeVjo6 .board-sfw {background-color: #9099D0;}
-.customMedia.knittingboard .embed-IeVjo6 .board-nsfw {background-color: #FFBEAF;}
-.customMedia.knittingboard .thread_head {position: relative;}
-.customMedia.knittingboard .thread_head .thread_posttype {font-weight: bold; line-height: 30px; margin: 0 5px;}
-.customMedia.knittingboard .thread_head .thread_data {display: inline; position: absolute; right: 0;}
-.customMedia.knittingboard .thread_head .thread_data td:last-of-type {text-align: right;}
-.customMedia.knittingboard .thread_link {font-weight: 500; white-space: nowrap;}
-.customMedia.knittingboard .thread_link span {display: inline; margin: 0 5px;}
-.customMedia.knittingboard .thread_info {white-space: nowrap;}
-.customMedia.knittingboard .thread_info .thread_title {display: inline-block; font-weight: bold; max-width: 278px; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom;}
-.customMedia.knittingboard .thread_info .thread_creator {color: #30A75C;}
-.customMedia.knittingboard .thread_preview {padding: 0; width: 1px;}
-.customMedia.knittingboard .thread_preview img {border-radius: 5px; display: inline-block; height: unset; max-height: 200px; max-width: 200px;}
-.customMedia.knittingboard .thread_comment {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%; word-break: break-word;}
-.customMedia.knittingboard .thread_comment a {word-break: break-word;}
-.customMedia.knittingboard .thread_foot {padding: 10px 2px 0;}
+.customMedia.chan {color: #AAAAAA;}
+.customMedia.chan .embed-IeVjo6 {max-width: 640px; min-width: 520px;}
+.customMedia.chan .embed-IeVjo6 .board-sfw {background-color: #9099D0;}
+.customMedia.chan .embed-IeVjo6 .board-nsfw {background-color: #FFBEAF;}
+.customMedia.chan .thread_head {position: relative;}
+.customMedia.chan .thread_head .thread_posttype {font-weight: bold; line-height: 30px; margin: 0 5px;}
+.customMedia.chan .thread_head .thread_data {display: inline; position: absolute; right: 0;}
+.customMedia.chan .thread_head .thread_data td:last-of-type {text-align: right;}
+.customMedia.chan .thread_link {font-weight: 500; white-space: nowrap;}
+.customMedia.chan .thread_link span {display: inline; margin: 0 5px;}
+.customMedia.chan .thread_info {white-space: nowrap;}
+.customMedia.chan .thread_info .thread_title {display: inline-block; font-weight: bold; max-width: 278px; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom;}
+.customMedia.chan .thread_info .thread_creator {color: #30A75C;}
+.customMedia.chan .thread_preview {padding: 0; width: 1px;}
+.customMedia.chan .thread_preview img {border-radius: 5px; display: inline-block; height: unset; max-height: 200px; max-width: 200px;}
+.customMedia.chan .thread_comment {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%; word-break: break-word;}
+.customMedia.chan .thread_comment a {word-break: break-word;}
+.customMedia.chan .thread_foot {padding: 10px 2px 0;}
 .custom_warning {color: #F32323;}
 /* steam workshop previews */
 .customMedia.steam_workshop .embed-IeVjo6 {max-width: 426px}
@@ -392,13 +461,15 @@ const CustomMediaSupport = (function() {
 .cms-archive_header > div {margin: 0 5px; width: 195px;}
 .cms-archive_filter {padding-bottom: 8px;}
 .cms-archive_filter .input-cIJ7To {padding: 0 10px; width: 250px;}
-.cms-archive_active .divider-3573oO {background-color: #a5a5a5;}
+.cms-archive_active_button .divider-3573oO {background-color: #a5a5a5;}
+.cms-archive_container > div {display: none;}
+.cms-archive_container .cms-archive_active {display: flex;}
 .cms-archive_container .customMedia {margin: 5px; position: relative;}
 .cms-archive_container .customMedia .embed-IeVjo6 {max-width: unset;}
 .cms-archive_delete {position: absolute; top: 3px; right: 3px;}
 .cms-archive_delete:hover .close-18n9bP, .cms-archive_clean:hover .close-18n9bP {background-color: rgba(240, 71, 71, 0.5);}
-.cms-info-header {height: 24px; padding: 8px;}
-.cms-archive_container .customMedia.knittingboard .thread_head .thread_data {right: 30px;}
+.cms-info-header {height: 24px; text-align: center; padding: 8px;}
+.cms-archive_container .customMedia.chan .thread_head .thread_data {right: 30px;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
@@ -423,10 +494,11 @@ const CustomMediaSupport = (function() {
 .orrie-tooltip .tooltip:hover {display: none;}
 			`
 		},
-		db: {
-			archive: {},
+		archive: {
+			chan: {},
 			filter: [],
 			proxy: {},
+			sadpanda: {},
 			steam: {},
 			url: {}
 		}
@@ -434,19 +506,15 @@ const CustomMediaSupport = (function() {
 	settingsLoad = function() {
 		// load settings
 		const storage = bdPluginStorage.get(script.file, "settings"),
-		archive_version = bdPluginStorage.get(script.file, "db_version");
+		archive = bdPluginStorage.get(script.file, "archive");
 		if (storage) {
 			script.settings = storage;
 		}
 		else {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
-		if (!archive_version || (archive_version && script.version.replace(/\./g,"") < 251)) {
-			bdPluginStorage.set(script.file, "db", {});
-		}
-		else {
-			script.db.archive = bdPluginStorage.get(script.file, "db"),
-			bdPluginStorage.set(script.file, "db_version", Number(script.version.replace(/\./g,"")));
+		if (archive) {
+			script.archive = archive;
 		}
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
@@ -480,6 +548,17 @@ const CustomMediaSupport = (function() {
 			console[method](`%c[${script.file}]%c ${title}`, "color: purple; font-weight: bold;", "", new Date().toLocaleTimeString("en-GB"), data ? data : "");
 		}
 	},
+	cleanArchive = function() {
+		for (let _db_k = Object.keys(script.archive), _db=0, _db_len=_db_k.length; _db<_db_len; _db++) {
+			const key = _db_k[_db];
+			if (Array.isArray(script.archive[key])) {
+				script.archive[key] = [];
+			}
+			else {
+				script.archive[key] = {};
+			}
+		}
+	},
 	scrollElement = function(scrollDistance, parentClass, forceScroll) {
 		// scroll element
 		const parent = document.getElementsByClassName(parentClass)[0];
@@ -508,8 +587,8 @@ const CustomMediaSupport = (function() {
 		if (media_elements.length) {
 			for (let _cm=media_elements.length; _cm--;) {
 				if (media_elements[_cm].check == fileFilter) {
-					if (!script.db.filter.includes(fileFilter)) {
-						script.db.filter.push(fileFilter);
+					if (!script.archive.filter.includes(fileFilter)) {
+						script.archive.filter.push(fileFilter);
 					}
 					return false;
 				}
@@ -523,12 +602,12 @@ const CustomMediaSupport = (function() {
 			const media = mediaAll[_rm],
 			url = media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href"),
 			fileFilter = url.split("/").slice(-2).join("/");
-			if (media && script.db.filter.includes(fileFilter)) {
+			if (media && script.archive.filter.includes(fileFilter)) {
 				let wrapper = media.closest(".accessory > div");
 				if (wrapper) {
 					wrapper.classList.add("media-toggled");
 				}
-				if (script.db.proxy[fileFilter] == "ERROR") {
+				if (script.archive.proxy[fileFilter] == "ERROR") {
 					const source = document.getElementById(`error_${fileFilter}`);
 					if (source) {
 						source.id = "";
@@ -537,10 +616,10 @@ const CustomMediaSupport = (function() {
 						source.parentNode.classList.remove("media-toggled");
 						source.parentNode.nextElementSibling.classList.add("media-toggled");
 					}
-					delete script.db.proxy[fileFilter];
+					delete script.archive.proxy[fileFilter];
 				}
 				else {
-					script.db.proxy[fileFilter] = url;
+					script.archive.proxy[fileFilter] = url;
 				}
 			}
 		}
@@ -599,8 +678,8 @@ const CustomMediaSupport = (function() {
 						// only continues if mediaCheck is true -- as in, the embedding doesn't already exist
 						if (data.href && data.fileMedia  && data.fileMedia !== "ignore" && mediaCheck(message, fileFilter)) {
 							link.classList.add("customMediaLink");
-							if (script.db.url[data.fileLink]) {
-								mediaEmbedding(Object.assign(data, script.db.url[data.fileLink]));
+							if (script.archive.url[data.fileLink]) {
+								mediaEmbedding(Object.assign(data, script.archive.url[data.fileLink]));
 							}
 							else if (script.settings.api && fileSite && fileSite.api) {
 								fileSite.api(data);
@@ -698,8 +777,8 @@ const CustomMediaSupport = (function() {
 									scrollElement(message.scrollHeight, "messages");
 									// replace original accessory previews if they exist
 									if (!script.media.replace.includes(hrefSplit[2])) {
-										if (!script.db.filter.includes(fileFilter)) {
-											script.db.filter.push(fileFilter);
+										if (!script.archive.filter.includes(fileFilter)) {
+											script.archive.filter.push(fileFilter);
 										}
 										mediaReplace(message);
 									}
@@ -714,14 +793,14 @@ const CustomMediaSupport = (function() {
 				})(),
 					_createElement("source", {src: href,
 						onerror() {
-							const proxy = script.db.proxy[fileFilter];
+							const proxy = script.archive.proxy[fileFilter];
 							if (proxy) {
 								this.src = proxy;
 								this.parentNode.load();
-								delete script.db.proxy[fileFilter];
+								delete script.archive.proxy[fileFilter];
 							}
 							else {
-								script.db.proxy[fileFilter] = "ERROR";
+								script.archive.proxy[fileFilter] = "ERROR";
 								this.id = `error_${fileFilter}`;
 								this.parentNode.classList.add("media-toggled");
 								this.parentNode.parentNode.nextElementSibling.classList.remove("media-toggled");
@@ -750,136 +829,69 @@ const CustomMediaSupport = (function() {
 		}
 		// replace original accessory previews if they exist
 		if ((fileReplace || (fileMedia == "video" || fileMedia == "audio")) && !previewReplace) {
-			if (!script.db.filter.includes(fileFilter)) {
-				script.db.filter.push(fileFilter);
+			if (!script.archive.filter.includes(fileFilter)) {
+				script.archive.filter.push(fileFilter);
 			}
 			mediaReplace(message);
 		}
 		scrollElement(message.scrollHeight, "messages");
 	},
-	sadpandaHandler = function(resp, {message, message_body}) {
-		// fetch sadpanda gallery information
-		const gallery = resp.gmetadata[0];
-		if (gallery) {
-			const tagsParser = function(tags) {
-				const tagsOutput = {language: "", parody: "", character: "", group: "", artist: "", male: "", female: "", misc: ""};
-				let tagsString = "";
-				for (let _t=0, _t_len=tags.length; _t<_t_len; _t++) {
-					const tag = tags[_t].match(/([\w\s\.\-]+)/g),
-					tagOutput = `<div class='tag'><a class='cms-ignore' href='https://exhentai.org/tag/${tag.length == 2? `${tag[0]}:${tag[1].replace(/\s/g, "+")}` : tag[0].replace(/\s/g, "+")}' target='_blank' rel='noreferrer'>${tag[tag.length-1]}</a></div>`;
-					if (tag.length == 2) {
-						tagsOutput[tag[0]] += tagOutput;
-					}
-					else {
-						tagsOutput.misc += tagOutput;
-					}
-				}
-				for (let _to_k=Object.keys(tagsOutput), _to=0, _to_len=_to_k.length; _to<_to_len; _to++) {
-					const key = _to_k[_to],
-					tagOutput = tagsOutput[key];
-					if (tagOutput) {
-						tagsString += `<tr><td class='desc'>${key}:</td><td>${tagOutput}</td></tr>`;
-					}
-				}
-				return tagsString;
-			};
-			const gallery_id = `${gallery.gid}_${gallery.token}`,
-			container = _createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
-			message.insertBefore(container, message_body.nextSibling);
-			scrollElement(message.scrollHeight, "messages");
-			// cache embed html in database and remove fetching tag
-			script.db.archive[gallery_id] = container.innerHTML;
-			bdPluginStorage.set(script.file, "db", script.db.archive);
-			// remove sadpanda images
-			const sadpandas = document.getElementsByClassName("messages")[0].querySelectorAll("img[href*='exhentai.org']");
-			if (sadpandas[0]) {
-				while(sadpandas[0]) {
-					sadpandas[0].remove();
-				}
-			}
-		}
-		else {
-			log("error", "sadpandaFetch - galleries returns empty?", resp);
-		}
-		script.check.sadpanda = false;
-	},
-	chanHandler = function(resp, {archive, href, hrefSplit, message, message_body, postnumber}) {
-		// fetch knitting image board information
-		const thread = resp[postnumber[0]],
-		post = thread.posts && thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
-		thread_id = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
-		is_reply = thread.posts && thread.posts[postnumber[1]] ? true : false,
-		counts = thread.posts ? (function(posts) {
-			let reply = 0, media = 1;
-			for (let _p_k=Object.keys(posts), _p=_p_k.length; _p--;) {
-				reply++;
-				if (posts[_p_k[_p]].media) {
-					media++;
-				}
-			}
-			return [reply, media];
-		})(thread.posts) : [0,1],
-		container = _createElement("div", {className: `accessory customMedia knittingboard post_${thread_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
-		message.insertBefore(container, message_body.nextSibling);
-		scrollElement(message.scrollHeight, "messages");
-		mediaReplace(message);
-		// cache embed html in database and remove fetching tag
-		script.db.archive[thread_id] = container.innerHTML;
-		bdPluginStorage.set(script.file, "db", script.db.archive);
-		script.check.chan = false;
-	},
 	archiveHandler = function() {
 		// displays the archived links in a modal
-		const sadpandaFragment = document.createDocumentFragment(),
-		chanFragment = document.createDocumentFragment(),
-		deletePreview = function(elem, key, counter) {
+		const deletePreview = function(elem, key, archive, counter) {
 			if (elem && key) {
-				delete script.db.archive[key];
-				bdPluginStorage.set(script.file, "db", script.db.archive);
+				delete script.archive[archive][key];
+				bdPluginStorage.set(script.file, "archive", script.archive);
 				elem.parentNode.remove();
 				document.getElementById(counter).textContent--;
 			}
-		};
-		BdApi.clearCSS("cms-filters");
-		for (let _db_k = Object.keys(script.db.archive), _db=_db_k.length; _db--;) {
-			const key = _db_k[_db];
-			if (Number.isInteger(parseFloat(key[0]))) {
-				const container = _createElement("div", {className: "customMedia sadpanda cms-filter", innerHTML: script.db.archive[key]},
-					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_sadpanda-counter");}})
-				);
-				container.className += (function(tags) {
+		},
+		activeArchive = function(elem, archive) {
+			const active_archive = document.getElementsByClassName("cms-archive_active")[0],
+			active_button = document.getElementsByClassName("cms-archive_active_button")[0];
+			if (active_archive) {
+				active_archive.classList.toggle("cms-archive_active");
+			}
+			if (active_button) {
+				active_button.classList.toggle("cms-archive_active_button");
+			}
+			elem.classList.toggle("cms-archive_active_button");
+			document.getElementById(`cms-${archive}_archive`).classList.toggle("cms-archive_active");
+		},
+		archives = {
+			sadpanda: {
+				name: "sadpanda",
+				fragment: document.createDocumentFragment(),
+				tags: function(tags) {
 					let tagsString = "";
 					for (let _t=tags.length; _t--;) {
 						tagsString += ` ${tags[_t].textContent}`;
 					}
 					return tagsString;
-				})(container.getElementsByClassName("tag"));
-				sadpandaFragment.appendChild(container);
-			}
-			else {
-				chanFragment.appendChild(_createElement("div", {className: `customMedia knittingboard cms-filter ${key.split("_")[0]}`, innerHTML: script.db.archive[key]},
-					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-bottom'>Delete</div>", onclick() {deletePreview(this, key, "cms-archive_chan-counter");}})
-				));
+				}
+			},
+			chan: {name: "chan", fragment: document.createDocumentFragment()},
+			steam: {name: "steam", fragment: document.createDocumentFragment()}
+		};
+		BdApi.clearCSS("cms-filters");
+		for (let _db_k = Object.keys(archives), _db=0, _db_len=_db_k.length; _db<_db_len; _db++) {
+			const archive = archives[_db_k[_db]];
+			for (let _db_k = Object.keys(script.archive[archive.name]), _db=_db_k.length; _db--;) {
+				const key = _db_k[_db],
+				container = _createElement("div", {className: `customMedia ${archive.name} cms-filter`, innerHTML: script.archive[archive.name][key]},
+					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-bottom'>Delete</div>", onclick() {deletePreview(this, key, archive.name, `cms-archive_${archive.name}-counter`);}})
+				);
+				if (archive.tags) {
+					container.className += archive.tags(container.getElementsByClassName("tag"));
+				} 
+				archive.fragment.appendChild(container);
 			}
 		}
 		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Archive Manager</h4></div><svg class='orrie-button-cancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
 			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 cms-archive_header", style: "flex: 0 0 auto;"}, [
-				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>ExHentai (<span id='cms-archive_sadpanda-counter'>${sadpandaFragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`,
-					onclick() {
-						document.getElementById("cms-archive_sadpanda").classList.toggle("orrie-toggled");
-						document.getElementById("cms-archive_chan").classList.add("orrie-toggled");
-						this.classList.toggle("cms-archive_active");
-						this.nextElementSibling.classList.remove("cms-archive_active");
-					}
-				}),
-				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>4chan (<span id='cms-archive_chan-counter'>${chanFragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`,
-					onclick() {
-						document.getElementById("cms-archive_sadpanda").classList.add("orrie-toggled");
-						document.getElementById("cms-archive_chan").classList.toggle("orrie-toggled");
-						this.classList.toggle("cms-archive_active");
-						this.previousElementSibling.classList.remove("cms-archive_active");
-					}
-				})
+				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>ExHentai (<span id='cms-archive_sadpanda-counter'>${archives.sadpanda.fragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "sadpanda");}}),
+				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>4chan (<span id='cms-archive_chan-counter'>${archives.chan.fragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "chan");}}),
+				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>Steam Workshop (<span id='cms-archive_steam-counter'>${archives.steam.fragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "steam");}})
 			]),
 			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 border-2AhmKo cms-archive_filter noScroll-1Ep7Tu", style: "flex: 0 0 auto;"},
 				_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG"}, [
@@ -900,12 +912,13 @@ const CustomMediaSupport = (function() {
 			_createElement("div", {className: "scrollerWrap-2lJEkd content-2BXhLs scrollerThemed-2oenus themeGhostHairline-DBD-2d border-2AhmKo"},
 				_createElement("div", {className: "scroller-2FKFPG inner-3wn6Q5 container-PNkimc cms-content"},
 					_createElement("div", {className: "cms-archive_container"}, [
-						_createElement("div", {className: "orrie-toggled flex-1O1GKY directionColumn-35P_nr", id: "cms-archive_sadpanda"}, sadpandaFragment.children.length ? sadpandaFragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
-						_createElement("div", {className: "orrie-toggled flex-1O1GKY directionColumn-35P_nr", id: "cms-archive_chan"}, chanFragment.children.length ? chanFragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
+						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr", id: "cms-sadpanda_archive"}, archives.sadpanda.fragment.children.length ? archives.sadpanda.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
+						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr", id: "cms-chan_archive"}, archives.chan.fragment.children.length ? archives.chan.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
+						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr", id: "cms-steam_archive"}, archives.steam.fragment.children.length ? archives.steam.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
 					])
 				)
 			),
-			_createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 cms-info-header' style='flex: 1 1 auto;'></h3>", style: "flex: 0 0 auto;"})
+			_createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'></h3>", style: "flex: 0 0 auto;"})
 		]);
 	},
 	insertCustomMenu = function(className, tooltip) {
@@ -1001,12 +1014,12 @@ const CustomMediaSupport = (function() {
 			_createElement("div", {className: "flex-1O1GKY justifyAround-1n1pnI"}, [
 				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
 				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"}),
-				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", textContent: `Clean Database (${Object.keys(script.db.archive).length || 0})`,
+				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", textContent: `Clean Database`,
 					onclick() {
 						// clean database
-						script.db.archive = {};
-						bdPluginStorage.set(script.file, "db", {});
-						this.textContent = "Clean Database (0)";
+						cleanArchive();
+						bdPluginStorage.set(script.file, "archive", script.archive);
+						this.textContent = "Clean Database";
 					}
 				})
 			]),
