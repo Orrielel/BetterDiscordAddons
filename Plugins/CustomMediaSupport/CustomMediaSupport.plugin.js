@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.6.1",
+		version: "2.6.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -46,33 +46,30 @@ const CustomMediaSupport = (function() {
 										// fetch sadpanda gallery information
 										const gallery = resp.gmetadata[0];
 										if (gallery) {
-											const tagsParser = function(tags) {
-												const tagsOutput = {language: "", parody: "", character: "", group: "", artist: "", male: "", female: "", misc: ""};
-												let tagsString = "";
-												for (let _t=0, _t_len=tags.length; _t<_t_len; _t++) {
-													const tag = tags[_t].match(/([\w\s\.\-]+)/g),
-													tagOutput = `<div class='tag'><a class='cms-ignore' href='https://exhentai.org/tag/${tag.length == 2? `${tag[0]}:${tag[1].replace(/\s/g, "+")}` : tag[0].replace(/\s/g, "+")}' target='_blank' rel='noreferrer'>${tag[tag.length-1]}</a></div>`;
-													if (tag.length == 2) {
-														tagsOutput[tag[0]] += tagOutput;
-													}
-													else {
-														tagsOutput.misc += tagOutput;
-													}
+											const tagsOutput = {},
+											tagsFilter = [];
+											let tagsString = "";
+											for (let _t=0, _t_len=gallery.tags.length; _t<_t_len; _t++) {
+												const tag_ns = gallery.tags[_t],
+												tagSplit = tag_ns.split(":"),
+												tag = tagSplit[tagSplit.length-1],
+												cat = tagSplit.length == 2 ? tagSplit[0] : "misc";
+												if (!tagsOutput[cat]) {tagsOutput[cat] = [];}
+												tagsOutput[cat].push(`<div class='tag'><a class='cms-ignore' href='https://exhentai.org/tag/${tag_ns.replace(/\s/g, "+")}' target='_blank' rel='noreferrer'>${tag}</a></div>`);
+												tagsFilter.push(tag);
+											}
+											for (let _to_k=Object.keys(tagsOutput), _to=0, _to_len=_to_k.length; _to<_to_len; _to++) {
+												const key = _to_k[_to],
+												tagOutput = tagsOutput[key];
+												if (tagOutput) {
+													tagsString += `<tr><td class='desc'>${key}:</td><td>${tagOutput.join("")}</td></tr>`;
 												}
-												for (let _to_k=Object.keys(tagsOutput), _to=0, _to_len=_to_k.length; _to<_to_len; _to++) {
-													const key = _to_k[_to],
-													tagOutput = tagsOutput[key];
-													if (tagOutput) {
-														tagsString += `<tr><td class='desc'>${key}:</td><td>${tagOutput}</td></tr>`;
-													}
-												}
-												return tagsString;
-											};
+											}
 											const gallery_id = `${gallery.gid}_${gallery.token}`,
-											container = _createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsParser(gallery.tags)}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+											container = _createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsString}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div><div class='cms-filter_container orrie-toggled'>${tagsFilter.join(" ")}</div>`});
 											message.insertBefore(container, message_body.nextSibling);
 											scrollElement(message.scrollHeight, "messages");
-											// cache embed html in database and remove fetching tag
+											// cache embed html in database
 											script.archive.sadpanda[gallery_id] = container.innerHTML;
 											bdPluginStorage.set(script.file, "archive", script.archive);
 											// remove sadpanda images
@@ -130,11 +127,11 @@ const CustomMediaSupport = (function() {
 													}
 													return [reply, media];
 												})(thread.posts) : [0,1],
-												container = _createElement("div", {className: `accessory customMedia chan post_${thread_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+												container = _createElement("div", {className: `accessory customMedia chan post_${thread_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div><div class='cms-filter_container orrie-toggled'>${post.board.shortname}</div>`});
 												message.insertBefore(container, message_body.nextSibling);
 												scrollElement(message.scrollHeight, "messages");
 												mediaReplace(message);
-												// cache embed html in database and remove fetching tag
+												// cache embed html in database
 												script.archive.chan[thread_id] = container.innerHTML;
 												bdPluginStorage.set(script.file, "archive", script.archive);
 												script.check.chan = false;
@@ -189,6 +186,7 @@ const CustomMediaSupport = (function() {
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
 									script.archive.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+									bdPluginStorage.set(script.file, "archive", script.archive);
 								}
 								else {
 									log("error", "imgur", item);
@@ -212,6 +210,7 @@ const CustomMediaSupport = (function() {
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
 									script.archive.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
+									bdPluginStorage.set(script.file, "archive", script.archive);
 								}
 								else {
 									log("error", "gfycat", gfyItem);
@@ -225,24 +224,36 @@ const CustomMediaSupport = (function() {
 						return {fileMedia: /filedetails/.test(href) ? "api" : false};
 					},
 					api(data) {
-						const file_id = `steam_${data.fileTitle.match(/\d+/)[0]}`;
-						if (script.archive.steam[file_id]) {
-							data.message.insertBefore(_createElement("div", {className: `accessory customMedia steam_workshop ${file_id}`, innerHTML: script.archive.steam[file_id]}), data.message_body.nextSibling);
+						const file_id = data.href.match(/\d+/g)[0],
+						name_id = `steam_${file_id}`;
+						if (script.archive.steam[name_id]) {
+							data.message.insertBefore(_createElement("div", {className: `accessory customMedia steam ${name_id}`, innerHTML: script.archive.steam[name_id]}), data.message_body.nextSibling);
 							scrollElement(data.message.scrollHeight, "messages");
 						}
 						else {
-							data.apiData = `itemcount=1&publishedfileids[0]=${data.fileTitle.match(/\d+/)[0]}&format=json`;
-							request("steam_workshop", `https://cors-anywhere.herokuapp.com/https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/`, function({response}, {message, message_body}) {
+							data.apiData = `itemcount=1&publishedfileids[0]=${file_id}&format=json`;
+							request("steam", `https://cors-anywhere.herokuapp.com/https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/`, function({response}, {message, message_body}) {
 								// fetch knitting image board information
-								const file = response.publishedfiledetails[0],
-								container = _createElement("div", {className: `accessory customMedia steam_workshop ${file_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps'></div><div class='embedInner-1-fpTo'><div class='embedContent-3fnYWm flex-1O1GKY'><div class='embedContentInner-FBnk7v'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop</a></div><div class='embedMargin-UO5XwE marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink cms-ignore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d'><div class='scroller-2FKFPG embedDescription-1Cuq9a embedMargin-UO5XwE marginTop4-2BNfKC markup textParserProcessed'>${file.description}</div></div><div class='embedFields-2IPs5Z horizontal-2EEEnY flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy embedMargin-UO5XwE marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z horizontal-2EEEnY flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy embedMargin-UO5XwE marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div></div></div><div class='embedImage-2W1cML embedMarginLarge-YZDCEs marginTop8-1DLZ1n'><img class='image' src='${file.preview_url}'></div></div></div>`});
+								const file = response.publishedfiledetails[0];
+								let container;
+								if (file.title) {
+									container = _createElement("div", {className: `accessory customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps'></div><div class='embedInner-1-fpTo'><div class='flex-1O1GKY'><div class='embedContentInner-FBnk7v'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop</a></div><div class='marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink cms-ignore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d marginTop4-2BNfKC'><div class='scroller-2FKFPG embedDescription-1Cuq9a marginTop4-2BNfKC markup textParserProcessed'>${file.description.replace(/\[[\w=:/.?&+*]+\]/g,"")}</div></div><div class='embedFields-2IPs5Z  flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z  flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div></div></div><div class='embedImage-2W1cML embedMarginLarge-YZDCEs marginTop8-1DLZ1n'><img class='image' src='${file.preview_url}'></div></div></div><div class='cms-filter_container orrie-toggled'>${file.tags.map(e => e.tag).join(" ")}</div>`});
+									// cache embed html in database
+									script.archive.steam[name_id] = container.innerHTML;
+									bdPluginStorage.set(script.file, "archive", script.archive);
+								}
+								else {
+									container = _createElement("div", {className: `accessory customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='media-error-message'>That item does not exist. It may have been removed by the author.</div></div>`});
+								}
 								message.insertBefore(container, message_body.nextSibling);
 								scrollElement(message.scrollHeight, "messages");
 								mediaReplace(message);
-								// cache embed html in database and remove fetching tag
-								script.archive.steam[file_id] = container.innerHTML;
 							}, "POST", data);
 						}
+						if (!script.archive.filter.includes(data.fileFilter)) {
+							script.archive.filter.push(data.fileFilter);
+						}
+						mediaReplace(data.message);
 					}
 				},
 				"facebook.com": {
@@ -444,10 +455,12 @@ const CustomMediaSupport = (function() {
 .customMedia.chan .thread_foot {padding: 10px 2px 0;}
 .custom_warning {color: #F32323;}
 /* steam workshop previews */
-.customMedia.steam_workshop .embed-IeVjo6 {max-width: 426px}
-.customMedia.steam_workshop .embedPill-1Zntps {background-color: #1B2838;}
-.customMedia.steam_workshop img.image {max-width: 400px;}
-.customMedia.steam_workshop .scrollerWrap-2lJEkd {max-height: 100px;}
+.customMedia.steam .embed-IeVjo6 {max-width: 426px}
+.customMedia.steam .embedPill-1Zntps {background-color: #1B2838;}
+.customMedia.steam img.image {max-height: 250px; max-width: 330px; margin: 0 auto;}
+.customMedia.steam .scrollerWrap-2lJEkd {max-height: 100px;}
+.customMedia.steam .embedContentInner-FBnk7v {height: 100%;}
+.customMedia.steam .embedDescription-1Cuq9a {white-space: pre-line;}
 /* greentext */
 .greentext {color: #709900;}
 /* spoiler */
@@ -469,7 +482,9 @@ const CustomMediaSupport = (function() {
 .cms-archive_delete {position: absolute; top: 3px; right: 3px;}
 .cms-archive_delete:hover .close-18n9bP, .cms-archive_clean:hover .close-18n9bP {background-color: rgba(240, 71, 71, 0.5);}
 .cms-info-header {height: 24px; text-align: center; padding: 8px;}
-.cms-archive_container .customMedia.chan .thread_head .thread_data {right: 30px;}
+#cms-chan_archive .thread_head .thread_data {right: 30px;}
+#cms-steam_archive .steam {margin: 5px auto; width: 360px;}
+#cms-steam_archive .steam .embedInner-1-fpTo {flex-grow: 1;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
@@ -684,7 +699,7 @@ const CustomMediaSupport = (function() {
 							else if (script.settings.api && fileSite && fileSite.api) {
 								fileSite.api(data);
 							}
-							else {
+							else if (data.fileMedia !== "api") {
 								mediaEmbedding(data);
 							}
 							message.classList.add("customEmbedded");
@@ -712,8 +727,8 @@ const CustomMediaSupport = (function() {
 					switch(fileMedia) {
 						case "video":
 							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 cms-ignore' href='${href}' target='_blank'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
-								_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
-								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-${previewReplace ? "left" : "top"}'>Popout Video</div>`,
+								_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-black tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
+								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-black tooltip-${previewReplace ? "left" : "top"}'>Popout Video</div>`,
 									onclick() {
 										const video = this.parentNode.nextElementSibling;
 										data.currentTime = video.currentTime;
@@ -722,7 +737,7 @@ const CustomMediaSupport = (function() {
 										modalHandler(mediaEmbedding(data, "return"), data);
 									}
 								}),
-								_createElement("div", {className: "metadataButton metadataButton-expand orrie-tooltip orrie-relative", innerHTML: "&#128470<div class='tooltip tooltip-top'>Expand Video</div>",
+								_createElement("div", {className: "metadataButton metadataButton-expand orrie-tooltip orrie-relative", innerHTML: "&#128470<div class='tooltip tooltip-black tooltip-top'>Expand Video</div>",
 									onclick() {
 										const video = this.parentNode.nextElementSibling;
 										container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
@@ -733,11 +748,11 @@ const CustomMediaSupport = (function() {
 								})
 							]);
 						case "audio":
-							return _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf-  cms-ignore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-top'>Download Audio</div></a>`});
+							return _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf-  cms-ignore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative cms-ignore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-black tooltip-top'>Download Audio</div></a>`});
 						case "img":
 						case "iframe":
 							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
-								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-top'>Popout Media</div>`,
+								_createElement("div", {className: "metadataButton metadataButton-popout orrie-tooltip orrie-relative", innerHTML: `&#128471;<div class='tooltip tooltip-black tooltip-top'>Popout Media</div>`,
 									onclick() {
 										modalHandler(mediaEmbedding(data, "return"), data);
 									}
@@ -846,7 +861,7 @@ const CustomMediaSupport = (function() {
 				document.getElementById(counter).textContent--;
 			}
 		},
-		activeArchive = function(elem, archive) {
+		activeArchive = function({classList}, archive) {
 			const active_archive = document.getElementsByClassName("cms-archive_active")[0],
 			active_button = document.getElementsByClassName("cms-archive_active_button")[0];
 			if (active_archive) {
@@ -855,14 +870,15 @@ const CustomMediaSupport = (function() {
 			if (active_button) {
 				active_button.classList.toggle("cms-archive_active_button");
 			}
-			elem.classList.toggle("cms-archive_active_button");
+			classList.toggle("cms-archive_active_button");
 			document.getElementById(`cms-${archive}_archive`).classList.toggle("cms-archive_active");
 		},
 		archives = {
 			sadpanda: {
 				name: "sadpanda",
+				count: 0,
 				fragment: document.createDocumentFragment(),
-				tags: function(tags) {
+				tags(tags) {
 					let tagsString = "";
 					for (let _t=tags.length; _t--;) {
 						tagsString += ` ${tags[_t].textContent}`;
@@ -870,8 +886,8 @@ const CustomMediaSupport = (function() {
 					return tagsString;
 				}
 			},
-			chan: {name: "chan", fragment: document.createDocumentFragment()},
-			steam: {name: "steam", fragment: document.createDocumentFragment()}
+			chan: {name: "chan", count: 0, fragment: document.createDocumentFragment()},
+			steam: {name: "steam", count: 0, fragment: document.createDocumentFragment()}
 		};
 		BdApi.clearCSS("cms-filters");
 		for (let _db_k = Object.keys(archives), _db=0, _db_len=_db_k.length; _db<_db_len; _db++) {
@@ -879,19 +895,26 @@ const CustomMediaSupport = (function() {
 			for (let _db_k = Object.keys(script.archive[archive.name]), _db=_db_k.length; _db--;) {
 				const key = _db_k[_db],
 				container = _createElement("div", {className: `customMedia ${archive.name} cms-filter`, innerHTML: script.archive[archive.name][key]},
-					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-bottom'>Delete</div>", onclick() {deletePreview(this, key, archive.name, `cms-archive_${archive.name}-counter`);}})
-				);
-				if (archive.tags) {
-					container.className += archive.tags(container.getElementsByClassName("tag"));
-				} 
+					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-black tooltip-bottom'>Delete</div>", onclick() {deletePreview(this, key, archive.name, `cms-archive_${archive.name}-counter`);}})
+				),
+				filter_container = container.getElementsByClassName("cms-filter_container")[0];
+				if (filter_container) {
+					container.classList.add(...filter_container.innerHTML.split(" "));
+				}
+				else {
+					if (archive.tags) {
+						container.className += archive.tags(container.getElementsByClassName("tag"));
+					}
+				}
 				archive.fragment.appendChild(container);
+				archive.count++;
 			}
 		}
 		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Archive Manager</h4></div><svg class='orrie-button-cancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
 			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 cms-archive_header", style: "flex: 0 0 auto;"}, [
-				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>ExHentai (<span id='cms-archive_sadpanda-counter'>${archives.sadpanda.fragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "sadpanda");}}),
-				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>4chan (<span id='cms-archive_chan-counter'>${archives.chan.fragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "chan");}}),
-				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>Steam Workshop (<span id='cms-archive_steam-counter'>${archives.steam.fragment.children.length}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "steam");}})
+				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>ExHentai (<span id='cms-archive_sadpanda-counter'>${archives.sadpanda.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "sadpanda");}}),
+				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>4chan (<span id='cms-archive_chan-counter'>${archives.chan.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "chan");}}),
+				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>Steam Workshop (<span id='cms-archive_steam-counter'>${archives.steam.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "steam");}})
 			]),
 			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 border-2AhmKo cms-archive_filter noScroll-1Ep7Tu", style: "flex: 0 0 auto;"},
 				_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG"}, [
@@ -901,7 +924,7 @@ const CustomMediaSupport = (function() {
 							BdApi.injectCSS("cms-filters", `.cms-filter:not(.${this.value.replace(/\s+/g,"").split(",").join(", .")}) {display:none;}`);
 						}
 					}),
-					_createElement("div", {className: "flex-1O1GKY cms-archive_clean orrie-tooltip orrie-relative", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-bottom'>Clean Filters</div>",
+					_createElement("div", {className: "flex-1O1GKY cms-archive_clean orrie-tooltip orrie-relative", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-black tooltip-bottom'>Clean Filters</div>",
 						onclick() {
 							this.previousElementSibling.value = "";
 							BdApi.clearCSS("cms-filters");
@@ -912,9 +935,9 @@ const CustomMediaSupport = (function() {
 			_createElement("div", {className: "scrollerWrap-2lJEkd content-2BXhLs scrollerThemed-2oenus themeGhostHairline-DBD-2d border-2AhmKo"},
 				_createElement("div", {className: "scroller-2FKFPG inner-3wn6Q5 container-PNkimc cms-content"},
 					_createElement("div", {className: "cms-archive_container"}, [
-						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr", id: "cms-sadpanda_archive"}, archives.sadpanda.fragment.children.length ? archives.sadpanda.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
-						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr", id: "cms-chan_archive"}, archives.chan.fragment.children.length ? archives.chan.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
-						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr", id: "cms-steam_archive"}, archives.steam.fragment.children.length ? archives.steam.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
+						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr", id: "cms-sadpanda_archive"}, archives.sadpanda.count ? archives.sadpanda.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
+						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr", id: "cms-chan_archive"}, archives.chan.count ? archives.chan.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})),
+						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyAround-1n1pnI wrap-ZIn9Iy", id: "cms-steam_archive"}, archives.steam.count ? archives.steam.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 cms-info-header' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"}))
 					])
 				)
 			),
@@ -928,7 +951,7 @@ const CustomMediaSupport = (function() {
 			if (menuIcon) {
 				menuIcon.remove();
 			}
-			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='tooltip tooltip-bottom'>${tooltip}</div>`,
+			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='tooltip tooltip-black tooltip-bottom'>${tooltip}</div>`,
 				onclick() {modalHandler(archiveHandler());}
 			}), menuAnchor.firstChild);
 		}
@@ -1052,7 +1075,7 @@ const CustomMediaSupport = (function() {
 		if (name == "imgur") {
 			headers.Authorization = "Client-ID b975f50eb16a396";
 		}
-		if (name == "steam_workshop") {
+		if (name == "steam") {
 			headers["Content-Type"] = "application/x-www-form-urlencoded";
 		}
 		fetch(api, {
@@ -1083,10 +1106,7 @@ const CustomMediaSupport = (function() {
 			return createSettingsPanel();
 		}
 		// start and observer
-		load() {
-			console.info(`${script.name} v${script.version} started.`);
-			insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
-		}
+		load() {}
 		start() {
 			console.info(`${script.name} v${script.version} started.`);
 			settingsLoad();
