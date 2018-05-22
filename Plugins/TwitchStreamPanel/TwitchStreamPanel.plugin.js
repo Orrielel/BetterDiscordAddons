@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.6.9",
+		version: "1.7.0",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -278,7 +278,7 @@ const TwitchStreamPanel = (function() {
 							streamItem.classList.add("tsp-stream_online");
 							BDfunctionsDevilBro.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
 						}
-						streamItem.cells[1].innerHTML += `<div class='tooltip tooltip-black tooltip-bottom'>${stream.game}</div>`;
+						streamItem.cells[1].innerHTML += `<div class='tooltip tooltip-brand tooltip-bottom'>${stream.game}</div>`;
 						streamItem.cells[2].innerHTML = stream.viewers.toLocaleString();
 						onlineStreams.push(streamName);
 						if (!script.streamsActive[stream.channel.name][0]) {
@@ -552,7 +552,7 @@ const TwitchStreamPanel = (function() {
 					const streamer = streams[_b_k[_b]];
 					streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-3iUx6q' ${streamer[4] ? `style='color:${streamer[4]} !important'` : ""}>${streamer[0]}</td><td class='size14-3iUx6q'>${streamer[1]}</td><td class='size14-3iUx6q'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td><td class='size14-3iUx6q'>${streamer[4] ? `<div style="color:${streamer[4]}">${streamer[4]}</div>` : "Default"}</td><td class='size14-3iUx6q'>${streamer[2]}</td>`},
 						_createElement("td", {className: "size14-3iUx6q"},
-							_createElement("button", {type: "button", className: "orrie-buttonRed orrie-relative orrie-tooltip", innerHTML: "✘<div class='tooltip tooltip-black tooltip-left'>Remove Stream</div>",
+							_createElement("button", {type: "button", className: "orrie-buttonRed orrie-relative orrie-tooltip", innerHTML: "✘<div class='tooltip tooltip-brand tooltip-left'>Remove Stream</div>",
 								onclick() {
 									delete streams[streamer[1]];
 									script.streamsCache[server.id] = {};
