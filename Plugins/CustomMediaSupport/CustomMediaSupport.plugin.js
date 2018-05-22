@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.6.4",
+		version: "2.6.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -32,7 +32,7 @@ const CustomMediaSupport = (function() {
 						return {fileMedia: /\/g\//.test(href) ? "api" : false};
 					},
 					api(data) {
-						if (script.settings.sadpanda) {
+						if (script.settings.sadpanda && /\/g\//.test(data.href)) {
 							const gallery_id = `${data.hrefSplit[4]}_${data.hrefSplit[5]}`;
 							if (!data.message.getElementsByClassName(`gallery_${gallery_id}`).length) {
 								if (script.archive.sadpanda[gallery_id]) {
@@ -94,8 +94,8 @@ const CustomMediaSupport = (function() {
 					}
 				},
 				"4chan.org": {
-					data({href}) {
-						return {fileMedia: /thread/.test(href) ? "api" : false};
+					data({href, fileMedia}) {
+						return /thread/.test(href) ? {fileMedia: "api"} : {ignoreApi: true, href: href.replace("is2.4chan","i.4cdn")};
 					},
 					api(data) {
 						if (script.settings.board) {
@@ -332,6 +332,7 @@ const CustomMediaSupport = (function() {
 					}
 				}
 			},
+			whitelist: ["4chan.org", "exhentai.org", "gfycat.com", "vocaroo.com", "pastebin.com", "wotlabs.net", "wot-life.com", "facebook.com", "instagram.com", "imgur.com", "streamable.com", "steampowered.com", "steamcommunity.com", "ifunny.co"],
 			replace: ["store.steampowered.com"]
 		},
 		chan: {
@@ -627,11 +628,14 @@ const CustomMediaSupport = (function() {
 				if (script.archive.proxy[fileFilter] == "ERROR") {
 					const source = document.getElementById(`error_${fileFilter}`);
 					if (source) {
+						const source_parent = source.parentNode;
 						source.id = "";
 						source.src = url;
-						source.parentNode.load();
-						source.parentNode.classList.remove("media-toggled");
-						source.parentNode.nextElementSibling.classList.add("media-toggled");
+						if (source_parent) {
+							source_parent.load();
+							source_parent.classList.remove("media-toggled");
+							source_parent.nextElementSibling.classList.add("media-toggled");
+						}
 					}
 					delete script.archive.proxy[fileFilter];
 				}
@@ -673,11 +677,13 @@ const CustomMediaSupport = (function() {
 					const fileLink = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href"),
 					href = decodeURI(encodeURI(fileLink.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4"))),
 					fileType = href.match(/\.(\w+$)/) ? href.match(/\.(\w+$)/)[1] : false,
-					message = link.closest(".message");
-					if (script.settings.embedding && message && fileType || /4chan.org|exhentai.org\/g\/|gfycat.com|vocaroo.com|pastebin.com|wotlabs.net|wot-life.com|facebook.com|instagram.com|imgur.com|streamable.com|steampowered.com|steamcommunity.com|ifunny.co/.test(href)) {
+					message = link.closest(".message"),
+					hrefSplit = href.split("/"),
+					hostName = hrefSplit[2].match(/([\w\-]+\.\w+)$/)[0];
+					if (script.settings.embedding && message && fileType || script.media.whitelist.includes(hostName)) {
 						const message_body = message.firstElementChild,
-						hrefSplit = href.split("/"),
-						fileFilter = hrefSplit.slice(-2).join("/");
+						fileFilter = hrefSplit.slice(-2).join("/"),
+						fileSite = script.media.sites[hostName] || false;
 						let data = {
 							fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
 							fileName: hrefSplit[hrefSplit.length-1] ? hrefSplit[hrefSplit.length-1].match(/[\w\s]+/)[0] : "",
@@ -687,8 +693,6 @@ const CustomMediaSupport = (function() {
 							fileTitle: message.getElementsByClassName("embedTitleLink-1Zla9e")[0] ? message.getElementsByClassName("embedTitleLink-1Zla9e")[0].innerHTML : decodeURIComponent(hrefSplit[hrefSplit.length-1]),
 							fileLink, fileType, fileFilter, href, hrefSplit, link, message, message_body
 						};
-						if (data.fileMedia == "ignore") {break;}
-						const fileSite = script.media.sites[hrefSplit[2].match(/([\w\-]+\.\w+)$/)[0]] || false;
 						if (fileSite && fileSite.data) {
 							data = Object.assign(data, fileSite.data(data));
 						}
@@ -698,7 +702,7 @@ const CustomMediaSupport = (function() {
 							if (script.archive.url[data.fileLink]) {
 								mediaEmbedding(Object.assign(data, script.archive.url[data.fileLink]));
 							}
-							else if (script.settings.api && fileSite && fileSite.api) {
+							else if (script.settings.api && fileSite && fileSite.api && !data.ignoreApi) {
 								fileSite.api(data);
 							}
 							else if (data.fileMedia !== "api") {
@@ -715,7 +719,7 @@ const CustomMediaSupport = (function() {
 	},
 	mediaEmbedding = function(data, mode) {
 		log("info", "mediaEmbedding", data);
-		const {fileLink, fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
+		const {fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		wrapperName = {
 			video: "imageWrapper-2p5ogY noScroll-1Ep7Tu",
 			audio: "wrapperAudio-1jDe0Q wrapper-2TxpI8",
