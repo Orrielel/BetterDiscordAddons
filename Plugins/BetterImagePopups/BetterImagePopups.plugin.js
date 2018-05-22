@@ -6,7 +6,7 @@ const BetterImagePopups = (function() {	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.6",
+		version: "1.3.7",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -219,11 +219,11 @@ const BetterImagePopups = (function() {	// plugin settings
 						zoomImage(click, "in", img, wrapper);
 					}
 				}),
-				_createElement("div", {className: "tooltip tooltip-black tooltip-bottom", textContent: "Shift = 50%, Ctrl = 100% and Alt = 200%"})
+				_createElement("div", {className: "tooltip tooltip-brand tooltip-bottom", textContent: "Shift = 50%, Ctrl = 100% and Alt = 200%"})
 			]));
 			container.classList.add("orrie-tooltip", "orrie-relative");
 			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-size' class='bip-toggled'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-error' class='bip-toggled'></span></span>`}), container.lastElementChild);
-			container.appendChild(_createElement("div", {className: "tooltip tooltip-black tooltip-top", textContent: "Click the image to zoom"}));
+			container.appendChild(_createElement("div", {className: "tooltip tooltip-brand tooltip-top", textContent: "Click the image to zoom"}));
 			img.classList.add("bip-center");
 			img.style.cssText = "";
 			img.onclick = function() {
