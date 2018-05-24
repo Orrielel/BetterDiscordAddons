@@ -23,6 +23,8 @@ If the filetype extension is supported, it will be automatically embedded, but s
 
 Data from exhentai, 4chan and steam workshop will be locally stored and can be viewed in the Archive Manager that's accessable from the cabinet icon which is to the right from the search bar.
 
+Plugin is not present in PluginRepo because too lewd :^)
+
 
 #### How?
 Open the [latest](https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/CustomMediaSupport/CustomMediaSupport.plugin.js) version and save the file in the BetterDiscord plugins folder (Right-click, save page as. Right-clicking the link also works). You can reach the folder either with the shortcut in the plugin list overview, or by pasting this into the explorer navigation line `%appdata%\BetterDiscord\plugins`. Make sure the filename is `CustomMediaSupport.plugin.js`.
