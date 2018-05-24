@@ -14,7 +14,7 @@ If the filetype extension is supported, it will be automatically embedded, but s
 * exhentai.org - galleries
 * 4chan.org - threads (using archive api)
 * imgur.com - media info
-* gfycat.com - Media info
+* gfycat.com - media info
 * steamcommunity.com - file details, workshop
 * pastebin.com - text
 * vocaroo.com - audio recordings
