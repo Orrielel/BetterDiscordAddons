@@ -636,13 +636,11 @@ const CustomMediaSupport = (function() {
 		return true;
 	},
 	mediaReplace = function(message) {
-		console.log(script.archive.filter);
 		const mediaAll = message.querySelectorAll(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a`);
 		for (let _rm=mediaAll.length; _rm--;) {
 			const media = mediaAll[_rm],
 			url = decodeURI(encodeURI(media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href"))),
 			fileFilter = url.split("/").slice(-2).join("/");
-			console.log(media, fileFilter, script.archive.filter.includes(fileFilter));
 			if (media && script.archive.filter.includes(fileFilter)) {
 				let wrapper = media.closest(".accessory > div");
 				if (wrapper) {
