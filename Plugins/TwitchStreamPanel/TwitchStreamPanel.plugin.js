@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.0",
+		version: "1.7.1",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -481,7 +481,7 @@ const TwitchStreamPanel = (function() {
 								}
 							})
 						]),
-						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr marginBottom8-AtZOdT", innerHTML: "<div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='discord_name' placeholder='Display Name  ― If left blank, plugin will use Twitch display name' type='text'></div><div class='input-1yeenJ orrie-inputRequired'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='twitch_name' placeholder='Twitch Username' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='discord_id' placeholder='Discord ID  ― For coloring. Use dev mode; right click the user and copy ID' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='icon' placeholder='Custom Icon  ― If left blank, plugin will use Twitch profile image when possible' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='color' placeholder='Custom Color ― HEX and RGBA supported (Overrides BRC)' type='text'></div>"},
+						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr marginBottom8-AtZOdT", innerHTML: "<div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='discord_name' placeholder='Display Name ― If left blank, plugin will use Twitch display name' type='text'></div><div class='input-1yeenJ orrie-inputRequired'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='twitch_name' placeholder='Twitch Username' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='discord_id' placeholder='Discord ID ― For coloring. Use dev mode; right click the user and copy ID' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='icon' placeholder='Custom Icon ― If left blank, plugin will use Twitch profile image when possible' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='color' placeholder='Custom Color ― HEX and RGBA supported (Overrides BRC)' type='text'></div>"},
 							_createElement("div", {className: "flex-1O1GKY input-1yeenJ orrie-inputRequired", innerHTML: "<input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='server_id' placeholder='Server to Hook (ID) &#8213; Use dev mode; right click the server icon and copy ID' type='text'>"},
 								BDfunctionsDevilBro.getSelectedServer() ?
 									_createElement("div", {className: "flex-1O1GKY wrapper-2AQieU input-cIJ7To", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 grow-q77ONN'><div class='contents-18-Yxp height24-3XzeJx'>Current Server</div></button>", onclick() {
@@ -661,8 +661,9 @@ const TwitchStreamPanel = (function() {
 			}
 			else {
 				for (let _c=0, _c_len=children.length; _c<_c_len; _c++) {
-					if (children[_c].nodeType) {
-						element.appendChild(children[_c]);
+					const child = children[_c];
+					if (child && child.nodeType) {
+						element.appendChild(child);
 					}
 				}
 			}
