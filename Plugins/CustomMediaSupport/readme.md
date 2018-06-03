@@ -11,17 +11,17 @@ If the filetype extension is supported, it will be automatically embedded, but s
 * Audio: mp3, ogg, oga, wav, wma, m4a, aac, flac
 * Documents: pdf
 ##### Sites:
-* exhentai.org - galleries
-* 4chan.org - threads (using archive api)
-* imgur.com - media info
-* gfycat.com - media info
-* steamcommunity.com - file details, workshop
+* exhentai.org - galleries (api)
+* 4chan.org - threads (api)
+* imgur.com - media info (api)
+* gfycat.com - media info (api)
+* steamcommunity.com - file details, workshop (api)
 * pastebin.com - text
 * vocaroo.com - audio recordings
 * wotlabs - user signatures
 * wot-life - user signatures
 
-Data from exhentai, 4chan and steam workshop will be locally stored and can be viewed in the Archive Manager that's accessable from the cabinet icon which is to the right from the search bar.
+Data from exhentai, 4chan and steam workshop will be locally stored and can be viewed in the Archive Manager that's accessable from the cabinet icon which is to the right from the search bar. Sites marked with `(api)` requires embedding API turned on to work.
 
 Plugin is not present in PluginRepo because too lewd :^)
 
