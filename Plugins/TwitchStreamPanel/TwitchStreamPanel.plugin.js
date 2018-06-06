@@ -1,13 +1,13 @@
 //META{"name":"TwitchStreamPanel","website":"https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel","source":"https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/TwitchStreamPanel/TwitchStreamPanel.plugin.js"}*//
 
-/* global bdPluginStorage, BdApi, BDfunctionsDevilBro */
+/* global bdPluginStorage, BdApi, BDFDB */
 
 const TwitchStreamPanel = (function() {
 	// plugin settings
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.1",
+		version: "1.7.2",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -84,7 +84,8 @@ const TwitchStreamPanel = (function() {
 .orrie-inputRequired::before {color: #F04747; content: "*"; font-size: 20px; font-weight: 700; margin-left: 2px; position: absolute; z-index: 1;}
 .theme-dark .orrie-plugin {color: #B0B6B9;}
 /* tooltips */
-.orrie-tooltip:hover .tooltip {display: initial;}
+.orrie-tooltip {overflow: initial;}
+.orrie-tooltip:hover > .tooltip {display: initial;}
 .orrie-tooltip .tooltip {display: none; margin: 0; text-align: center; width: max-content;}
 .orrie-tooltip .tooltip-top {bottom: 135%; left: 50%; transform: translateX(-50%);}
 .orrie-tooltip .tooltip-bottom {top: 135%; left: 50%; transform: translateX(-50%);}
@@ -186,7 +187,7 @@ const TwitchStreamPanel = (function() {
 	streamsInsert = function() {
 		// prepare static stream list data
 		const channelContainer = document.getElementsByClassName("scroller-2FKFPG")[0],
-		serverID = BDfunctionsDevilBro.getSelectedServer().id || null,
+		serverID = BDFDB.getSelectedServer().id || null,
 		streamFragment = document.createDocumentFragment(),
 		streamString = [];
 		script.streamsActive = script.streams[serverID];
@@ -276,7 +277,7 @@ const TwitchStreamPanel = (function() {
 						if (streamItem.classList.contains("tsp-stream_offline")) {
 							streamItem.classList.remove("tsp-stream_offline");
 							streamItem.classList.add("tsp-stream_online");
-							BDfunctionsDevilBro.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
+							BDFDB.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
 						}
 						streamItem.cells[1].innerHTML += `<div class='tooltip tooltip-brand tooltip-bottom'>${stream.game}</div>`;
 						streamItem.cells[2].innerHTML = stream.viewers.toLocaleString();
@@ -483,9 +484,9 @@ const TwitchStreamPanel = (function() {
 						]),
 						_createElement("div", {className: "flex-1O1GKY directionColumn-35P_nr marginBottom8-AtZOdT", innerHTML: "<div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='discord_name' placeholder='Display Name ― If left blank, plugin will use Twitch display name' type='text'></div><div class='input-1yeenJ orrie-inputRequired'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='twitch_name' placeholder='Twitch Username' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='discord_id' placeholder='Discord ID ― For coloring. Use dev mode; right click the user and copy ID' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='icon' placeholder='Custom Icon ― If left blank, plugin will use Twitch profile image when possible' type='text'></div><div class='input-1yeenJ'><input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='color' placeholder='Custom Color ― HEX and RGBA supported (Overrides BRC)' type='text'></div>"},
 							_createElement("div", {className: "flex-1O1GKY input-1yeenJ orrie-inputRequired", innerHTML: "<input class='inputDefault-_djjkz input-cIJ7To size16-14cGz5' name='server_id' placeholder='Server to Hook (ID) &#8213; Use dev mode; right click the server icon and copy ID' type='text'>"},
-								BDfunctionsDevilBro.getSelectedServer() ?
+								BDFDB.getSelectedServer() ?
 									_createElement("div", {className: "flex-1O1GKY wrapper-2AQieU input-cIJ7To", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 grow-q77ONN'><div class='contents-18-Yxp height24-3XzeJx'>Current Server</div></button>", onclick() {
-										const server = BDfunctionsDevilBro.getSelectedServer();
+										const server = BDFDB.getSelectedServer();
 										if (server) {
 											this.previousElementSibling.value = server.id;
 										}
@@ -542,7 +543,7 @@ const TwitchStreamPanel = (function() {
 	},
 	createServerList = function() {
 		const serverFragment = document.createDocumentFragment(),
-		servers = BDfunctionsDevilBro.readServerList();
+		servers = BDFDB.readServerList();
 		for (let _a=0, _a_len = servers.length; _a<_a_len; _a++) {
 			const server = servers[_a];
 			let streams = script.streams[server.id];
@@ -594,7 +595,7 @@ const TwitchStreamPanel = (function() {
 			data.push(inputs[_i].value.replace(/\s/g,""));
 		}
 		if (data[1] && data[5]) {
-			if (BDfunctionsDevilBro.getDivOfServer(data[5])) {
+			if (BDFDB.getDivOfServer(data[5])) {
 				if (!script.streams[data[5]]) {
 					script.streams[data[5]] = {};
 				}
@@ -691,11 +692,11 @@ const TwitchStreamPanel = (function() {
 			BdApi.clearCSS("orrie-plugin");
 			BdApi.injectCSS("orrie-plugin", script.css.shared);
 			BdApi.injectCSS(script.file, script.css.script);
-			if (typeof BDfunctionsDevilBro !== "object") {
-				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDfunctionsDevilBro.js"}));
+			if (typeof BDFDB !== "object") {
+				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDFDB.js"}));
 			}
-			if (typeof BDfunctionsDevilBro === "object" && document.getElementsByClassName("messages")[0]) {
-				const serverID = BDfunctionsDevilBro.getSelectedServer() ? BDfunctionsDevilBro.getSelectedServer().id : false;
+			if (typeof BDFDB === "object" && document.getElementsByClassName("messages")[0]) {
+				const serverID = BDFDB.getSelectedServer() ? BDFDB.getSelectedServer().id : false;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
 					streamsInsert();
 				}
@@ -703,8 +704,8 @@ const TwitchStreamPanel = (function() {
 			}
 		}
 		observer({addedNodes}) {
-			if (addedNodes.length > 0 && (addedNodes[0].className == "content flex-spacer flex-horizontal" || addedNodes[0].className == "messages-wrapper") && BDfunctionsDevilBro) {
-				const serverID = BDfunctionsDevilBro.getSelectedServer() ? BDfunctionsDevilBro.getSelectedServer().id : false;
+			if (addedNodes.length > 0 && (addedNodes[0].className == "content flex-spacer flex-horizontal" || addedNodes[0].className == "messages-wrapper") && BDFDB) {
+				const serverID = BDFDB.getSelectedServer() ? BDFDB.getSelectedServer().id : false;
 				if (!document.getElementsByClassName("tsp-menuIcon")[0]) {
 					insertCustomMenu("tsp-menuIcon", script.name);
 				}
