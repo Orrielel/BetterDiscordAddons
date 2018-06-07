@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.6.7",
+		version: "2.6.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -400,7 +400,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-iframe .metadata-13NcHb {max-width: 100%; min-width: 500px;}
 .theme-dark .customMedia.media-iframe iframe {background-color: rgba(46,48,54,.3); border: 1px solid rgba(46,48,54,.6);}
 .theme-light .customMedia.media-iframe iframe {background: hsla(0,0%,98%,.3); border: 1px solid hsla(0,0%,80%,.3);}
-.CustomMediaSupportModal .modal-3HD5ck {width: 80vw;}
+.CustomMediaSupportModal.orriePluginModal .modal-3HD5ck {width: 80vw;}
 .CustomMediaSupportModal .customMedia.media-video video {max-height: 80vh; min-height: 50vh; max-width: 90vw;}
 .CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh !important; width: 90vw !important; max-height: unset; max-width: unset; resize: none;}
 .accessory.media-replace .customMedia.media-video video {object-fit: fill; width: 100%;}
@@ -493,15 +493,15 @@ const CustomMediaSupport = (function() {
 .cms-archive_active_button .divider-3573oO {background-color: #a5a5a5;}
 .cms-archive_container > div {display: none;}
 .cms-archive_container .cms-archive_active {display: flex;}
-.cms-archive_container .customMedia {margin: 5px auto; position: relative;}
+.cms-archive_container .customMedia {margin: 5px 10px; position: relative;}
 .cms-archive_container .customMedia .embed-IeVjo6 {max-width: unset;}
 .cms-archive_delete {position: absolute; top: 3px; right: 3px;}
 .cms-archive_delete:hover .close-18n9bP, .cms-archive_clean:hover .close-18n9bP {background-color: rgba(240, 71, 71, 0.5);}
 .cms-info-header {height: 24px; text-align: center; padding: 8px;}
-#cms-archive_sadpanda .sadpanda {width: 640px;}
-#cms-archive_chan .chan {width: 640px;}
+#cms-archive_sadpanda .sadpanda {width: 475px;}
+#cms-archive_chan .chan {width: 620px;}
 #cms-archive_chan .thread_head .thread_data {right: 30px;}
-#cms-archive_steam .steam {width: 420px;}
+#cms-archive_steam .steam {width: 350px;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
@@ -979,9 +979,9 @@ const CustomMediaSupport = (function() {
 			_createElement("div", {className: "scrollerWrap-2lJEkd content-2BXhLs scrollerThemed-2oenus themeGhostHairline-DBD-2d border-2AhmKo"},
 				_createElement("div", {className: "scroller-2FKFPG inner-3wn6Q5 container-PNkimc cms-content"},
 					_createElement("div", {className: "cms-archive_container"}, [
-						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyAround-1n1pnI wrap-ZIn9Iy", id: "cms-archive_sadpanda"}, archives.sadpanda.count ? archives.sadpanda.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: archiveEmpty})),
-						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyAround-1n1pnI wrap-ZIn9Iy", id: "cms-archive_chan"}, archives.chan.count ? archives.chan.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: archiveEmpty})),
-						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyAround-1n1pnI wrap-ZIn9Iy", id: "cms-archive_steam"}, archives.steam.count ? archives.steam.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: archiveEmpty}))
+						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp wrap-ZIn9Iy", id: "cms-archive_sadpanda"}, archives.sadpanda.count ? archives.sadpanda.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: archiveEmpty})),
+						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp wrap-ZIn9Iy", id: "cms-archive_chan"}, archives.chan.count ? archives.chan.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: archiveEmpty})),
+						_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp wrap-ZIn9Iy", id: "cms-archive_steam"}, archives.steam.count ? archives.steam.fragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: archiveEmpty}))
 					])
 				)
 			)
