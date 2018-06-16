@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.6.8",
+		version: "2.6.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -95,7 +95,7 @@ const CustomMediaSupport = (function() {
 				},
 				"4chan.org": {
 					data({href, fileMedia}) {
-						return /thread/.test(href) ? {fileMedia: "api"} : {ignoreApi: true, href: href.replace("is2.4chan","i.4cdn")};
+						return /thread/.test(href) ? {fileMedia: "api"} : {ignoreApi: true, href: href.replace(/is\d\.4chan/g,"i.4cdn")};
 					},
 					api(data) {
 						if (script.settings.board) {
@@ -1107,15 +1107,20 @@ const CustomMediaSupport = (function() {
 	},
 	request = function(name, api, handler, method, data) {
 		// request handler
-		const headers = {
+		const rules = {
+			imgur: {
+				"Authorization": "Client-ID b975f50eb16a396"
+			},
+			steam: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			}
+		};
+		let headers = {
 			"Accept": "application/json",
 			"Content-Type": "application/json"
 		};
-		if (name == "imgur") {
-			headers.Authorization = "Client-ID b975f50eb16a396";
-		}
-		if (name == "steam") {
-			headers["Content-Type"] = "application/x-www-form-urlencoded";
+		if (rules[name]) {
+			headers = Object.assign(headers, rules[name]);
 		}
 		fetch(api, {
 			method,
