@@ -2,11 +2,12 @@
 
 /* global bdPluginStorage, BdApi */
 
-const BetterImagePopups = (function() {	// plugin settings
+const BetterImagePopups = (function() {
+	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.7",
+		version: "1.3.8",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -34,7 +35,7 @@ const BetterImagePopups = (function() {	// plugin settings
 .bip-container .bip-description {font-size: 16px; line-height: 24px;}
 .bip-container .bip-description > span {margin-left: 4px;}
 .bip-container .bip-description > span+span:before {content: "–"; font-weight: bold; margin-right: 4px;}
-.bip-container .downloadLink-2oSgiF {text-transform: capitalize;}
+.bip-container .downloadLink-1ywL9o {text-transform: capitalize;}
 .bip-container .bip-controls {margin: 0 auto; padding: 10px 25px; visibility: hidden;}
 .bip-container.bip-scaling .bip-controls {visibility: visible;}
 .bip-container .bip-controls > div:not(.tooltip) {display: inline-block;}
@@ -46,7 +47,7 @@ const BetterImagePopups = (function() {	// plugin settings
 // progress bar
 @-webkit-keyframes progress-bar-stripes {from {background-position: 40px 0;} to {background-position: 0 0;}}
 @keyframes progress-bar-stripes {from { background-position: 40px 0;} to { background-position: 0 0;}}
-.bip-progress {background-color: rgba(0, 0, 0, 0.25); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); height: 24px; overflow: hidden; bottom: 50px; position: absolute; width: 100%;}
+.bip-progress {background-color: rgba(0, 0, 0, 0.25); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); height: 24px; overflow: hidden; position: absolute; top: 0; width: 100%;}
 .bip-progress_bar {animation: progress-bar-stripes 2s linear infinite; background-color: #5CB85C; background-image: linear-gradient(45deg,rgba(255,255,255,0.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,0.15) 50%,rgba(255,255,255,0.15) 75%,transparent 75%,transparent); background-size: 40px 40px; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15); color: #FFFFFF; float: left; font-size: 14px; font-weight: 500; height: 100%; line-height: 24px; opacity: 0.8; text-align: center; transition: width 0.6s ease; width: 0; white-space: nowrap;}
 			`,
 			shared: `
@@ -63,7 +64,8 @@ const BetterImagePopups = (function() {	// plugin settings
 .orrie-inputRequired::before {color: #F04747; content: "*"; font-size: 20px; font-weight: 700; margin-left: 2px; position: absolute; z-index: 1;}
 .theme-dark .orrie-plugin {color: #B0B6B9;}
 /* tooltips */
-.orrie-tooltip:hover .tooltip {display: initial;}
+.orrie-tooltip {overflow: initial;}
+.orrie-tooltip:hover > .tooltip {display: initial;}
 .orrie-tooltip .tooltip {display: none; margin: 0; text-align: center; width: max-content;}
 .orrie-tooltip .tooltip-top {bottom: 135%; left: 50%; transform: translateX(-50%);}
 .orrie-tooltip .tooltip-bottom {top: 135%; left: 50%; transform: translateX(-50%);}
@@ -208,13 +210,13 @@ const BetterImagePopups = (function() {	// plugin settings
 			}
 			node.classList.add("bip-container");
 			node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb orrie-tooltip orrie-relative"}, [
-				_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", textContent: "-",
+				_createElement("div", {className: "bip-zoom downloadLink-1ywL9o", textContent: "-",
 					onclick(click) {
 						zoomImage(click, "out", img, wrapper);
 					}
 				}),
 				_createElement("div", {className: "bip-zoom-level"}),
-				_createElement("div", {className: "bip-zoom downloadLink-2oSgiF", textContent: "+",
+				_createElement("div", {className: "bip-zoom downloadLink-1ywL9o", textContent: "+",
 					onclick(click) {
 						zoomImage(click, "in", img, wrapper);
 					}
@@ -350,8 +352,9 @@ const BetterImagePopups = (function() {	// plugin settings
 			}
 			else {
 				for (let _c=0, _c_len=children.length; _c<_c_len; _c++) {
-					if (children[_c].nodeType) {
-						element.appendChild(children[_c]);
+					const child = children[_c];
+					if (child && child.nodeType) {
+						element.appendChild(child);
 					}
 				}
 			}
