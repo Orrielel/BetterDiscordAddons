@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.6.9",
+		version: "2.7.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -644,7 +644,7 @@ const CustomMediaSupport = (function() {
 		const mediaAll = message.querySelectorAll(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a`);
 		for (let _rm=mediaAll.length; _rm--;) {
 			const media = mediaAll[_rm],
-			url = decodeURI(encodeURI(media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href"))),
+			url = decodeURI(encodeURI((media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).replace("%2B","+"))),
 			fileFilter = url.split("/").slice(-2).join("/");
 			if (media && script.archive.filter.includes(fileFilter)) {
 				let wrapper = media.closest(".accessory > div");
