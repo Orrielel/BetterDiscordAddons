@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.8",
+		version: "1.3.9",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -176,6 +176,7 @@ const BetterImagePopups = (function() {
 						}
 						else {
 							progress_bar_id.style.width = `${ratio}%`;
+							progress_bar_id.lastElementChild.textContent = `${ratio}%`;
 						}
 					}
 				}).then(function(blob) {
@@ -206,7 +207,7 @@ const BetterImagePopups = (function() {
 					}
 					log("error", "imageLoad", error);
 				});
-				container.appendChild(_createElement("div", {className: "bip-progress", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution</div>"}));
+				container.appendChild(_createElement("div", {className: "bip-progress", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution (<span>0%</span>)</div>"}));
 			}
 			node.classList.add("bip-container");
 			node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb orrie-tooltip orrie-relative"}, [
@@ -386,7 +387,7 @@ const BetterImagePopups = (function() {
 		observer({addedNodes}) {
 			if (addedNodes.length > 0) {
 				const node = addedNodes[0];
-				if (node.className == "modal-1UGdnR") {
+				if (node.classList && node.classList.contains("modal-1UGdnR")) {
 					const wrapper = node.getElementsByClassName("imageWrapper-2p5ogY")[0];
 					if (wrapper && !node.getElementsByClassName("uploadModal-2ifh8j")[0]) {
 						BdApi.clearCSS(`${script.file}-zoom`);
