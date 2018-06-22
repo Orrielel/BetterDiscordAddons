@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.0",
+		version: "2.7.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -1168,20 +1168,20 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages").length) {
 				const node = addedNodes[0];
 				if (node.className) {
-					switch(node.className) {
+					switch(node.classList[0]) {
 						case "messages-wrapper":
-						case "content flex-spacer flex-horizontal":
+						case "content":
 							if (!document.getElementsByClassName("cms-menuIcon")[0]) {
 								insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
 							}
 							/* falls through */
-						case "message-group hide-overflow":
+						case "message-group":
 						case "message":
 							mediaConvert("messages", node);
 							textParser(node);
 							break;
-						case "embed-IeVjo6 flex-1O1GKY embed":
-						case "wrapperPaused-19pWuK wrapper-2TxpI8":
+						case "embed-IeVjo6":
+						case "wrapperPaused-19pWuK":
 							mediaConvert("message", node);
 							mediaReplace(node);
 							break;
