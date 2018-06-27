@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.3.9",
+		version: "1.4.0",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -51,7 +51,7 @@ const BetterImagePopups = (function() {
 .bip-progress_bar {animation: progress-bar-stripes 2s linear infinite; background-color: #5CB85C; background-image: linear-gradient(45deg,rgba(255,255,255,0.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,0.15) 50%,rgba(255,255,255,0.15) 75%,transparent 75%,transparent); background-size: 40px 40px; box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15); color: #FFFFFF; float: left; font-size: 14px; font-weight: 500; height: 100%; line-height: 24px; opacity: 0.8; text-align: center; transition: width 0.6s ease; width: 0; white-space: nowrap;}
 			`,
 			shared: `
-.orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
+.orriePluginModal .backdrop-1wrmKB {background-color: #000000; opacity: 0.85;}
 .orriePluginModal .modal-1UGdnR {opacity: 1;}
 .orriePluginModal .modal-3HD5ck {padding: 0 20px; width: 800px;}
 .orriePluginModal .description-3_Ncsb {font-size: 16px; line-height: 24px;}
