@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.2",
+		version: "1.7.3",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -71,7 +71,7 @@ const TwitchStreamPanel = (function() {
 .orriePluginModal #tsp-stream_input .buttonGreyGhost-SfY7zU:hover {background-color: rgba(116, 127, 141, 0.20);}
 			`,
 			shared: `
-.orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
+.orriePluginModal .backdrop-1wrmKB {background-color: #000000; opacity: 0.85;}
 .orriePluginModal .modal-1UGdnR {opacity: 1;}
 .orriePluginModal .modal-3HD5ck {padding: 0 20px; width: 800px;}
 .orriePluginModal .description-3_Ncsb {font-size: 16px; line-height: 24px;}
@@ -144,7 +144,7 @@ const TwitchStreamPanel = (function() {
 	},
 	modalHandler = function(modalContent) {
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
-			_createElement("div", {className: "backdrop-1ocfXc", onclick() {modal.remove();}}),
+			_createElement("div", {className: "backdrop-1wrmKB", onclick() {modal.remove();}}),
 			_createElement("div", {className: "modal-1UGdnR"},
 				_createElement("div", {className: "inner-1JeGVc"}, modalContent)
 			)
