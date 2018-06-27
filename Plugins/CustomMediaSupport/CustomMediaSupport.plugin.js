@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.1",
+		version: "2.7.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -504,7 +504,7 @@ const CustomMediaSupport = (function() {
 #cms-archive_steam .steam {width: 350px;}
 			`,
 			shared: `
-.orriePluginModal .backdrop-1ocfXc {background-color: #000000; opacity: 0.85;}
+.orriePluginModal .backdrop-1wrmKB {background-color: #000000; opacity: 0.85;}
 .orriePluginModal .modal-1UGdnR {opacity: 1;}
 .orriePluginModal .modal-3HD5ck {padding: 0 20px; width: 800px;}
 .orriePluginModal .description-3_Ncsb {font-size: 16px; line-height: 24px;}
@@ -547,7 +547,10 @@ const CustomMediaSupport = (function() {
 			bdPluginStorage.set(script.file, "settings", script.settings);
 		}
 		if (archive) {
+			archive.filter = [];
+			archive.proxy = {};
 			script.archive = archive;
+			bdPluginStorage.set(script.file, "archive", script.archive);
 		}
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
@@ -584,7 +587,7 @@ const CustomMediaSupport = (function() {
 	cleanArchive = function(key) {
 		if (key) {
 			const wrapper = document.getElementById(`cms-archive_${key}`),
-			counter = document.getElementById(`cms-archive_chan${key}-counter`);
+			counter = document.getElementById(`cms-archive_${key}-counter`);
 			if (Array.isArray(script.archive[key])) {
 				script.archive[key] = [];
 			}
@@ -615,7 +618,7 @@ const CustomMediaSupport = (function() {
 			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb orrie-centerText userSelectText-1o1dQ7", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
 		}
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
-			_createElement("div", {className: "backdrop-1ocfXc", onclick() {modal.remove();}}),
+			_createElement("div", {className: "backdrop-1wrmKB", onclick() {modal.remove();}}),
 			_createElement("div", {className: "modal-1UGdnR"},
 				_createElement("div", {className: "inner-1JeGVc"}, modalContent)
 			)
@@ -967,11 +970,11 @@ const CustomMediaSupport = (function() {
 				_createElement("div", {className: "cms-archive_clean_menu"},
 					_createElement("div", {className: "cms-archive_clean_menu-wrapper orrie-tooltip orrie-relative", innerHTML: "<button type='button' class='userInfoViewingButton-2-jbH9 button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'><div class='contents-18-Yxp'>Cleaning Menu</div></button><div class='tooltip tooltip-brand tooltip-top'>Be very, very careful now!</div>"},
 						_createElement("div", {className: "cms-archive_clean_menu-buttons cardPrimary-1Hv-to card-3Qj_Yx side-8zPYf6"}, [
-							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: "ExHentai", onclick() {cleanArchive("sadpanda");}}),
-							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: "4chan", onclick() {cleanArchive("chan");}}),
-							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: "Steam Workshop", onclick() {cleanArchive("steam");}}),
-							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ orrie-tooltip", innerHTML: "Small APIs<div class='tooltip tooltip-brand tooltip-right'>imgur and gfycat</div>", onclick() {cleanArchive("url");}}),
-							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: "Everything", onclick() {cleanArchive("");}})
+							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: `ExHentai (${archives.sadpanda.count})`, onclick() {cleanArchive("sadpanda");}}),
+							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: `4chan (${archives.chan.count})`, onclick() {cleanArchive("chan");}}),
+							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: `Steam Workshop (${archives.steam.count})`, onclick() {cleanArchive("steam");}}),
+							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ orrie-tooltip", innerHTML: `Small APIs (${Object.keys(script.archive.url).length})<div class='tooltip tooltip-brand tooltip-right'>imgur and gfycat</div>`, onclick() {cleanArchive("url");}}),
+							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: `Everything (${archives.sadpanda.count+archives.chan.count+archives.steam.count+Object.keys(script.archive.url).length+Object.keys(script.archive.proxy).length+script.archive.filter.length})`, onclick() {cleanArchive();}})
 						])
 					)
 				)
