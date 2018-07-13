@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.2",
+		version: "2.7.3",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -249,7 +249,7 @@ const CustomMediaSupport = (function() {
 									script.archive.steam[name_id] = container.innerHTML;
 									bdPluginStorage.set(script.file, "archive", script.archive);
 								}
-								else {
+								else if (!message.getElementsByClassName("media-error-message").length) {
 									container = _createElement("div", {className: `accessory customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='media-error-message'>That item does not exist. It may have been removed by the author.</div></div>`});
 								}
 								message.insertBefore(container, message_body.nextSibling);
@@ -1025,7 +1025,7 @@ const CustomMediaSupport = (function() {
 						}
 						if (/magnet:\?/.test(line)) {
 							// parse magnet links
-							textSplit[_t] = line.replace(/(magnet:\?[\w=:%&\-.;/]+)/g, "<a class='cms-ignore' href='$1' target='_blank' rel='noreferrer'>$1</a> (Click to Open in Torrent Client)");
+							textSplit[_t] = line.replace(/(magnet:\?[\w=:%&\-.;/\+]+)/g, "<a class='cms-ignore' href='$1' target='_blank' rel='noreferrer'>$1</a> (Click to Open in Torrent Client)");
 							break;
 						}
 					}
