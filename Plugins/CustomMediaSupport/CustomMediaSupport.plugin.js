@@ -1172,7 +1172,6 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
-					console.log("ELEMENT", node.className, node);
 					switch(node.classList[0]) {
 						case "messages-wrapper":
 						case "content":
