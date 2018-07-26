@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.3",
+		version: "2.7.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -36,7 +36,7 @@ const CustomMediaSupport = (function() {
 							const gallery_id = `${data.hrefSplit[4]}_${data.hrefSplit[5]}`;
 							if (!data.message.getElementsByClassName(`gallery_${gallery_id}`).length) {
 								if (script.archive.sadpanda[gallery_id]) {
-									data.message.insertBefore(_createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: script.archive.sadpanda[gallery_id]}), data.message_body.nextSibling);
+									data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia sadpanda gallery_${gallery_id}`, innerHTML: script.archive.sadpanda[gallery_id]}), data.message_body.nextSibling);
 									scrollElement(data.message.scrollHeight, "messages");
 								}
 								else {
@@ -66,7 +66,7 @@ const CustomMediaSupport = (function() {
 												}
 											}
 											const gallery_id = `${gallery.gid}_${gallery.token}`,
-											container = _createElement("div", {className: `accessory customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsString}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div><div class='cms-filter_container orrie-toggled'>${tagsFilter.join(" ")}</div>`});
+											container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsString}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div><div class='cms-filter_container orrie-toggled'>${tagsFilter.join(" ")}</div>`});
 											message.insertBefore(container, message_body.nextSibling);
 											scrollElement(message.scrollHeight, "messages");
 											// cache embed html in database
@@ -103,7 +103,7 @@ const CustomMediaSupport = (function() {
 							const thread_id = `${data.hrefSplit[3]}_${data.postnumber[1] ? data.hrefSplit[5].replace("#","_") : data.hrefSplit[5]}`;
 							if (!data.message.getElementsByClassName(`post_${thread_id}`).length) {
 								if (script.archive.chan[thread_id]) {
-									data.message.insertBefore(_createElement("div", {className: `accessory customMedia chan post_${thread_id}`, innerHTML: script.archive.chan[thread_id]}), data.message_body.nextSibling);
+									data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia chan post_${thread_id}`, innerHTML: script.archive.chan[thread_id]}), data.message_body.nextSibling);
 									scrollElement(data.message.scrollHeight, "messages");
 								}
 								else {
@@ -127,7 +127,7 @@ const CustomMediaSupport = (function() {
 													}
 													return [reply, media];
 												})(thread.posts) : [0,1],
-												container = _createElement("div", {className: `accessory customMedia chan post_${thread_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div><div class='cms-filter_container orrie-toggled'>${post.board.shortname}</div>`});
+												container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia chan post_${thread_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div><div class='cms-filter_container orrie-toggled'>${post.board.shortname}</div>`});
 												message.insertBefore(container, message_body.nextSibling);
 												scrollElement(message.scrollHeight, "messages");
 												mediaReplace(message);
@@ -233,7 +233,7 @@ const CustomMediaSupport = (function() {
 						const file_id = data.href.match(/\d+/g)[0],
 						name_id = `steam_${file_id}`;
 						if (script.archive.steam[name_id]) {
-							data.message.insertBefore(_createElement("div", {className: `accessory customMedia steam ${name_id}`, innerHTML: script.archive.steam[name_id]}), data.message_body.nextSibling);
+							data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${name_id}`, innerHTML: script.archive.steam[name_id]}), data.message_body.nextSibling);
 							scrollElement(data.message.scrollHeight, "messages");
 						}
 						else {
@@ -244,13 +244,13 @@ const CustomMediaSupport = (function() {
 								let container;
 								if (file.result == 1 && file.consumer_app_id == file.creator_app_id) {
 									const tags = file.tags.map(e => e.tag);
-									container = _createElement("div", {className: `accessory customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps'></div><div class='embedInner-1-fpTo'><div class='embedContentInner-FBnk7v'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop</a></div><div class='marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink cms-ignore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d marginTop4-2BNfKC'><div class='scroller-2FKFPG embedDescription-1Cuq9a marginTop4-2BNfKC markup textParserProcessed'>${file.description.replace(/\[[\w=:/.?&+*]+\]/g,"")}</div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div></div><div class='embedImage-2W1cML embedMarginLarge-YZDCEs marginTop8-1DLZ1n'><img class='image' src='${file.preview_url}'></div><div class='embedContentInner-FBnk7v'><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedFieldName-NFrena size14-3iUx6q weightMedium-2iZe9B'>Tags</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG marginLeft4-3VaXdt textParserProcessed'>${tags.join(", ")}</div></div></div></div></div><div class='cms-filter_container orrie-toggled'>${tags.join(" ")}</div>`});
+									container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps'></div><div class='embedInner-1-fpTo'><div class='embedContentInner-FBnk7v'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop</a></div><div class='marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink cms-ignore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d marginTop4-2BNfKC'><div class='scroller-2FKFPG embedDescription-1Cuq9a marginTop4-2BNfKC markup-2BOw-j textParserProcessed'>${file.description.replace(/\[[\w=:/.?&+*]+\]/g,"")}</div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup-2BOw-j textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup-2BOw-j textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup-2BOw-j textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup-2BOw-j textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div></div><div class='embedImage-2W1cML embedMarginLarge-YZDCEs marginTop8-1DLZ1n'><img class='image' src='${file.preview_url}'></div><div class='embedContentInner-FBnk7v'><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedFieldName-NFrena size14-3iUx6q weightMedium-2iZe9B'>Tags</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG marginLeft4-3VaXdt textParserProcessed'>${tags.join(", ")}</div></div></div></div></div><div class='cms-filter_container orrie-toggled'>${tags.join(" ")}</div>`});
 									// cache embed html in database
 									script.archive.steam[name_id] = container.innerHTML;
 									bdPluginStorage.set(script.file, "archive", script.archive);
 								}
 								else if (!message.getElementsByClassName("media-error-message").length) {
-									container = _createElement("div", {className: `accessory customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='media-error-message'>That item does not exist. It may have been removed by the author.</div></div>`});
+									container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='media-error-message'>That item does not exist. It may have been removed by the author.</div></div>`});
 								}
 								message.insertBefore(container, message_body.nextSibling);
 								scrollElement(message.scrollHeight, "messages");
@@ -373,6 +373,7 @@ const CustomMediaSupport = (function() {
 			script: `
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,0.7);}
+.containerCozy-B4noqO:not(.customMedia) {margin-bottom: 0;}
 .message-group .customMedia {display: flex; margin-top: 8px; padding: 0; position: relative;}
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
@@ -403,8 +404,8 @@ const CustomMediaSupport = (function() {
 .CustomMediaSupportModal.orriePluginModal .modal-3HD5ck {width: 80vw;}
 .CustomMediaSupportModal .customMedia.media-video video {max-height: 80vh; min-height: 50vh; max-width: 90vw;}
 .CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh !important; width: 90vw !important; max-height: unset; max-width: unset; resize: none;}
-.accessory.media-replace .customMedia.media-video video {object-fit: fill; width: 100%;}
-.accessory.media-replace .metadataButton-expand {display: none;}
+.containerCozy-B4noqO.media-replace .customMedia.media-video video {object-fit: fill; width: 100%;}
+.containerCozy-B4noqO.media-replace .metadataButton-expand {display: none;}
 /* player style */
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 3px 3px; display: flex !important; opacity: 1 !important;}
@@ -644,13 +645,13 @@ const CustomMediaSupport = (function() {
 		return true;
 	},
 	mediaReplace = function(message) {
-		const mediaAll = message.querySelectorAll(`.accessory:not(.customMedia) video[src]:not([src=""]), .accessory:not(.customMedia) source, .accessory:not(.customMedia) a`);
+		const mediaAll = message.querySelectorAll(`.containerCozy-B4noqO:not(.customMedia) video[src]:not([src=""]), .containerCozy-B4noqO:not(.customMedia) source, .containerCozy-B4noqO:not(.customMedia) a`);
 		for (let _rm=mediaAll.length; _rm--;) {
 			const media = mediaAll[_rm],
 			url = decodeURI(encodeURI((media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).replace("%2B","+"))),
 			fileFilter = url.split("/").slice(-2).join("/");
 			if (media && script.archive.filter.includes(fileFilter)) {
-				let wrapper = media.closest(".accessory > div");
+				let wrapper = media.closest(".containerCozy-B4noqO > div");
 				if (wrapper) {
 					wrapper.classList.add("media-toggled");
 				}
@@ -695,10 +696,10 @@ const CustomMediaSupport = (function() {
 		if (!script.check.media) {
 			script.check.media = true;
 			const types = {
-				messages: ".markup > a:not(.cms-ignore), .metadataDownload-1fk90V:not(.cms-ignore), .fileNameLink-9GuxCo:not(.cms-ignore)",
-				message: ".accessory:not(.media-replace) .embedTitleLink-1Zla9e, .accessory:not(.media-replace) .metadataDownload-1fk90V"
+				messages: ".markup-2BOw-j > a:not(.cms-ignore), .metadataDownload-1fk90V:not(.cms-ignore), .metadataDownload-1fk90V:not(.cms-ignore)",
+				message: ".contentCozy-3XX413:not(.media-replace) .embedTitleLink-1Zla9e, .contentCozy-3XX413:not(.media-replace) .metadataDownload-1fk90V"
 			},
-			links = (type !== "messages" ? node.closest(".message") : node).querySelectorAll(types[type]);
+			links = (type !== "messages" ? node.closest(".contentCozy-3XX413") : node).querySelectorAll(types[type]);
 			log("info", `mediaConvert ${type}`, links);
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
@@ -706,7 +707,7 @@ const CustomMediaSupport = (function() {
 					const fileLink = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href"),
 					href = decodeURI(encodeURI(fileLink.replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4"))),
 					fileType = href.match(/\.(\w+$)/) ? href.match(/\.(\w+$)/)[1] : false,
-					message = link.closest(".message"),
+					message = link.closest(".contentCozy-3XX413"),
 					hrefSplit = href.split("/"),
 					hostName = hrefSplit[2].match(/([\w\-]+\.\w+)$/) ? hrefSplit[2].match(/([\w\-]+\.\w+)$/)[0] : false;
 					if (script.settings.embedding && message && fileType || script.media.whitelist.includes(hostName)) {
@@ -750,13 +751,13 @@ const CustomMediaSupport = (function() {
 		log("info", "mediaEmbedding", data);
 		const {fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hrefSplit, message, message_body} = data,
 		wrapperName = {
-			video: "imageWrapper-2p5ogY noScroll-1Ep7Tu",
+			video: "imageWrapper-2p5ogY noScroll-3xWe_g",
 			audio: "wrapperAudio-1jDe0Q wrapper-2TxpI8",
-			img: "imageWrapper-2p5ogY noScroll-1Ep7Tu",
-			iframe: "imageWrapper-2p5ogY noScroll-1Ep7Tu"
+			img: "imageWrapper-2p5ogY noScroll-3xWe_g",
+			iframe: "imageWrapper-2p5ogY noScroll-3xWe_g"
 		},
 		previewReplace = script.media.replace.includes(hrefSplit[2]),
-		container = _createElement("div", {className: `accessory customMedia media-${fileMedia}`, check: fileFilter}, [
+		container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia media-${fileMedia}`, check: fileFilter}, [
 			_createElement("div", {className: wrapperName[fileMedia], check: fileFilter}, [
 				mode == "return" ? false : (function() {
 					switch(fileMedia) {
@@ -865,10 +866,10 @@ const CustomMediaSupport = (function() {
 			return container;
 		}
 		if (previewReplace) {
-			const anchor = message.querySelector(`.accessory a[href*='${fileFilter}']`),
+			const anchor = message.querySelector(`.containerCozy-B4noqO a[href*='${fileFilter}']`),
 			embed = anchor ? anchor.closest(".embedContent-3fnYWm").nextElementSibling : false;
 			if (embed) {
-				anchor.closest(".accessory").classList.add("media-replace");
+				anchor.closest(".containerCozy-B4noqO").classList.add("media-replace");
 				embed.firstElementChild.classList.add("media-toggled");
 				embed.appendChild(container);
 				embed.style.height = "auto";
@@ -952,7 +953,7 @@ const CustomMediaSupport = (function() {
 				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>4chan (<span id='cms-archive_chan-counter'>${archives.chan.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "chan");}}),
 				_createElement("div", {className: "defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText", innerHTML: `<div class='size18-3EXdSj'>Steam Workshop (<span id='cms-archive_steam-counter'>${archives.steam.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {activeArchive(this, "steam");}})
 			]),
-			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 border-2AhmKo cms-archive_filter noScroll-1Ep7Tu", style: "flex: 0 0 auto;"}, [
+			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 border-2AhmKo cms-archive_filter noScroll-3xWe_g", style: "flex: 0 0 auto;"}, [
 				_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG"}, [
 					_createElement("input", {className: "input-cIJ7To size16-14cGz5", placeholder: "Filter Content (tags or board)", type: "text", value: "",
 						onchange() {
@@ -1005,9 +1006,9 @@ const CustomMediaSupport = (function() {
 	textParser = function(node) {
 		// parse messages for text conversion
 		if (!script.check.textParser) {
-			log("info", "textParser");
 			script.check.textParser = true;
-			const messages = node.querySelectorAll(".markup:not(.textParserProcessed)");
+			const messages = node.querySelectorAll(".markup-2BOw-j:not(.textParserProcessed)");
+			log("info", "textParser", messages);
 			for (let _m=messages.length; _m--;) {
 				const elem = messages[_m];
 				if (elem.firstElementChild && elem.firstElementChild.tagName == "PRE") {
@@ -1171,6 +1172,7 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages").length) {
 				const node = addedNodes[0];
 				if (node.className) {
+					console.log(node.className, node);
 					switch(node.classList[0]) {
 						case "messages-wrapper":
 						case "content":
@@ -1178,8 +1180,8 @@ const CustomMediaSupport = (function() {
 								insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
 							}
 							/* falls through */
-						case "message-group":
-						case "message":
+						case "containerCozy-jafyvG":
+						case "contentCozy-3XX413":
 							mediaConvert("messages", node);
 							textParser(node);
 							break;
@@ -1188,9 +1190,10 @@ const CustomMediaSupport = (function() {
 							mediaConvert("message", node);
 							mediaReplace(node);
 							break;
-						case "message-text":
-						case "edited":
-							setTimeout(textParser(node), 2500);
+						case "messageCozy-2JPAPA":
+						case "containerCozy-336-Cz":
+						case "edited-DL9ECl":
+							setTimeout(textParser(node), 500);
 							break;
 					}
 				}
