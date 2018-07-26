@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.4",
+		version: "2.7.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -1007,7 +1007,7 @@ const CustomMediaSupport = (function() {
 		// parse messages for text conversion
 		if (!script.check.textParser) {
 			script.check.textParser = true;
-			const messages = node.querySelectorAll(".markup-2BOw-j:not(.textParserProcessed)");
+			const messages = (node.classList.contains("edited-DL9ECl") ? node.closest(".containerCozy-336-Cz") : node).querySelectorAll(".markup-2BOw-j:not(.textParserProcessed)");
 			log("info", "textParser", messages);
 			for (let _m=messages.length; _m--;) {
 				const elem = messages[_m];
@@ -1171,8 +1171,8 @@ const CustomMediaSupport = (function() {
 		observer({addedNodes}) {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages").length) {
 				const node = addedNodes[0];
-				if (node.className) {
-					console.log(node.className, node);
+				if (node.nodeType == 1 && node.className) {
+					console.log("ELEMENT", node.className, node);
 					switch(node.classList[0]) {
 						case "messages-wrapper":
 						case "content":
@@ -1191,9 +1191,8 @@ const CustomMediaSupport = (function() {
 							mediaReplace(node);
 							break;
 						case "messageCozy-2JPAPA":
-						case "containerCozy-336-Cz":
 						case "edited-DL9ECl":
-							setTimeout(textParser(node), 500);
+							textParser(node);
 							break;
 					}
 				}
