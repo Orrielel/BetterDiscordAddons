@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.5",
+		version: "2.7.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -401,7 +401,7 @@ const CustomMediaSupport = (function() {
 .customMedia.media-iframe .metadata-13NcHb {max-width: 100%; min-width: 500px;}
 .theme-dark .customMedia.media-iframe iframe {background-color: rgba(46,48,54,.3); border: 1px solid rgba(46,48,54,.6);}
 .theme-light .customMedia.media-iframe iframe {background: hsla(0,0%,98%,.3); border: 1px solid hsla(0,0%,80%,.3);}
-.CustomMediaSupportModal.orriePluginModal .modal-3HD5ck {width: 80vw;}
+.CustomMediaSupportModal.orriePluginModal .modal-3HD5ck {overflow: auto; resize: both; width: 80vw; max-width: 95vw; max-height: 100%;}
 .CustomMediaSupportModal .customMedia.media-video video {max-height: 80vh; min-height: 50vh; max-width: 90vw;}
 .CustomMediaSupportModal .customMedia.media-iframe iframe {height: 80vh !important; width: 90vw !important; max-height: unset; max-width: unset; resize: none;}
 .containerCozy-B4noqO.media-replace .customMedia.media-video video {object-fit: fill; width: 100%;}
@@ -486,10 +486,11 @@ const CustomMediaSupport = (function() {
 .cms-archive_header > div {margin: 0 5px; width: 195px;}
 .cms-archive_filter {padding-bottom: 8px;}
 .cms-archive_filter .input-cIJ7To {padding: 0 10px; width: 250px;}
-.cms-archive_clean_menu {align-self: center; position: absolute; right: 25px; z-index: 10;}
+.cms-archive_clean_menu {align-self: center; position: absolute; right: 30px; z-index: 10;}
 .cms-archive_clean_menu .cms-archive_clean_menu-buttons {display: none; position: absolute; right: -10px;}
 .cms-archive_clean_menu:hover .cms-archive_clean_menu-buttons {display: block;}
 .cms-archive_clean_menu .cms-archive_clean_menu-button {margin-bottom: 0;}
+.cms-archive_clean_menu .orrie-tooltip .tooltip-left {right: calc(100% + 10px);}
 .cms-archive_clean_menu .orrie-tooltip .tooltip-right {left: calc(100% + 10px);}
 .cms-archive_active_button .divider-3573oO {background-color: #a5a5a5;}
 .cms-archive_container > div {display: none;}
@@ -924,7 +925,20 @@ const CustomMediaSupport = (function() {
 					_createElement("div", {className: "flex-1O1GKY cms-archive_delete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-brand tooltip-bottom'>Delete</div>", onclick() {deletePreview(this, key, archive.name, `cms-archive_${archive.name}-counter`);}})
 				),
 				filter_container = container.getElementsByClassName("cms-filter_container")[0];
-				container.classList.add(filter_container && filter_container.innerHTML ? filter_container.innerHTML.split(" ") : Array.from(container.getElementsByClassName("tag")).map(({textContent}) => textContent));
+				let tag_container = [];
+				if (filter_container && filter_container.innerHTML) {
+					tag_container = filter_container.innerHTML.split(" ");
+				}
+				else {
+					const tags = container.getElementsByClassName("tag");
+					let _t = tags.length;
+					while (_t--) {
+						if (tags[_t].textContent) {
+							tag_container.push(...tags[_t].textContent.split(" "));
+						}
+					}
+				}
+				container.classList.add(tag_container);
 				archive.fragment.appendChild(container);
 				archive.count++;
 			}
@@ -956,7 +970,7 @@ const CustomMediaSupport = (function() {
 							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: `ExHentai (${archives.sadpanda.count})`, onclick() {cleanArchive("sadpanda");}}),
 							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: `4chan (${archives.chan.count})`, onclick() {cleanArchive("chan");}}),
 							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: `Steam Workshop (${archives.steam.count})`, onclick() {cleanArchive("steam");}}),
-							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ orrie-tooltip", innerHTML: `Small APIs (${Object.keys(script.archive.url).length})<div class='tooltip tooltip-brand tooltip-right'>imgur and gfycat</div>`, onclick() {cleanArchive("url");}}),
+							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ orrie-tooltip", innerHTML: `Small APIs (${Object.keys(script.archive.url).length})<div class='tooltip tooltip-brand tooltip-left'>imgur and gfycat</div>`, onclick() {cleanArchive("url");}}),
 							_createElement("div", {className: "cms-archive_clean_menu-button itemDefault-3Jdr52 item-PXvHYJ", innerHTML: `Everything (${archives.sadpanda.count+archives.chan.count+archives.steam.count+Object.keys(script.archive.url).length+Object.keys(script.archive.proxy).length+script.archive.filter.length})`, onclick() {cleanArchive();}})
 						])
 					)
