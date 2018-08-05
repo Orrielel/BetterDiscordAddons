@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.6",
+		version: "2.7.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -37,7 +37,7 @@ const CustomMediaSupport = (function() {
 							if (!data.message.getElementsByClassName(`gallery_${gallery_id}`).length) {
 								if (script.archive.sadpanda[gallery_id]) {
 									data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia sadpanda gallery_${gallery_id}`, innerHTML: script.archive.sadpanda[gallery_id]}), data.message_body.nextSibling);
-									scrollElement(data.message.scrollHeight, "messages");
+									scrollElement(data.message.scrollHeight, "messages-3amgkR");
 								}
 								else {
 									script.check.sadpanda = true;
@@ -68,12 +68,12 @@ const CustomMediaSupport = (function() {
 											const gallery_id = `${gallery.gid}_${gallery.token}`,
 											container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia sadpanda gallery_${gallery_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B cms-ignore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsString}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='cms-ignore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div><div class='cms-filter_container orrie-toggled'>${tagsFilter.join(" ")}</div>`});
 											message.insertBefore(container, message_body.nextSibling);
-											scrollElement(message.scrollHeight, "messages");
+											scrollElement(message.scrollHeight, "messages-3amgkR");
 											// cache embed html in database
 											script.archive.sadpanda[gallery_id] = container.innerHTML;
 											bdPluginStorage.set(script.file, "archive", script.archive);
 											// remove sadpanda images
-											const sadpandas = document.getElementsByClassName("messages")[0].querySelectorAll("img[href*='exhentai.org']");
+											const sadpandas = document.getElementsByClassName("messages-3amgkR")[0].querySelectorAll("img[href*='exhentai.org']");
 											if (sadpandas[0]) {
 												while(sadpandas[0]) {
 													sadpandas[0].remove();
@@ -104,7 +104,7 @@ const CustomMediaSupport = (function() {
 							if (!data.message.getElementsByClassName(`post_${thread_id}`).length) {
 								if (script.archive.chan[thread_id]) {
 									data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia chan post_${thread_id}`, innerHTML: script.archive.chan[thread_id]}), data.message_body.nextSibling);
-									scrollElement(data.message.scrollHeight, "messages");
+									scrollElement(data.message.scrollHeight, "messages-3amgkR");
 								}
 								else {
 									if (!script.check.chan) {
@@ -129,7 +129,7 @@ const CustomMediaSupport = (function() {
 												})(thread.posts) : [0,1],
 												container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia chan post_${thread_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG cms-ignore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${is_reply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='cms-ignore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='cms-ignore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='cms-ignore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='cms-ignore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div><div class='cms-filter_container orrie-toggled'>${post.board.shortname}</div>`});
 												message.insertBefore(container, message_body.nextSibling);
-												scrollElement(message.scrollHeight, "messages");
+												scrollElement(message.scrollHeight, "messages-3amgkR");
 												mediaReplace(message);
 												// cache embed html in database
 												script.archive.chan[thread_id] = container.innerHTML;
@@ -234,7 +234,7 @@ const CustomMediaSupport = (function() {
 						name_id = `steam_${file_id}`;
 						if (script.archive.steam[name_id]) {
 							data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${name_id}`, innerHTML: script.archive.steam[name_id]}), data.message_body.nextSibling);
-							scrollElement(data.message.scrollHeight, "messages");
+							scrollElement(data.message.scrollHeight, "messages-3amgkR");
 						}
 						else {
 							data.apiData = `itemcount=1&publishedfileids[0]=${file_id}&format=json`;
@@ -253,7 +253,7 @@ const CustomMediaSupport = (function() {
 									container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='media-error-message'>That item does not exist. It may have been removed by the author.</div></div>`});
 								}
 								message.insertBefore(container, message_body.nextSibling);
-								scrollElement(message.scrollHeight, "messages");
+								scrollElement(message.scrollHeight, "messages-3amgkR");
 								mediaReplace(message);
 							}, "POST", data);
 						}
@@ -778,7 +778,7 @@ const CustomMediaSupport = (function() {
 									onclick() {
 										const video = this.parentNode.nextElementSibling;
 										container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "media-large-horizontal" : "media-large-vertical");
-										if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages")[0].clientHeight) {
+										if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages-3amgkR")[0].clientHeight) {
 											message.scrollIntoView(false);
 										}
 									}
@@ -826,7 +826,7 @@ const CustomMediaSupport = (function() {
 										}
 									}
 									this.volume = script.settings.volume;
-									scrollElement(message.scrollHeight, "messages");
+									scrollElement(message.scrollHeight, "messages-3amgkR");
 									// replace original accessory previews if they exist
 									if (!script.media.replace.includes(hrefSplit[2])) {
 										if (!script.archive.filter.includes(fileFilter)) {
@@ -886,7 +886,7 @@ const CustomMediaSupport = (function() {
 			}
 			mediaReplace(message);
 		}
-		scrollElement(message.scrollHeight, "messages");
+		scrollElement(message.scrollHeight, "messages-3amgkR");
 	},
 	archiveHandler = function() {
 		// displays the archived links in a modal
@@ -1158,19 +1158,19 @@ const CustomMediaSupport = (function() {
 			BdApi.injectCSS("orrie-plugin", script.css.shared);
 			BdApi.injectCSS(script.file, script.css.script);
 			insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
-			const messages = document.getElementsByClassName("messages")[0];
+			const messages = document.getElementsByClassName("messages-3amgkR")[0];
 			if (messages) {
 				mediaConvert("messages", messages);
 				textParser(messages);
 			}
 		}
 		observer({addedNodes}) {
-			if (addedNodes.length > 0 && document.getElementsByClassName("messages").length) {
+			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
 					switch(node.classList[0]) {
-						case "messages-wrapper":
-						case "content":
+						case "messagesWrapper-3lZDfY":
+						case "content-yTz4x3":
 							if (!document.getElementsByClassName("cms-menuIcon")[0]) {
 								insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
 							}
