@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.3",
+		version: "1.7.4",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -695,7 +695,7 @@ const TwitchStreamPanel = (function() {
 			if (typeof BDFDB !== "object") {
 				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDFDB.js"}));
 			}
-			if (typeof BDFDB === "object" && document.getElementsByClassName("messages")[0]) {
+			if (typeof BDFDB === "object" && document.getElementsByClassName("messages-3amgkR")[0]) {
 				const serverID = BDFDB.getSelectedServer() ? BDFDB.getSelectedServer().id : false;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
 					streamsInsert();
@@ -704,7 +704,7 @@ const TwitchStreamPanel = (function() {
 			}
 		}
 		observer({addedNodes}) {
-			if (addedNodes.length > 0 && (addedNodes[0].className == "content flex-spacer flex-horizontal" || addedNodes[0].className == "messages-wrapper") && BDFDB) {
+			if (addedNodes.length > 0 && (addedNodes[0].className == "content-yTz4x3" || addedNodes[0].className == "messagesWrapper-3lZDfY") && BDFDB) {
 				const serverID = BDFDB.getSelectedServer() ? BDFDB.getSelectedServer().id : false;
 				if (!document.getElementsByClassName("tsp-menuIcon")[0]) {
 					insertCustomMenu("tsp-menuIcon", script.name);
