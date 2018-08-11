@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.7",
+		version: "2.7.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -696,12 +696,17 @@ const CustomMediaSupport = (function() {
 		// main media function -- checks every anchor element in messages
 		if (!script.check.media) {
 			script.check.media = true;
-			const types = {
-				messages: ".markup-2BOw-j > a:not(.cms-ignore), .metadataDownload-1fk90V:not(.cms-ignore), .metadataDownload-1fk90V:not(.cms-ignore)",
-				message: ".contentCozy-3XX413:not(.media-replace) .embedTitleLink-1Zla9e, .contentCozy-3XX413:not(.media-replace) .metadataDownload-1fk90V"
-			},
-			links = (type !== "messages" ? node.closest(".contentCozy-3XX413") : node).querySelectorAll(types[type]);
-			log("info", `mediaConvert ${type}`, links);
+			let parent = node, rule = ".markup-2BOw-j > a:not(.cms-ignore), .contentCozy-3XX413:not(.media-replace) .metadataDownload-1fk90V, .video-8eMOth > source:not(.cms-ignore)";
+			switch(type) {
+				case "messages":
+					break;
+				case "metadata":
+					parent = node.closest(".messageCozy-2JPAPA");
+					rule = ".metadataDownload-1fk90V:not(.cms-ignore), .video-8eMOth > source:not(.cms-ignore)";
+					break;
+			}
+			links = parent.querySelectorAll(rule);
+			log("info", `mediaConvert ${type}`, {links, parent, rule});
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.getAttribute("href") || link.getAttribute("src")) {
@@ -717,7 +722,7 @@ const CustomMediaSupport = (function() {
 						fileSite = script.media.sites[hostName] || false;
 						let data = {
 							fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
-							fileName: hrefSplit[hrefSplit.length-1] ? hrefSplit[hrefSplit.length-1].match(/[\w\s]+/)[0] : "",
+							fileName: hrefSplit[hrefSplit.length-1] ? hrefSplit[hrefSplit.length-1].match(/[\w\s-]+/)[0] : "",
 							filePoster: "",
 							fileReplace: false,
 							fileSize: message.getElementsByClassName("metadataSize-2UOOLK")[0] ? message.getElementsByClassName("metadataSize-2UOOLK")[0].textContent : "",
@@ -1078,8 +1083,8 @@ const CustomMediaSupport = (function() {
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
 			_createElement("div", {className: "flex-1O1GKY justifyAround-1n1pnI"}, [
-				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
-				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"}),
+				_createElement("a", {href: script.discord, target: "_blank", rel: "noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
+				_createElement("a", {href: script.url, target: "_blank", rel: "noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"}),
 				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", textContent: `Clean Database`,
 					onclick() {cleanArchive();}
 				})
@@ -1175,17 +1180,16 @@ const CustomMediaSupport = (function() {
 								insertCustomMenu("cms-menuIcon", `${script.name} Archive`);
 							}
 							/* falls through */
-						case "containerCozy-jafyvG":
-						case "contentCozy-3XX413":
-							mediaConvert("messages", node);
+						case "containerCozyBounded-1rKFAn":
+						case "messageCozy-2JPAPA":
+							mediaConvert("message", node);
 							textParser(node);
 							break;
-						case "embed-IeVjo6":
-						case "wrapperPaused-19pWuK":
-							mediaConvert("message", node);
+						case "metadataIcon-2FyCKU":
+						case "iconPlay-2kgvwV":
+							mediaConvert("metadata", node);
 							mediaReplace(node);
 							break;
-						case "messageCozy-2JPAPA":
 						case "edited-DL9ECl":
 							textParser(node);
 							break;
