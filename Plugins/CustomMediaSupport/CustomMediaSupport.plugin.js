@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.9",
+		version: "2.8.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -651,6 +651,8 @@ const CustomMediaSupport = (function() {
 			const media = mediaAll[_rm],
 			url = decodeURI(encodeURI((media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).replace("%2B","+"))),
 			fileFilter = url.split("/").slice(-2).join("/");
+			console.log("filter", script.archive.filter);
+			console.log(fileFilter, script.archive.filter.includes(fileFilter));
 			if (media && script.archive.filter.includes(fileFilter)) {
 				let wrapper = media.closest(".containerCozy-B4noqO > div");
 				if (wrapper) {
@@ -1173,6 +1175,7 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
+					console.log(node.classList[0], node);
 					switch(node.classList[0]) {
 						case "messagesWrapper-3lZDfY":
 						case "content-yTz4x3":
@@ -1189,6 +1192,9 @@ const CustomMediaSupport = (function() {
 						case "metadataIcon-2FyCKU":
 						case "iconPlay-2kgvwV":
 							mediaConvert("metadata", node);
+							mediaReplace(node);
+							break;
+						case "wrapperPaused-19pWuK":
 							mediaReplace(node);
 							break;
 						case "edited-DL9ECl":
