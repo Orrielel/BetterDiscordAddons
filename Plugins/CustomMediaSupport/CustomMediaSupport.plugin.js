@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.7.8",
+		version: "2.7.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -244,7 +244,7 @@ const CustomMediaSupport = (function() {
 								let container;
 								if (file.result == 1 && file.consumer_app_id == file.creator_app_id) {
 									const tags = file.tags.map(({tag}) => tag);
-									container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps'></div><div class='embedInner-1-fpTo'><div class='embedContentInner-FBnk7v'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop</a></div><div class='marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink cms-ignore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d marginTop4-2BNfKC'><div class='scroller-2FKFPG embedDescription-1Cuq9a marginTop4-2BNfKC markup-2BOw-j textParserProcessed'>${file.description.replace(/\[[\w=:/.?&+*]+\]/g,"")}</div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup-2BOw-j textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup-2BOw-j textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup-2BOw-j textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG markup-2BOw-j textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div></div><div class='embedImage-2W1cML embedMarginLarge-YZDCEs marginTop8-1DLZ1n'><img class='image' src='${file.preview_url}'></div><div class='embedContentInner-FBnk7v'><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedFieldName-NFrena size14-3iUx6q weightMedium-2iZe9B'>Tags</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG marginLeft4-3VaXdt textParserProcessed'>${tags.join(", ")}</div></div></div></div></div><div class='cms-filter_container orrie-toggled'>${tags.join(" ")}</div>`});
+									container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${name_id}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps'></div><div class='embedInner-1-fpTo'><div class='embedContentInner-FBnk7v'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop</a></div><div class='marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink cms-ignore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d marginTop4-2BNfKC'><div class='scroller-2FKFPG embedDescription-1Cuq9a marginTop4-2BNfKC markup-2BOw-j textParserProcessed'>${file.description.replace(/\[[\w=:/.?&+*]+\]/g,"")}</div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div></div><div class='embedImage-2W1cML embedMarginLarge-YZDCEs marginTop8-1DLZ1n'><img class='image' src='${file.preview_url}'></div><div class='embedContentInner-FBnk7v'><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedFieldName-NFrena size14-3iUx6q weightMedium-2iZe9B'>Tags</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG marginLeft4-3VaXdt textParserProcessed'>${tags.join(", ")}</div></div></div></div></div><div class='cms-filter_container orrie-toggled'>${tags.join(" ")}</div>`});
 									// cache embed html in database
 									script.archive.steam[name_id] = container.innerHTML;
 									bdPluginStorage.set(script.file, "archive", script.archive);
@@ -415,8 +415,8 @@ const CustomMediaSupport = (function() {
 ::-webkit-media-controls-fullscreen-button {display: none;}
 .media-toggled {display: none !important;}
 /* hide download button */
-.customMedia ::-webkit-media-controls {overflow: hidden !important}
-.customMedia ::-webkit-media-controls-enclosure {width: calc(100% + 32px);margin-left: auto;}
+.customMedia.media-video ::-webkit-media-controls {overflow: hidden !important}
+.customMedia.media-video ::-webkit-media-controls-enclosure {width: calc(100% + 32px);margin-left: auto;}
 /* exhentai previews */
 .customMedia.sadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
 .customMedia.sadpanda .gallery_info .desc {color: #FFFFFF;}
@@ -696,13 +696,13 @@ const CustomMediaSupport = (function() {
 		// main media function -- checks every anchor element in messages
 		if (!script.check.media) {
 			script.check.media = true;
-			let parent = node, rule = ".markup-2BOw-j > a:not(.cms-ignore), .contentCozy-3XX413:not(.media-replace) .metadataDownload-1fk90V, .video-8eMOth > source:not(.cms-ignore)";
+			let parent = node, rule = ".markup-2BOw-j > a:not(.cms-ignore), .containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V";
 			switch(type) {
 				case "messages":
 					break;
 				case "metadata":
 					parent = node.closest(".messageCozy-2JPAPA");
-					rule = ".metadataDownload-1fk90V:not(.cms-ignore), .video-8eMOth > source:not(.cms-ignore)";
+					rule = ".containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V:not(.cms-ignore), .containerCozy-B4noqO:not(.media-replace) .video-8eMOth > source:not(.cms-ignore)";
 					break;
 			}
 			links = parent.querySelectorAll(rule);
@@ -851,17 +851,17 @@ const CustomMediaSupport = (function() {
 					_createElement("source", {src: href,
 						onerror() {
 							const proxy = script.archive.proxy[fileFilter];
-							if (proxy) {
-								this.src = proxy;
-								this.parentNode.load();
-								delete script.archive.proxy[fileFilter];
-							}
-							else {
-								script.archive.proxy[fileFilter] = "ERROR";
-								this.id = `error_${fileFilter}`;
-								this.parentNode.classList.add("media-toggled");
-								this.parentNode.parentNode.nextElementSibling.classList.remove("media-toggled");
-							}
+							//if (proxy) {
+							//	this.src = proxy;
+							//	this.parentNode.load();
+							//	delete script.archive.proxy[fileFilter];
+							//}
+							//else {
+							//	script.archive.proxy[fileFilter] = "ERROR";
+							//	this.id = `error_${fileFilter}`;
+							//	this.parentNode.classList.add("media-toggled");
+							//	this.parentNode.parentNode.nextElementSibling.classList.remove("media-toggled");
+							//}
 						}
 					})
 				)
@@ -1183,6 +1183,7 @@ const CustomMediaSupport = (function() {
 						case "containerCozyBounded-1rKFAn":
 						case "messageCozy-2JPAPA":
 							mediaConvert("message", node);
+							mediaReplace(node);
 							textParser(node);
 							break;
 						case "metadataIcon-2FyCKU":
