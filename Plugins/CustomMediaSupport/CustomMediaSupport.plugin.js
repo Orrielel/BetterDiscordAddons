@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.8.0",
+		version: "2.8.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -651,8 +651,6 @@ const CustomMediaSupport = (function() {
 			const media = mediaAll[_rm],
 			url = decodeURI(encodeURI((media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).replace("%2B","+"))),
 			fileFilter = url.split("/").slice(-2).join("/");
-			console.log("filter", script.archive.filter);
-			console.log(fileFilter, script.archive.filter.includes(fileFilter));
 			if (media && script.archive.filter.includes(fileFilter)) {
 				let wrapper = media.closest(".containerCozy-B4noqO > div");
 				if (wrapper) {
@@ -707,7 +705,7 @@ const CustomMediaSupport = (function() {
 					rule = ".containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V:not(.cms-ignore), .containerCozy-B4noqO:not(.media-replace) .video-8eMOth > source:not(.cms-ignore)";
 					break;
 			}
-			links = parent.querySelectorAll(rule);
+			const links = parent.querySelectorAll(rule);
 			log("info", `mediaConvert ${type}`, {links, parent, rule});
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
@@ -853,17 +851,19 @@ const CustomMediaSupport = (function() {
 					_createElement("source", {src: href,
 						onerror() {
 							const proxy = script.archive.proxy[fileFilter];
-							//if (proxy) {
-							//	this.src = proxy;
-							//	this.parentNode.load();
-							//	delete script.archive.proxy[fileFilter];
-							//}
-							//else {
-							//	script.archive.proxy[fileFilter] = "ERROR";
-							//	this.id = `error_${fileFilter}`;
-							//	this.parentNode.classList.add("media-toggled");
-							//	this.parentNode.parentNode.nextElementSibling.classList.remove("media-toggled");
-							//}
+							if (!previewReplace) {
+								if (proxy) {
+									this.src = proxy;
+									this.parentNode.load();
+									delete script.archive.proxy[fileFilter];
+								}
+								else {
+									script.archive.proxy[fileFilter] = "ERROR";
+									this.id = `error_${fileFilter}`;
+									this.parentNode.classList.add("media-toggled");
+									this.parentNode.parentNode.nextElementSibling.classList.remove("media-toggled");
+								}
+							}
 						}
 					})
 				)
@@ -1175,7 +1175,6 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
-					console.log(node.classList[0], node);
 					switch(node.classList[0]) {
 						case "messagesWrapper-3lZDfY":
 						case "content-yTz4x3":
