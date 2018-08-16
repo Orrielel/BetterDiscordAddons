@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.4",
+		version: "1.7.5",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -693,30 +693,45 @@ const TwitchStreamPanel = (function() {
 			BdApi.injectCSS("orrie-plugin", script.css.shared);
 			BdApi.injectCSS(script.file, script.css.script);
 			if (typeof BDFDB !== "object") {
-				document.head.appendChild(_createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDFDB.js"}));
+				const libraryScript = _createElement("script", {type: "text/javascript", src: "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDFDB.js"});
+				libraryScript.addEventListener("load", function() {
+					const serverID = BDFDB.getSelectedServer() ? BDFDB.getSelectedServer().id : false;
+					if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
+						streamsInsert();
+					}
+				}, false);
+				document.head.appendChild(libraryScript);
 			}
 			if (typeof BDFDB === "object" && document.getElementsByClassName("messages-3amgkR")[0]) {
 				const serverID = BDFDB.getSelectedServer() ? BDFDB.getSelectedServer().id : false;
 				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
 					streamsInsert();
 				}
-				insertCustomMenu("tsp-menuIcon", script.name);
 			}
+			insertCustomMenu("tsp-menuIcon", script.name);
 		}
 		observer({addedNodes}) {
-			if (addedNodes.length > 0 && (addedNodes[0].className == "content-yTz4x3" || addedNodes[0].className == "messagesWrapper-3lZDfY") && BDFDB) {
-				const serverID = BDFDB.getSelectedServer() ? BDFDB.getSelectedServer().id : false;
-				if (!document.getElementsByClassName("tsp-menuIcon")[0]) {
-					insertCustomMenu("tsp-menuIcon", script.name);
-				}
-				if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
-					if (!document.getElementById(`streams_${serverID}`)) {
-						streamsRemove();
-						streamsInsert();
+			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
+				const node = addedNodes[0];
+				if (node.nodeType == 1 && node.className && typeof BDFDB === "object") {
+					switch(node.classList[0]) {
+						case "messagesWrapper-3lZDfY":
+						case "content-yTz4x3":
+						case "membersWrap-2h-GB4":
+							const serverID = BDFDB.getSelectedServer() ? BDFDB.getSelectedServer().id : false;
+							if (!document.getElementsByClassName("tsp-menuIcon")[0]) {
+								insertCustomMenu("tsp-menuIcon", script.name);
+							}
+							if (script.streams[serverID] && Object.keys(script.streams[serverID]).length) {
+								if (!document.getElementById(`streams_${serverID}`)) {
+									streamsRemove();
+									streamsInsert();
+								}
+							}
+							else {
+								streamsRemove();
+							}
 					}
-				}
-				else {
-					streamsRemove();
 				}
 			}
 		}
