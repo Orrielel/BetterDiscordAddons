@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.5",
+		version: "1.7.6",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -200,11 +200,12 @@ const TwitchStreamPanel = (function() {
 		const streamContainer = _createElement("div", {className: "TwitchStreamPanel", id: `streams_${serverID}`}, [
 			_createElement("div", {className: "containerDefault-3GGEv_"},
 				_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignStart-H-X2h- noWrap-3jynv6 wrapperDefault-10Jfvz cursorPointer-1ajlYk"}, [
-					_createElement("div", {className: `nameDefault-2DI02H colorTransition-2-M2tg tsp-streams_button`, innerHTML: `<svg class='iconDefault-3Gr8d2 iconTransition-2pOJ7l${!script.settings.state ? " closed-1D6IW8" : ""}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg>Streams`,
+					_createElement("div", {className: `nameDefault-2DI02H colorTransition-2-M2tg tsp-streams_button`, innerHTML: `<svg class='iconDefault-3Gr8d2 iconTransition-2pOJ7l ${!script.settings.state ? "directionRight-O8AY4M" : "directionDown-26e7eE"}' width='12' height='12' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg>Streams`,
 					onclick() {
 						script.settings.state = !script.settings.state;
 						streamContainer.children[1].classList.toggle("orrie-toggled");
-						this.firstElementChild.classList.toggle("closed-1D6IW8");
+						this.firstElementChild.classList.toggle("directionDown-26e7eE");
+						this.firstElementChild.classList.toggle("directionRight-O8AY4M");
 						this.nextElementSibling.classList.toggle("orrie-toggled");
 						streamContainer.lastElementChild.classList.toggle("orrie-toggled");
 						forceScrolling(streamContainer.scrollHeight, "scroller-2FKFPG");
@@ -575,7 +576,11 @@ const TwitchStreamPanel = (function() {
 					));
 				}
 				serverFragment.appendChild(_createElement("div", {className: "tsp-stream_server orrie-relative", id: `tsp_${server.id}`}, [
-					_createElement("div", {className: "defaultColor-1_ajX0 app-XZYfmp cursorPointer-1ajlYk orrie-centerText", innerHTML: `<svg class='iconDefault-3Gr8d2 iconTransition-2pOJ7l$ closed-1D6IW8' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-3EXdSj'>${server.name}</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {this.nextElementSibling.classList.toggle("orrie-toggled"); this.firstElementChild.classList.toggle("closed-1D6IW8");}}),
+					_createElement("div", {className: "defaultColor-1_ajX0 app-XZYfmp cursorPointer-1ajlYk orrie-centerText", innerHTML: `<svg class='iconDefault-3Gr8d2 iconTransition-2pOJ7l$ directionRight-O8AY4M' width='18' height='18' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M7 10L12 15 17 10'></path></svg><div class='size18-3EXdSj'>${server.name}</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {
+						this.nextElementSibling.classList.toggle("orrie-toggled");
+						this.firstElementChild.classList.toggle("directionDown-26e7eE");
+						this.firstElementChild.classList.toggle("directionRight-O8AY4M");
+					}}),
 					_createElement("div", {className: "orrie-toggled flex-1O1GKY directionColumn-35P_nr"}, [
 						_createElement("table", {className: "cardPrimary-1Hv-to primary-jw0I4K orrie-centerText", innerHTML: `<tr><td class='weightSemiBold-NJexzi'>Server ID</td><td>${server.id}</td></tr><tr><td class='weightSemiBold-NJexzi'>Streams</td><td id='tsp_${server.id}_count'>${streamFragment.childElementCount}</td></tr>`, cellSpacing: 0}),
 						_createElement("div", {className: "divider-2JwdCF"}),
