@@ -7,18 +7,17 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.8.4",
+		version: "2.8.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
 		raw: "https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/CustomMediaSupport/CustomMediaSupport.plugin.js",
 		discord: "https://discord.gg/YEZkpkj",
 		check: {
-			version: false,
 			media: false,
-			sadpanda: false,
-			chan: false,
-			textParser: false
+			replace: false,
+			textParser: false,
+			version: false
 		},
 		media: {
 			types: {
@@ -41,7 +40,6 @@ const CustomMediaSupport = (function() {
 									scrollElement(data.message.scrollHeight, "messages-3amgkR");
 								}
 								else {
-									script.check.sadpanda = true;
 									data.apiData = `{"method":"gdata","gidlist":[["${data.hrefSplit[4]}","${data.hrefSplit[5]}"]],"namespace":1}`;
 									request("sadpanda", "https://e-hentai.org/api.php", function(resp, {message, message_body}) {
 										// fetch sadpanda gallery information
@@ -69,7 +67,6 @@ const CustomMediaSupport = (function() {
 											const galleryKey = `${gallery.gid}_${gallery.token}`,
 											container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customSadpanda gallery${galleryKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps cat-${gallery.category}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsString}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='customIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
 											message.insertBefore(container, message_body.nextSibling);
-											scrollElement(message.scrollHeight, "messages-3amgkR");
 											// cache embed html in database
 											script.archive.sadpanda[galleryKey] = {html: container.innerHTML, tags: tagsFilter.join(" ")};
 											bdPluginStorage.set(script.file, "archive", script.archive);
@@ -80,11 +77,11 @@ const CustomMediaSupport = (function() {
 													sadpandas[0].remove();
 												}
 											}
+											scrollElement(message.scrollHeight, "messages-3amgkR");
 										}
 										else {
 											log("error", "sadpandaFetch - galleries returns empty?", resp);
 										}
-										script.check.sadpanda = false;
 									}, "POST", data);
 								}
 								if (!script.archive.filter.includes(galleryKey)) {
@@ -109,36 +106,32 @@ const CustomMediaSupport = (function() {
 									scrollElement(data.message.scrollHeight, "messages-3amgkR");
 								}
 								else {
-									if (!script.check.chan) {
-										script.check.chan = true;
-										data.archive = archiveCheck(data.hrefSplit[3]);
-										if (data.archive) {
+									data.archive = archiveCheck(data.hrefSplit[3]);
+									if (data.archive) {
 										request("4chan", `https://cors-anywhere.herokuapp.com/${data.archive}/_/api/chan/thread/?board=${data.hrefSplit[3]}&num=${data.postnumber[0]}`, function(resp, {archive, message, message_body, href, hrefSplit, postnumber}) {
-												// fetch knitting image board information
-												const thread = resp[postnumber[0]],
-												post = thread.posts && thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
-												threadKey = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
-												isReply = thread.posts && thread.posts[postnumber[1]] ? true : false,
-												counts = thread.posts ? (function(posts) {
-													let reply = 0, media = 1;
-													for (let _p_k=Object.keys(posts), _p=_p_k.length; _p--;) {
-														reply++;
-														if (posts[_p_k[_p]].media) {
-															media++;
-														}
+											// fetch knitting image board information
+											const thread = resp[postnumber[0]],
+											post = thread.posts && thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
+											threadKey = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
+											isReply = thread.posts && thread.posts[postnumber[1]] ? true : false,
+											counts = thread.posts ? (function(posts) {
+												let reply = 0, media = 1;
+												for (let _p_k=Object.keys(posts), _p=_p_k.length; _p--;) {
+													reply++;
+													if (posts[_p_k[_p]].media) {
+														media++;
 													}
-													return [reply, media];
-												})(thread.posts) : [0,1],
-												container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${isReply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='customIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='customIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='customIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='customIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
-												message.insertBefore(container, message_body.nextSibling);
-												scrollElement(message.scrollHeight, "messages-3amgkR");
-												mediaReplace(message);
-												// cache embed html in database
-												script.archive.chan[threadKey] = {html: container.innerHTML, tags: post.board.shortname};
-												bdPluginStorage.set(script.file, "archive", script.archive);
-												script.check.chan = false;
-											}, "GET", data);
-										}
+												}
+												return [reply, media];
+											})(thread.posts) : [0,1],
+											container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps ${script.chan.nsfw.includes(hrefSplit[3]) ? "board-nsfw" : "board-sfw"}'></div><div class='embedInner-1-fpTo'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='http://boards.4chan.org/${post.board.shortname}/' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${isReply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='customIgnore' href='https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}' target='_blank' rel='noreferrer'>https://boards.4chan.org/${post.board.shortname}/thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span> <span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span> <span class='thread_postid'><a class='customIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='customIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='customIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+											message.insertBefore(container, message_body.nextSibling);
+											mediaReplace(message);
+											// cache embed html in database
+											script.archive.chan[threadKey] = {html: container.innerHTML, tags: post.board.shortname};
+											bdPluginStorage.set(script.file, "archive", script.archive);
+											scrollElement(message.scrollHeight, "messages-3amgkR");
+										}, "GET", data);
 									}
 								}
 								if (!script.archive.filter.includes(`thread/${data.postnumber[0]}`)) {
@@ -257,8 +250,8 @@ const CustomMediaSupport = (function() {
 										container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${nameKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='customMediaError'>That item does not exist. It may have been removed by the author.</div></div>`});
 									}
 									message.insertBefore(container, message_body.nextSibling);
-									scrollElement(message.scrollHeight, "messages-3amgkR");
 									mediaReplace(message);
+									scrollElement(message.scrollHeight, "messages-3amgkR");
 								}, "POST", data);
 							}
 							if (!script.archive.filter.includes(data.fileFilter)) {
@@ -646,34 +639,38 @@ const CustomMediaSupport = (function() {
 		return true;
 	},
 	mediaReplace = function(message) {
-		const mediaAll = message.querySelectorAll(`.containerCozy-B4noqO:not(.customMedia) video[src]:not([src=""]), .containerCozy-B4noqO:not(.customMedia) source, .containerCozy-B4noqO:not(.customMedia) a`);
-		for (let _rm=mediaAll.length; _rm--;) {
-			const media = mediaAll[_rm],
-			url = decodeURI(encodeURI((media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).replace("%2B","+"))),
-			fileFilter = url.split("/").slice(-2).join("/");
-			if (media && script.archive.filter.includes(fileFilter)) {
-				let wrapper = media.closest(".containerCozy-B4noqO > div");
-				if (wrapper) {
-					wrapper.classList.add("media-toggled");
-				}
-				if (script.archive.proxy[fileFilter] == "ERROR") {
-					const source = document.getElementById(`error_${fileFilter}`);
-					if (source) {
-						const sourceParent = source.parentNode;
-						source.id = "";
-						source.src = url;
-						if (sourceParent) {
-							sourceParent.load();
-							sourceParent.classList.remove("media-toggled");
-							sourceParent.nextElementSibling.classList.add("media-toggled");
-						}
+		if (!script.check.replace) {
+			script.check.replace = true;
+			const mediaAll = message.querySelectorAll(`.containerCozy-B4noqO:not(.customMedia) video[src]:not([src=""]), .containerCozy-B4noqO:not(.customMedia) source, .containerCozy-B4noqO:not(.customMedia) a`);
+			for (let _rm=mediaAll.length; _rm--;) {
+				const media = mediaAll[_rm],
+				url = decodeURI(encodeURI((media.tagName == "VIDEO" || media.tagName == "SOURCE" ? media.getAttribute("src") : media.getAttribute("href")).replace("%2B","+"))),
+				fileFilter = url.split("/").slice(-2).join("/");
+				if (media && script.archive.filter.includes(fileFilter)) {
+					let wrapper = media.closest(".containerCozy-B4noqO > div");
+					if (wrapper) {
+						wrapper.classList.add("media-toggled");
 					}
-					delete script.archive.proxy[fileFilter];
-				}
-				else {
-					script.archive.proxy[fileFilter] = url;
+					if (script.archive.proxy[fileFilter] == "ERROR") {
+						const source = document.getElementById(`error_${fileFilter}`);
+						if (source) {
+							const sourceParent = source.parentNode;
+							source.id = "";
+							source.src = url;
+							if (sourceParent) {
+								sourceParent.load();
+								sourceParent.classList.remove("media-toggled");
+								sourceParent.nextElementSibling.classList.add("media-toggled");
+							}
+						}
+						delete script.archive.proxy[fileFilter];
+					}
+					else {
+						script.archive.proxy[fileFilter] = url;
+					}
 				}
 			}
+			script.check.replace = false;
 		}
 	},
 	mediaSize = function(fileSize) {
@@ -721,7 +718,7 @@ const CustomMediaSupport = (function() {
 					}
 					if (script.settings.embedding && message && fileType || script.media.whitelist.includes(hostName)) {
 						const message_body = message.firstElementChild,
-						fileFilter = fileLink.split("/").slice(-2).join("/"),
+						fileFilter = hrefSplit.slice(-2).join("/"),
 						fileSite = script.media.sites[hostName] || false;
 						let data = {
 							fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
@@ -765,92 +762,86 @@ const CustomMediaSupport = (function() {
 			img:    "imageWrapper-2p5ogY noScroll-3xWe_g",
 			iframe: "imageWrapper-2p5ogY noScroll-3xWe_g"
 		},
-		previewReplace = script.media.replace.includes(hostName),
-		container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia custom${fileMedia.replace(/\w/, c => c.toUpperCase())}`, fileFilter}, [
-			_createElement("div", {className: wrapperName[fileMedia]}, [
-				mode == "return" ? false : (function() {
-					switch(fileMedia) {
-						case "video":
-							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 customIgnore' href='${href}' target='_blank'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
-								_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-brand tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
-								_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip tooltip-brand tooltip-${previewReplace ? "left" : "top"}'>Popout Video</div>`, // &#128471;
-									onclick() {
-										const video = this.parentNode.nextElementSibling;
-										data.currentTime = video.currentTime;
-										data.playing = !video.paused;
-										video.pause();
-										modalHandler(mediaEmbedding(data, "return"), data);
-									}
-								}),
-								_createElement("div", {className: "metadataButton metadataButtonExpand orrie-tooltip orrie-relative", innerHTML: "<div class='tooltip tooltip-brand tooltip-top'>Expand Video</div>", // &#128470
-									onclick() {
-										const video = this.parentNode.nextElementSibling;
-										container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "customMediaHorizontal" : "customMediaVertical");
-										if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages-3amgkR")[0].clientHeight) {
-											message.scrollIntoView(false);
+		previewReplace = script.media.replace.includes(hostName);
+		let metaDataElement, mediaProperties;
+		if (mode !== "return") {
+			switch(fileMedia) {
+				case "video":
+				case "audio":
+					metaDataElement = fileMedia == "video" ? _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 customIgnore' href='${href}' target='_blank'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
+						_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-brand tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
+						_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip tooltip-brand tooltip-${previewReplace ? "left" : "top"}'>Popout Video</div>`, // &#128471;
+							onclick() {
+								const video = this.parentNode.nextElementSibling;
+								data.currentTime = video.currentTime;
+								data.playing = !video.paused;
+								video.pause();
+								modalHandler(mediaEmbedding(data, "return"), data);
+							}
+						}),
+						_createElement("div", {className: "metadataButton metadataButtonExpand orrie-tooltip orrie-relative", innerHTML: "<div class='tooltip tooltip-brand tooltip-top'>Expand Video</div>", // &#128470
+							onclick() {
+								const video = this.parentNode.nextElementSibling;
+								container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "customMediaHorizontal" : "customMediaVertical");
+								if (container.getBoundingClientRect().bottom > document.getElementsByClassName("messages-3amgkR")[0].clientHeight) {
+									message.scrollIntoView(false);
+								}
+							}
+						})
+					]) : _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf- customIgnore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-brand tooltip-top'>Download Audio</div></a>`});
+					mediaProperties = {controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
+						onclick() {if (this.paused) {this.play();} else {this.pause();}},
+						onloadedmetadata() {
+							if (fileMedia == "video") {
+								data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
+								if (script.settings.hoverPlay) {
+									this.onmouseover = function() {
+										if (this.paused) {
+											this.play();
 										}
-									}
-								})
-							]);
-						case "audio":
-							return _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf- customIgnore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-brand tooltip-top'>Download Audio</div></a>`});
-						case "img":
-						case "iframe":
-							return _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
-								_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip tooltip-brand tooltip-top'>Popout Media</div>`, // &#128471;
-									onclick() {
-										modalHandler(mediaEmbedding(data, "return"), data);
-									}
-								})
-							]);
-						default:
-							log("error", "mediaEmbed", href);
-					}
-				})(),
-				_createElement(fileMedia, (function() {
-					switch(fileMedia) {
-						case "video":
-						case "audio":
-							return {controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
-								onclick() {if (this.paused) {this.play();} else {this.pause();}},
-								onloadedmetadata() {
-									if (fileMedia == "video") {
-										data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
-										if (script.settings.hoverPlay) {
-											this.onmouseover = function() {
-												if (this.paused) {
-													this.play();
-												}
-											};
-											this.onmouseout = function() {
-												this.pause();
-											};
-										}
-										if (data.currentTime) {
-											this.currentTime = data.currentTime;
-											if (data.playing) {
-												this.play();
-											}
-										}
-									}
-									this.volume = script.settings.volume;
-									scrollElement(message.scrollHeight, "messages-3amgkR");
-									// replace original accessory previews if they exist
-									if (!previewReplace) {
-										if (!script.archive.filter.includes(fileFilter)) {
-											script.archive.filter.push(fileFilter);
-										}
-										mediaReplace(message);
+									};
+									this.onmouseout = function() {
+										this.pause();
+									};
+								}
+								if (data.currentTime) {
+									this.currentTime = data.currentTime;
+									if (data.playing) {
+										this.play();
 									}
 								}
-							};
-						case "img":
-						case "iframe":
-							return {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, allowFullscreen: true};
-						default:
-							log("error", "mediaEmbed", href);
-					}
-				})(),
+							}
+							this.volume = script.settings.volume;
+							// replace original accessory previews if they exist
+							if (!previewReplace) {
+								if (!script.archive.filter.includes(fileFilter)) {
+									script.archive.filter.push(fileFilter);
+								}
+								mediaReplace(message);
+							}
+							scrollElement(message.scrollHeight, "messages-3amgkR");
+						}
+					};
+					break;
+				case "img":
+				case "iframe":
+					metaDataElement = _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
+						_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip tooltip-brand tooltip-top'>Popout Media</div>`, // &#128471;
+							onclick() {
+								modalHandler(mediaEmbedding(data, "return"), data);
+							}
+						})
+					]);
+					mediaProperties = {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, allowFullscreen: true};
+					break;
+				default:
+					log("error", "mediaEmbed", href);
+			}
+		}
+		const container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia custom${fileMedia.replace(/\w/, c => c.toUpperCase())}`, fileFilter}, [
+			_createElement("div", {className: wrapperName[fileMedia]}, [
+				metaDataElement,
+				_createElement(fileMedia, mediaProperties,
 					_createElement("source", {src: href,
 						onerror() {
 							if (!previewReplace) {
