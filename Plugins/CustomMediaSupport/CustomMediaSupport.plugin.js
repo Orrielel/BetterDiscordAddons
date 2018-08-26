@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.8.5",
+		version: "2.8.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -197,8 +197,8 @@ const CustomMediaSupport = (function() {
 					}
 				},
 				"gfycat.com": {
-					data({href}) {
-						return {fileMedia: "video", fileReplace: true, href};
+					data({href, fileName}) {
+						return {fileMedia: "video", fileName: fileName.replace("-mobile",""), fileReplace: true, href};
 					},
 					api(data) {
 						request("gfycat", `https://cors-anywhere.herokuapp.com/https://api.gfycat.com/v1/gfycats/${data.fileName}`, function({gfyItem}, data) {
@@ -402,6 +402,7 @@ const CustomMediaSupport = (function() {
 .CustomMediaSupportModal.orriePluginModal .modal-3HD5ck {overflow: auto; resize: both; width: 1525px; max-width: 95vw; max-height: 100%;}
 .CustomMediaSupportModal .customMedia.customVideo video {max-height: 80vh; min-height: 50vh; max-width: 90vw;}
 .CustomMediaSupportModal .customMedia.customIframe iframe {height: 80vh !important; width: 90vw !important; max-height: unset; max-width: unset; resize: none;}
+.CustomMediaSupportModal .customModalText {margin: 8px auto 0;}
 .containerCozy-B4noqO.media-replace .customMedia.customVideo video {object-fit: fill; width: 100%;}
 .containerCozy-B4noqO.media-replace .metadataButtonExpand {display: none;}
 /* player style */
@@ -609,18 +610,28 @@ const CustomMediaSupport = (function() {
 		}
 	},
 	modalHandler = function(modalContent, data) {
+		const removeModal = function(modal) {
+			if (data && data.videoElement) {
+				const video = modal.getElementsByTagName("video")[0];
+				data.videoElement.currentTime = video.currentTime;
+				if (!video.paused) {
+					data.videoElement.play();
+				}
+			}
+			modal.remove();
+		};
 		if (data) {
-			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb orrie-centerText userSelectText-1o1dQ7", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
+			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb userSelectText-1o1dQ7 customModalText", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
 		}
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
-			_createElement("div", {className: "backdrop-1wrmKB", onclick() {modal.remove();}}),
+			_createElement("div", {className: "backdrop-1wrmKB", onclick() {removeModal(modal);}}),
 			_createElement("div", {className: "modal-1UGdnR"},
 				_createElement("div", {className: "inner-1JeGVc"}, modalContent)
 			)
 		]),
-		button = modal.getElementsByClassName("orrie-button-cancel")[0];
+		button = modal.getElementsByClassName("customModalCancel")[0];
 		if (button) {
-			button.addEventListener('click', function() {modal.remove();}, false);
+			button.addEventListener('click', function() {removeModal(modal);}, false);
 		}
 		document.getElementById("app-mount").lastElementChild.appendChild(modal);
 	},
@@ -764,15 +775,16 @@ const CustomMediaSupport = (function() {
 		},
 		previewReplace = script.media.replace.includes(hostName);
 		let metaDataElement, mediaProperties;
-		if (mode !== "return") {
-			switch(fileMedia) {
-				case "video":
-				case "audio":
+		switch(fileMedia) {
+			case "video":
+			case "audio":
+				if (mode !== "return") {
 					metaDataElement = fileMedia == "video" ? _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 customIgnore' href='${href}' target='_blank'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
 						_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-brand tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
 						_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip tooltip-brand tooltip-${previewReplace ? "left" : "top"}'>Popout Video</div>`, // &#128471;
 							onclick() {
 								const video = this.parentNode.nextElementSibling;
+								data.videoElement = video;
 								data.currentTime = video.currentTime;
 								data.playing = !video.paused;
 								video.pause();
@@ -789,42 +801,44 @@ const CustomMediaSupport = (function() {
 							}
 						})
 					]) : _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf- customIgnore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-brand tooltip-top'>Download Audio</div></a>`});
-					mediaProperties = {controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
-						onclick() {if (this.paused) {this.play();} else {this.pause();}},
-						onloadedmetadata() {
-							if (fileMedia == "video") {
-								data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
-								if (script.settings.hoverPlay) {
-									this.onmouseover = function() {
-										if (this.paused) {
-											this.play();
-										}
-									};
-									this.onmouseout = function() {
-										this.pause();
-									};
-								}
-								if (data.currentTime) {
-									this.currentTime = data.currentTime;
-									if (data.playing) {
+				}
+				mediaProperties = {controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
+					onclick() {if (this.paused) {this.play();} else {this.pause();}},
+					onloadedmetadata() {
+						if (fileMedia == "video") {
+							data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
+							if (script.settings.hoverPlay) {
+								this.onmouseover = function() {
+									if (this.paused) {
 										this.play();
 									}
+								};
+								this.onmouseout = function() {
+									this.pause();
+								};
+							}
+							if (data.currentTime) {
+								this.currentTime = data.currentTime;
+								if (data.playing) {
+									this.play();
 								}
 							}
-							this.volume = script.settings.volume;
-							// replace original accessory previews if they exist
-							if (!previewReplace) {
-								if (!script.archive.filter.includes(fileFilter)) {
-									script.archive.filter.push(fileFilter);
-								}
-								mediaReplace(message);
-							}
-							scrollElement(message.scrollHeight, "messages-3amgkR");
 						}
-					};
-					break;
-				case "img":
-				case "iframe":
+						this.volume = script.settings.volume;
+						// replace original accessory previews if they exist
+						if (!previewReplace) {
+							if (!script.archive.filter.includes(fileFilter)) {
+								script.archive.filter.push(fileFilter);
+							}
+							mediaReplace(message);
+						}
+						scrollElement(message.scrollHeight, "messages-3amgkR");
+					}
+				};
+				break;
+			case "img":
+			case "iframe":
+				if (mode !== "return") {
 					metaDataElement = _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
 						_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip tooltip-brand tooltip-top'>Popout Media</div>`, // &#128471;
 							onclick() {
@@ -832,11 +846,11 @@ const CustomMediaSupport = (function() {
 							}
 						})
 					]);
-					mediaProperties = {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, allowFullscreen: true};
-					break;
-				default:
-					log("error", "mediaEmbed", href);
-			}
+				}
+				mediaProperties = {"className": fileMedia, src: fileType == "pdf" ? `https://docs.google.com/gview?url=${href}&embedded=true` : href, allowFullscreen: true};
+				break;
+			default:
+				log("error", "mediaEmbed", href);
 		}
 		const container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia custom${fileMedia.replace(/\w/, c => c.toUpperCase())}`, fileFilter}, [
 			_createElement("div", {className: wrapperName[fileMedia]}, [
@@ -917,7 +931,7 @@ const CustomMediaSupport = (function() {
 			chan:     {id: "Chan",     name: "4chan",          count: 0},
 			steam:    {id: "Steam",    name: "Steam Workshop", count: 0},
 			url:      {id: "Url",      name: "Other APIs",     count: Object.keys(script.archive.url).length, tooltip: "imgur and gfycat"},
-			all:      {id: "All",      name: "Everything",     count: Object.keys(script.archive.proxy).length}, 
+			all:      {id: "All",      name: "Everything",     count: Object.keys(script.archive.proxy).length},
 		},
 		headerFragments = document.createDocumentFragment(),
 		containerFragments = document.createDocumentFragment(),
@@ -944,7 +958,7 @@ const CustomMediaSupport = (function() {
 			}
 			cleanMenuFragments.appendChild(_createElement("div", {className: `customArchiveCleanMenuButton itemDefault-3Jdr52 item-PXvHYJ ${archiveInfo.tooltip ? "orrie-tooltip" : ""}`, innerHTML: `${archiveInfo.name} (<span>${archiveInfo.count}</span>) ${archiveInfo.tooltip ? `<div class='tooltip tooltip-brand tooltip-left'>${archiveInfo.tooltip}</div>` : ""}`, onclick() {cleanArchive(archiveName, archiveInfo.id, this);}}));
 		}
-		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Archive Manager</h4></div><svg class='orrie-button-cancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
+		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Archive Manager</h4></div><svg class='customModalCancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
 			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 customArchiveHeader", style: "flex: 0 0 auto;"}, headerFragments),
 			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 border-2AhmKo customArchiveFilter noScroll-3xWe_g", style: "flex: 0 0 auto;"}, [
 				_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG"}, [
