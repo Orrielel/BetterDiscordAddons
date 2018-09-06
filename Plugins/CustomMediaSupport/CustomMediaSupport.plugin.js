@@ -719,7 +719,6 @@ const CustomMediaSupport = (function() {
 			script.check.media = true;
 			let parent = type == "metadata" ? node.closest(".messageCozy-2JPAPA") : node;
 			const links = parent.querySelectorAll(script.classes[type]);
-			console.log(script.classes[type]);
 			log("info", `mediaConvert ${type}`, {parent, links});
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
