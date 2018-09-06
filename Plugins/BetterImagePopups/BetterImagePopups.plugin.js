@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.4.0",
+		version: "1.4.1",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -25,7 +25,7 @@ const BetterImagePopups = (function() {
 		css: {
 			script:`
 .bip-container {text-align: center;}
-.bip-container .scrollerWrap-2lJEkd {flex-direction: column; min-height: unset;}
+.bip-container .scrollerWrap-2lJEkd {display: initial; min-height: unset;}
 .bip-container .imageWrapper-2p5ogY img {position: static;}
 .bip-container .spinner-2enMB9 {position: absolute;}
 .bip-container .bip-scroller {margin-bottom: 6px; max-height: calc(100vh - 160px); max-width: calc(100vw - 160px); overflow: auto;}
