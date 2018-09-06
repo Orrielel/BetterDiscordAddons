@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.8.7",
+		version: "2.8.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -719,6 +719,7 @@ const CustomMediaSupport = (function() {
 			script.check.media = true;
 			let parent = type == "metadata" ? node.closest(".messageCozy-2JPAPA") : node;
 			const links = parent.querySelectorAll(script.classes[type]);
+			console.log(script.classes[type]);
 			log("info", `mediaConvert ${type}`, {parent, links});
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
@@ -1180,7 +1181,7 @@ const CustomMediaSupport = (function() {
 							/* falls through */
 						case "containerCozyBounded-1rKFAn":
 						case "messageCozy-2JPAPA":
-							mediaConvert("message", node);
+							mediaConvert("messages", node);
 							mediaReplace(node);
 							textParser(node);
 							break;
