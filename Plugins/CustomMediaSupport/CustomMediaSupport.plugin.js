@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.8.8",
+		version: "2.8.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -26,6 +26,10 @@ const CustomMediaSupport = (function() {
 			iframe: "imageWrapper-2p5ogY noScroll-3xWe_g",
 			messages: ".markup-2BOw-j > a:not(.customIgnore), .containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V",
 			metadata: ".containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V:not(.customIgnore), .containerCozy-B4noqO:not(.media-replace) .video-8eMOth > source:not(.customIgnore)"
+		},
+		headers: {
+			imgur: {"Authorization": "Client-ID b975f50eb16a396"},
+			steam: {"Content-Type": "application/x-www-form-urlencoded"}
 		},
 		media: {
 			types: {
@@ -272,22 +276,14 @@ const CustomMediaSupport = (function() {
 				"facebook.com": {
 					data({message}) {
 						if (message) {
-							return {
-								fileMedia: "video",
-								fileReplace: true,
-								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-							};
+							return {fileMedia: "video", fileReplace: true, href: message.getElementsByTagName("source").length ? message.getElementsByTagName("source")[0].src : false};
 						}
 					}
 				},
 				"instagram.com": {
 					data({message}) {
 						if (message) {
-							return {
-								fileMedia: "video",
-								fileReplace: true,
-								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-							};
+							return {fileMedia: "video", fileReplace: true, href: message.getElementsByTagName("source").length ? message.getElementsByTagName("source")[0].src : false};
 						}
 					}
 				},
@@ -299,21 +295,14 @@ const CustomMediaSupport = (function() {
 				"streamable.com": {
 					data({message}) {
 						if (message) {
-							return {
-								fileMedia: "video",
-								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-							};
+							return {fileMedia: "video", href: message.getElementsByTagName("source").length ? message.getElementsByTagName("source")[0].src : false};
 						}
 					}
 				},
 				"steampowered.com": {
 					data({message}) {
 						if (message) {
-							return {
-								fileMedia: "video",
-								filePoster: message.getElementsByTagName("video")[0] ? message.getElementsByTagName("video")[0].poster : "",
-								href: message.getElementsByTagName("source")[0] ? `https://${message.getElementsByTagName("source")[0].src.match(/(steamcdn[\w\-\.\/]+)/)[0]}` : false
-							};
+							return {fileMedia: "video", filePoster: message.getElementsByTagName("video").length ? message.getElementsByTagName("video")[0].poster : "", href: message.getElementsByTagName("source").length ? `https://${message.getElementsByTagName("source")[0].src.match(/(steamcdn[\w\-\.\/]+)/)[0]}` : false};
 						}
 					}
 				},
@@ -335,11 +324,7 @@ const CustomMediaSupport = (function() {
 				"ifunny.co": {
 					data({message}) {
 						if (message) {
-							return {
-								fileMedia: "video",
-								filePoster: message.getElementsByTagName("video")[0] ? message.getElementsByTagName("video")[0].poster : "",
-								href: message.getElementsByTagName("source")[0] ? message.getElementsByTagName("source")[0].src : false
-							};
+							return {fileMedia: "video", filePoster: message.getElementsByTagName("video").length ? message.getElementsByTagName("video")[0].poster : "", href: message.getElementsByTagName("source").length ? message.getElementsByTagName("source")[0].src : false};
 						}
 					}
 				}
@@ -573,47 +558,11 @@ const CustomMediaSupport = (function() {
 		window.PluginUpdates.plugins[script.raw] = {name:script.name, raw:script.raw, version:script.version};
 		log("info", "Settings Loaded");
 	},
-	settingsSave = function(key, data) {
-		// save settings
-		script.settings[key] = data;
-		bdPluginStorage.set(script.file, "settings", script.settings);
-		log("info", "Settings Saved", [key, data]);
-	},
-	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
-		// animate settings changes
-		switch(type) {
-			case "check":
-				nextElementSibling.classList.toggle("checked");
-				break;
-			case "range":
-				const value = `${(data*100).toFixed(0)}%`;
-				previousElementSibling.textContent = value;
-				style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
-				break;
-			// case "text":
-		}
-	},
 	log = function(method, title, data) {
 		// logging function
 		if (script.settings.debug || method == "error") {
 			console[method](`%c[${script.file}]%c ${title}`, "color: purple; font-weight: bold;", "", new Date().toLocaleTimeString("en-GB"), data ? data : "");
 		}
-	},
-	cleanArchive = function(key, id, elem) {
-		if (key !== "all") {
-			script.archive[key] = Array.isArray(script.archive[key]) ? [] : {};
-			if (id && key !== "url") {
-				document.getElementById(`customArchive${id}`).innerHTML = "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 customArchiveEmpty' style='flex: 1 1 auto;'>Shits Empty Bro</h3>";
-				document.getElementById(`customArchive${id}Counter`).textContent = "0";
-			}
-		}
-		else {
-			script.archive = {chan:{},filter:[],proxy:{},sadpanda:{},steam:{},url:{}};
-		}
-		if (elem) {
-			elem.firstElementChild.textContent = "0";
-		}
-		bdPluginStorage.set(script.file, "archive", script.archive);
 	},
 	scrollElement = function(scrollDistance = 0, parentClass = "messages-3amgkR", forceScroll = false) {
 		// scroll element
@@ -737,12 +686,12 @@ const CustomMediaSupport = (function() {
 						fileSite = script.media.sites[hostName] || false;
 						let data = {
 							fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
-							fileName: hrefSplit[hrefSplit.length-1] ? hrefSplit[hrefSplit.length-1].match(/[\w\s-]+/)[0] : "",
+							fileName: hrefSplit[hrefSplit.length-1] ? hrefSplit[hrefSplit.length-1].match(/[^\.]*/)[0] : "",
 							fileFilter: hrefSplit.slice(-2).join("/"),
 							filePoster: "",
 							fileReplace: false,
-							fileSize: message.getElementsByClassName("metadataSize-2UOOLK")[0] ? message.getElementsByClassName("metadataSize-2UOOLK")[0].textContent : "",
-							fileTitle: message.getElementsByClassName("embedTitleLink-1Zla9e")[0] ? message.getElementsByClassName("embedTitleLink-1Zla9e")[0].innerHTML : decodeURIComponent(hrefSplit[hrefSplit.length-1]),
+							fileSize: message.getElementsByClassName("metadataSize-2UOOLK").length ? message.getElementsByClassName("metadataSize-2UOOLK")[0].textContent : "",
+							fileTitle: message.getElementsByClassName("embedTitleLink-1Zla9e").length ? message.getElementsByClassName("embedTitleLink-1Zla9e")[0].innerHTML : decodeURIComponent(hrefSplit[hrefSplit.length-1]),
 							fileLink, fileType, href, hrefSplit, hostName, link, message, message_body
 						};
 						if (fileSite && fileSite.data) {
@@ -884,10 +833,10 @@ const CustomMediaSupport = (function() {
 			return container;
 		}
 		if (previewReplace) {
-			const anchor = message.querySelector(`.containerCozy-B4noqO a[href*='${fileFilter}']`),
-			embed = anchor ? anchor.closest(".embedContent-3fnYWm").nextElementSibling : false;
+			const video = message.querySelector(`video[poster*='${filePoster}']`),
+			embed = video ? video.closest(".embedVideo-3nf0O9") : false;
 			if (embed) {
-				anchor.closest(".containerCozy-B4noqO").classList.add("media-replace");
+				embed.closest(".containerCozy-B4noqO").classList.add("media-replace");
 				embed.firstElementChild.classList.add("media-toggled");
 				embed.appendChild(container);
 				embed.style.height = "auto";
@@ -912,7 +861,7 @@ const CustomMediaSupport = (function() {
 			chan:     {id: "Chan",     name: "4chan",          count: 0},
 			steam:    {id: "Steam",    name: "Steam Workshop", count: 0},
 			url:      {id: "Url",      name: "Other APIs",     count: Object.keys(script.archive.url).length, tooltip: "imgur and gfycat"},
-			all:      {id: "All",      name: "Everything",     count: Object.keys(script.archive.proxy).length},
+			all:      {id: "All",      name: "Everything",     count: Object.keys(script.archive.proxy).length}
 		},
 		headerFragments = document.createDocumentFragment(),
 		containerFragments = document.createDocumentFragment(),
@@ -937,7 +886,7 @@ const CustomMediaSupport = (function() {
 			if (archiveName !== "all") {
 				archivesInfo.all.count += archiveInfo.count;
 			}
-			cleanMenuFragments.appendChild(_createElement("div", {className: `customArchiveCleanMenuButton itemDefault-3Jdr52 item-PXvHYJ ${archiveInfo.tooltip ? "orrie-tooltip" : ""}`, innerHTML: `${archiveInfo.name} (<span>${archiveInfo.count}</span>) ${archiveInfo.tooltip ? `<div class='tooltip tooltip-brand tooltip-left'>${archiveInfo.tooltip}</div>` : ""}`, onclick() {cleanArchive(archiveName, archiveInfo.id, this);}}));
+			cleanMenuFragments.appendChild(_createElement("div", {className: `customArchiveCleanMenuButton itemDefault-3Jdr52 item-PXvHYJ ${archiveInfo.tooltip ? "orrie-tooltip" : ""}`, innerHTML: `${archiveInfo.name} (<span>${archiveInfo.count}</span>) ${archiveInfo.tooltip ? `<div class='tooltip tooltip-brand tooltip-left'>${archiveInfo.tooltip}</div>` : ""}`, onclick() {archiveClean(archiveName, archiveInfo.id, this);}}));
 		}
 		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Archive Manager</h4></div><svg class='customModalCancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
 			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 customArchiveHeader", style: "flex: 0 0 auto;"}, headerFragments),
@@ -990,8 +939,24 @@ const CustomMediaSupport = (function() {
 			document.getElementById(counter).textContent--;
 		}
 	},
+	archiveClean = function(key, id, elem) {
+		if (key !== "all") {
+			script.archive[key] = Array.isArray(script.archive[key]) ? [] : {};
+			if (id && key !== "url") {
+				document.getElementById(`customArchive${id}`).innerHTML = "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 customArchiveEmpty' style='flex: 1 1 auto;'>Shits Empty Bro</h3>";
+				document.getElementById(`customArchive${id}Counter`).textContent = "0";
+			}
+		}
+		else {
+			script.archive = {chan:{},filter:[],proxy:{},sadpanda:{},steam:{},url:{}};
+		}
+		if (elem) {
+			elem.firstElementChild.textContent = "0";
+		}
+		bdPluginStorage.set(script.file, "archive", script.archive);
+	},
 	insertCustomMenu = function(className, tooltip) {
-		const menuAnchor = document.getElementsByClassName("titleText-3X-zRE")[0] ? document.getElementsByClassName("titleText-3X-zRE")[0].nextElementSibling.nextElementSibling : false;
+		const menuAnchor = document.getElementsByClassName("titleText-3X-zRE").length ? document.getElementsByClassName("titleText-3X-zRE")[0].nextElementSibling.nextElementSibling : false;
 		if (menuAnchor) {
 			const menuIcon = menuAnchor.getElementsByClassName(className)[0];
 			if (menuIcon) {
@@ -1036,7 +1001,7 @@ const CustomMediaSupport = (function() {
 			script.check.textParser = false;
 		}
 	},
-	createSettingsPanel = function() {
+	settingsPanel = function() {
 		// settings panel creation
 		const settingsFragment = document.createDocumentFragment(),
 		settingType = function(key, props) {
@@ -1084,11 +1049,31 @@ const CustomMediaSupport = (function() {
 				_createElement("a", {href: script.discord, target: "_blank", rel: "noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
 				_createElement("a", {href: script.url, target: "_blank", rel: "noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"}),
 				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", textContent: `Clean Database`,
-					onclick() {cleanArchive("all");}
+					onclick() {archiveClean("all");}
 				})
 			]),
 			_createElement("div", {className: "orrie-centerText marginTop8-1DLZ1n", textContent: "Use the Archive Manager to tidy up the database, or clean it alltogether"}),
 		]);
+	},
+	settingsSave = function(key, data) {
+		// save settings
+		script.settings[key] = data;
+		bdPluginStorage.set(script.file, "settings", script.settings);
+		log("info", "Settings Saved", [key, data]);
+	},
+	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
+		// animate settings changes
+		switch(type) {
+			case "check":
+				nextElementSibling.classList.toggle("checked");
+				break;
+			case "range":
+				const value = `${(data*100).toFixed(0)}%`;
+				previousElementSibling.textContent = value;
+				style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
+				break;
+			// case "text":
+		}
 	},
 	_createElement = function(tag, attributes, children) {
 		// element creation
@@ -1110,20 +1095,12 @@ const CustomMediaSupport = (function() {
 	},
 	request = function(name, api, handler, method, data) {
 		// request handler
-		const rules = {
-			imgur: {
-				"Authorization": "Client-ID b975f50eb16a396"
-			},
-			steam: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			}
-		};
 		let headers = {
 			"Accept": "application/json",
 			"Content-Type": "application/json"
 		};
-		if (rules[name]) {
-			headers = Object.assign(headers, rules[name]);
+		if (script.headers[name]) {
+			headers = Object.assign(headers, script.headers[name]);
 		}
 		fetch(api, {
 			method,
@@ -1150,7 +1127,7 @@ const CustomMediaSupport = (function() {
 		}
 		// create settings panel
 		getSettingsPanel() {
-			return createSettingsPanel();
+			return settingsPanel();
 		}
 		// start and observer
 		load() {}
