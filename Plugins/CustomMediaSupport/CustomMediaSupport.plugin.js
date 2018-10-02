@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.8.9",
+		version: "2.9.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -377,7 +377,7 @@ const CustomMediaSupport = (function() {
 .customMedia .metadataContent-3c_ZXw {overflow: hidden;}
 .customMedia .metadataName-14STf- a {color: #FFFFFF; opacity: 0.6;}
 .customMedia .metadataName-14STf-:hover a {opacity: 1;}
-.customMedia .metadataButton {cursor: pointer; height: 22px; opacity: 0.6; width: 22px;} /* font-size: 22px; font-weight: bold; */
+.customMedia .metadataButton {cursor: pointer; height: 22px; opacity: 0.6; min-width: 22px;} /* font-size: 22px; font-weight: bold; */
 .customMedia .metadataButton:hover {opacity: 1;}
 .customMedia .metadataButtonPopout {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAVCAYAAABc6S4mAAAAbklEQVR4AWP4//8/dkwdYEIVC0Yt2AjEDiTgWlItmA7ik4AD6W5BBRAfwcAI8BzEJ4C34LOgmgqReWHkWLCERHwPv72YFnCSkmLoYwEiiCqxYEGqWYBLDckWjFqwlUT8lTgLKAaELbhLIT6GywIA5SnsLtcbhqwAAAAASUVORK5CYII=) no-repeat center / 18px;}
 .customMedia .metadataButtonExpand {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAVCAYAAABc6S4mAAAAO0lEQVR4AWP4//9/8n/aAR+SLRi1IBKIHSjE2fgsUARiBgqx5WC3YNSCUQtGLRi1YCuVMP3rg7s0wj4AGC3DMn4UuAEAAAAASUVORK5CYII=) no-repeat center / 18px;}
@@ -475,6 +475,7 @@ const CustomMediaSupport = (function() {
 .customMedia .spoiler:hover {background-color: unset; color: #ADADAD !important;}
 .customMedia .spoiler::before {display: inline; content: "Spoiler:"; font-family: inherit; padding: 0 2px;}
 /* archive manager */
+.headerBar-UHpsPw {overflow: initial;}
 .customMenuIcon {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAASCAYAAABrXO8xAAABfElEQVR42rWSu4rCQBiF51n2VVJsZSVEkWjjXQOCooUajeJdtLNR8QJaKYiCl85SEDvxCbb3BbY4y5nCDSiSxoGTGf7/fJOTnwguj8fz5XK5rtFoFKFQ6KXYc7vdV3olpKrqdzwevw8GA3S7XXQ6nZdibzgcQtf1OxkRDAZ/1+s1NpsNuL/Rw0NGRCIRtNttZLNZGIbxVrlcDq1WS8aWYLPZRLlcZqS3qlQqqNfrHwALhcIjHs+feSOHw8Z0OkWv1+P5Sfl8/h/ko9FoIBAIyOJiscB+v8dut8N4PJZJEokEwuHwwxOLxSBY5G2KomA0GklwuVxiu93ifD7jdrvJfT6fw+fzoVQqgYxIp9MoFotwOp0S7Pf7mEwmmM1mWK1WOBwOOB6PuFwujCoHRkbw21KpFGFbopc/gjBNE5lMhlOzJXoZV9RqNSvI349Ttoo1KygHJFhk9mq1SslzMpm06qnPC4SmaSe/3//Dm+yIXjKCy+FwmF6vF3ZEL5k/rZRshi+9vygAAAAASUVORK5CYII=) no-repeat center; opacity: 0.6;}
 .customMenuIcon:hover {opacity: 1;}
 .customArchiveContent {background-color: unset;}
@@ -633,7 +634,9 @@ const CustomMediaSupport = (function() {
 							if (sourceParent) {
 								sourceParent.load();
 								sourceParent.classList.remove("media-toggled");
-								sourceParent.nextElementSibling.classList.add("media-toggled");
+								if (sourceParent.nextElementSibling) {
+									sourceParent.nextElementSibling.classList.add("media-toggled");
+								}
 							}
 						}
 						delete script.archive.proxy[fileFilter];
@@ -880,7 +883,7 @@ const CustomMediaSupport = (function() {
 					));
 					archiveInfo.count++;
 				}
-				headerFragments.appendChild(_createElement("div", {className: `defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText ${archiveName == "sadpanda" ? "customArchiveActiveButton" : ""}`, innerHTML: `<div class='size18-3EXdSj'>${archiveInfo.name} (<span id='customArchive${archiveInfo.id}Counter'>${archiveInfo.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {archiveHandlerActive(this, archiveInfo.id);}}));
+				headerFragments.appendChild(_createElement("div", {className: `defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText ${archiveName == "sadpanda" ? "customArchiveActiveButton" : ""}`, innerHTML: `<div class='size18-3EXdSj'>${archiveInfo.name} (<span id='customArchive${archiveInfo.id}Counter'>${archiveInfo.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() { archiveHandlerActive(this, archiveInfo.id);}}));
 				containerFragments.appendChild(_createElement("div", {className: `flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp wrap-ZIn9Iy ${archiveName == "sadpanda" ? "customArchiveActive" : ""}`, id: `customArchive${archiveInfo.id}`}, archiveInfo.count ? archiveFragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 customArchiveEmpty' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})));
 			}
 			if (archiveName !== "all") {
@@ -956,7 +959,7 @@ const CustomMediaSupport = (function() {
 		bdPluginStorage.set(script.file, "archive", script.archive);
 	},
 	insertCustomMenu = function(className, tooltip) {
-		const menuAnchor = document.getElementsByClassName("titleText-3X-zRE").length ? document.getElementsByClassName("titleText-3X-zRE")[0].nextElementSibling.nextElementSibling : false;
+		const menuAnchor = document.getElementsByClassName("title-1aVOXw").length ? document.getElementsByClassName("title-1aVOXw")[0].nextElementSibling : false;
 		if (menuAnchor) {
 			const menuIcon = menuAnchor.getElementsByClassName(className)[0];
 			if (menuIcon) {
@@ -1003,39 +1006,12 @@ const CustomMediaSupport = (function() {
 	},
 	settingsPanel = function() {
 		// settings panel creation
-		const settingsFragment = document.createDocumentFragment(),
-		settingType = function(key, props) {
-			switch(props[1]) {
-				case "check":
-					const checked = script.settings[key] ? "checked" : "";
-					return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
-						_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked,
-							onchange() {
-								settingsSave(key, this.checked);
-								settingsAnimate(this, "check", this.checked);
-							}
-						}),
-						_createElement("div", {className: `ui-switch ${checked}`})
-					]);
-				case "range":
-					const value = `${(script.settings[key]*100).toFixed(0)}%`;
-					return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`},
-						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
-							onchange() {settingsSave(key, this.value);},
-							oninput() {settingsAnimate(this, "range", this.value);}
-						})
-					);
-				case "text":
-					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
-						onchange() {settingsSave(key, this.value);}
-					});
-			}
-		};
+		const settingsFragment = document.createDocumentFragment();
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 			const setting = script.settingsMenu[_s_k[_s]];
 			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
 				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-236NPn ui-flex-child'>${setting[0]}</h3>`},
-					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
+					_createElement("div", {className: "input-wrapper"}, settingsType(_s_k[_s], setting))
 				),
 				_createElement("div", {className: "ui-form-text style-description marginTop4-2BNfKC", innerHTML: setting[2]})
 			]));
@@ -1054,6 +1030,33 @@ const CustomMediaSupport = (function() {
 			]),
 			_createElement("div", {className: "orrie-centerText marginTop8-1DLZ1n", textContent: "Use the Archive Manager to tidy up the database, or clean it alltogether"}),
 		]);
+	},
+	settingsType = function(key, props) {
+		switch(props[1]) {
+			case "check":
+				const checked = script.settings[key] ? "checked" : "";
+				return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
+					_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked,
+						onchange() {
+							settingsSave(key, this.checked);
+							settingsAnimate(this, "check", this.checked);
+						}
+					}),
+					_createElement("div", {className: `ui-switch ${checked}`})
+				]);
+			case "range":
+				const value = `${(script.settings[key]*100).toFixed(0)}%`;
+				return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`},
+					_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
+						onchange() {settingsSave(key, this.value);},
+						oninput() {settingsAnimate(this, "range", this.value);}
+					})
+				);
+			case "text":
+				return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
+					onchange() {settingsSave(key, this.value);}
+				});
+		}
 	},
 	settingsSave = function(key, data) {
 		// save settings
