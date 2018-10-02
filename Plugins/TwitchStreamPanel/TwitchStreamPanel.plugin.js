@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.6",
+		version: "1.7.7",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -110,26 +110,6 @@ const TwitchStreamPanel = (function() {
 		}
 		window.PluginUpdates.plugins[script.raw] = {name:script.name, raw:script.raw, version:script.version};
 		log("info", "Settings Loaded");
-	},
-	settingsSave = function(key, data) {
-		// save settings
-		script.settings[key] = data;
-		bdPluginStorage.set(script.file, "settings", script.settings);
-		log("info", "Settings Saved", [key, data]);
-	},
-	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
-		// animate settings changes
-		switch(type) {
-			case "check":
-				nextElementSibling.classList.toggle("checked");
-				break;
-			case "range":
-				const value = `${(data*100).toFixed(0)}%`;
-				previousElementSibling.textContent = value;
-				style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
-				break;
-			// case "text":
-		}
 	},
 	log = function(method, title, data) {
 		// logging function
@@ -301,6 +281,7 @@ const TwitchStreamPanel = (function() {
 				for (let _s=streamItems.length; _s--;) {
 					const streamItem = streamItems[_s];
 					if (streamItem.classList.contains("tsp-stream_online") && !onlineStreams.includes(streamItem.id)) {
+						streamItem.cells[1].innerHTML = "";
 						streamItem.cells[2].innerHTML = "";
 						streamItem.classList.remove("tsp-stream_online");
 						streamItem.classList.add("tsp-stream_offline");
@@ -326,41 +307,14 @@ const TwitchStreamPanel = (function() {
 			}
 		}
 	},
-	createSettingsPanel = function() {
+	settingsPanel = function() {
 		// settings panel creation
-		const settingsFragment = document.createDocumentFragment(),
-		settingType = function(key, props) {
-			switch(props[1]) {
-				case "check":
-					const checked = script.settings[key] ? "checked" : "";
-					return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
-						_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked,
-							onchange() {
-								settingsSave(key, this.checked);
-								settingsAnimate(this, "check", this.checked);
-							}
-						}),
-						_createElement("div", {className: `ui-switch ${checked}`})
-					]);
-				case "range":
-					const value = `${(script.settings[key]*100).toFixed(0)}%`;
-					return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`},
-						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
-							onchange() {settingsSave(key, this.value);},
-							oninput() {settingsAnimate(this, "range", this.value);}
-						})
-					);
-				case "text":
-					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
-						onchange() {settingsSave(key, this.value);}
-					});
-			}
-		};
+		const settingsFragment = document.createDocumentFragment();
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 			const setting = script.settingsMenu[_s_k[_s]];
 			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
 				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-236NPn ui-flex-child'>${setting[0]}</h3>`},
-					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
+					_createElement("div", {className: "input-wrapper"}, settingsType(_s_k[_s], setting))
 				),
 				_createElement("div", {className: "ui-form-text style-description marginTop4-2BNfKC", innerHTML: setting[2]})
 			]));
@@ -385,6 +339,53 @@ const TwitchStreamPanel = (function() {
 				})
 			])
 		]);
+	},
+	settingsType = function(key, props) {
+		switch(props[1]) {
+			case "check":
+				const checked = script.settings[key] ? "checked" : "";
+				return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
+					_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked,
+						onchange() {
+							settingsSave(key, this.checked);
+							settingsAnimate(this, "check", this.checked);
+						}
+					}),
+					_createElement("div", {className: `ui-switch ${checked}`})
+				]);
+			case "range":
+				const value = `${(script.settings[key]*100).toFixed(0)}%`;
+				return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`},
+					_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
+						onchange() {settingsSave(key, this.value);},
+						oninput() {settingsAnimate(this, "range", this.value);}
+					})
+				);
+			case "text":
+				return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
+					onchange() {settingsSave(key, this.value);}
+				});
+		}
+	},
+	settingsSave = function(key, data) {
+		// save settings
+		script.settings[key] = data;
+		bdPluginStorage.set(script.file, "settings", script.settings);
+		log("info", "Settings Saved", [key, data]);
+	},
+	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
+		// animate settings changes
+		switch(type) {
+			case "check":
+				nextElementSibling.classList.toggle("checked");
+				break;
+			case "range":
+				const value = `${(data*100).toFixed(0)}%`;
+				previousElementSibling.textContent = value;
+				style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
+				break;
+			// case "text":
+		}
 	},
 	createStreamModal = function() {
 		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Streamlist Manager</h4></div><svg class='orrie-button-cancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
@@ -647,7 +648,7 @@ const TwitchStreamPanel = (function() {
 		}, 2500);
 	},
 	insertCustomMenu = function(className, tooltip) {
-		const menuAnchor = document.getElementsByClassName("titleText-3X-zRE")[0] ? document.getElementsByClassName("titleText-3X-zRE")[0].nextElementSibling.nextElementSibling : false;
+		const menuAnchor = document.getElementsByClassName("title-1aVOXw").length ? document.getElementsByClassName("title-1aVOXw")[0].nextElementSibling : false;
 		if (menuAnchor) {
 			const menuIcon = menuAnchor.getElementsByClassName(className)[0];
 			if (menuIcon) {
@@ -687,7 +688,7 @@ const TwitchStreamPanel = (function() {
 		}
 		// create settings panel
 		getSettingsPanel() {
-			return createSettingsPanel();
+			return settingsPanel();
 		}
 		// start and observer
 		load() {}
