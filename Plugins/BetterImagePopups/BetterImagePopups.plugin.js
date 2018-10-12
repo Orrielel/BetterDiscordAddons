@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.4.1",
+		version: "1.4.2",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -90,26 +90,6 @@ const BetterImagePopups = (function() {
 		}
 		window.PluginUpdates.plugins[script.raw] = {name:script.name, raw:script.raw, version:script.version};
 		log("info", "Settings Loaded");
-	},
-	settingsSave = function(key, data) {
-		// save settings
-		script.settings[key] = data;
-		bdPluginStorage.set(script.file, "settings", script.settings);
-		log("info", "Settings Saved", [key, data]);
-	},
-	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
-		// animate settings changes
-		switch(type) {
-			case "check":
-				nextElementSibling.classList.toggle("checked");
-				break;
-			case "range":
-				const value = `${(data*100).toFixed(0)}%`;
-				previousElementSibling.textContent = value;
-				style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
-				break;
-			// case "text":
-		}
 	},
 	log = function(method, title, data) {
 		// logging function
@@ -294,41 +274,14 @@ const BetterImagePopups = (function() {
 			BdApi.clearCSS(`${script.file}-imageSize`);
 		}
 	},
-	createSettingsPanel = function() {
+	settingsPanel = function() {
 		// settings panel creation
-		const settingsFragment = document.createDocumentFragment(),
-		settingType = function(key, props) {
-			switch(props[1]) {
-				case "check":
-					const checked = script.settings[key] ? "checked" : "";
-					return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
-						_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked,
-							onchange() {
-								settingsSave(key, this.checked);
-								settingsAnimate(this, "check", this.checked);
-							}
-						}),
-						_createElement("div", {className: `ui-switch ${checked}`})
-					]);
-				case "range":
-					const value = `${(script.settings[key]*100).toFixed(0)}%`;
-					return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`},
-						_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
-							onchange() {settingsSave(key, this.value);},
-							oninput() {settingsAnimate(this, "range", this.value);}
-						})
-					);
-				case "text":
-					return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
-						onchange() {settingsSave(key, this.value);}
-					});
-			}
-		};
+		const settingsFragment = document.createDocumentFragment();
 		for (let _s_k = Object.keys(script.settingsMenu), _s=0, _s_len=_s_k.length; _s<_s_len; _s++) {
 			const setting = script.settingsMenu[_s_k[_s]];
 			settingsFragment.appendChild(_createElement("div", {className: "ui-flex flex-vertical flex-justify-start flex-align-stretch flex-nowrap ui-switch-item", style: "margin-top: 0px;"}, [
 				_createElement("div", {className: "ui-flex flex-horizontal flex-justify-start flex-align-stretch flex-nowrap plugin-setting-input-row", innerHTML: `<h3 class='ui-form-title h3 marginReset-236NPn ui-flex-child'>${setting[0]}</h3>`},
-					_createElement("div", {className: "input-wrapper"}, settingType(_s_k[_s], setting))
+					_createElement("div", {className: "input-wrapper"}, settingsType(_s_k[_s], setting))
 				),
 				_createElement("div", {className: "ui-form-text style-description marginTop4-2BNfKC", innerHTML: setting[2]})
 			]));
@@ -343,6 +296,53 @@ const BetterImagePopups = (function() {
 				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"})
 			])
 		]);
+	},
+	settingsType = function(key, props) {
+		switch(props[1]) {
+			case "check":
+				const checked = script.settings[key] ? "checked" : "";
+				return _createElement("label", {className: "ui-switch-wrapper ui-flex-child", style: "flex: 0 0 auto; right: 0px;"}, [
+					_createElement("input", {type: "checkbox", className: "plugin-input ui-switch-checkbox plugin-input-checkbox", checked,
+						onchange() {
+							settingsSave(key, this.checked);
+							settingsAnimate(this, "check", this.checked);
+						}
+					}),
+					_createElement("div", {className: `ui-switch ${checked}`})
+				]);
+			case "range":
+				const value = `${(script.settings[key]*100).toFixed(0)}%`;
+				return _createElement("div", {className: "plugin-setting-input-container", innerHTML: `<span class='plugin-setting-label'>${value}</span>`},
+					_createElement("input", {className: "plugin-input plugin-input-range", type: "range", max: "1", min: "0", step: "0.01", value: script.settings[key], style: `background: linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value}); margin-left: 10px; float: right;`,
+						onchange() {settingsSave(key, this.value);},
+						oninput() {settingsAnimate(this, "range", this.value);}
+					})
+				);
+			case "text":
+				return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
+					onchange() {settingsSave(key, this.value);}
+				});
+		}
+	},
+	settingsSave = function(key, data) {
+		// save settings
+		script.settings[key] = data;
+		bdPluginStorage.set(script.file, "settings", script.settings);
+		log("info", "Settings Saved", [key, data]);
+	},
+	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
+		// animate settings changes
+		switch(type) {
+			case "check":
+				nextElementSibling.classList.toggle("checked");
+				break;
+			case "range":
+				const value = `${(data*100).toFixed(0)}%`;
+				previousElementSibling.textContent = value;
+				style.background = `linear-gradient(to right, rgb(114, 137, 218), rgb(114, 137, 218) ${value}, rgb(114, 118, 125) ${value})`;
+				break;
+			// case "text":
+		}
 	},
 	_createElement = function(tag, attributes, children) {
 		// element creation
@@ -372,7 +372,7 @@ const BetterImagePopups = (function() {
 		}
 		// create settings panel
 		getSettingsPanel() {
-			return createSettingsPanel();
+			return settingsPanel();
 		}
 		// load, start and observer
 		load() {}
@@ -389,7 +389,7 @@ const BetterImagePopups = (function() {
 				const node = addedNodes[0];
 				if (node.classList && node.classList.contains("modal-1UGdnR")) {
 					const wrapper = node.getElementsByClassName("imageWrapper-2p5ogY")[0];
-					if (wrapper && !node.getElementsByClassName("uploadModal-2ifh8j")[0]) {
+					if (wrapper && !wrapper.classList.contains("embedVideoImageComponent-34z3di") && !node.getElementsByClassName("uploadModal-2ifh8j")[0]) {
 						BdApi.clearCSS(`${script.file}-zoom`);
 						script.zoom = 100;
 						const wrapperObserver = new MutationObserver(function(mutations) {
