@@ -7,7 +7,7 @@ const TwitchStreamPanel = (function() {
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.7",
+		version: "1.7.8",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -97,14 +97,14 @@ const TwitchStreamPanel = (function() {
 	},
 	settingsLoad = function() {
 		// load settings
-		const storage = bdPluginStorage.get(script.file, "settings");
+		const storage = BdApi.loadData(script.file, "settings");
 		if (storage) {
 			script.settings = storage;
 		}
 		else {
-			bdPluginStorage.set(script.file, "settings", script.settings);
+			BdApi.saveData(script.file, "settings", script.settings);
 		}
-		script.streams = bdPluginStorage.get(script.file, "streams") || {};
+		script.streams = BdApi.loadData(script.file, "streams") || {};
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
 		}
@@ -258,7 +258,7 @@ const TwitchStreamPanel = (function() {
 						if (streamItem.classList.contains("tsp-stream_offline")) {
 							streamItem.classList.remove("tsp-stream_offline");
 							streamItem.classList.add("tsp-stream_online");
-							BDFDB.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
+							BdApi.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
 						}
 						streamItem.cells[1].innerHTML += `<div class='tooltip tooltip-brand tooltip-bottom'>${stream.game}</div>`;
 						streamItem.cells[2].innerHTML = stream.viewers.toLocaleString();
@@ -266,12 +266,12 @@ const TwitchStreamPanel = (function() {
 						if (!script.streamsActive[stream.channel.name][0]) {
 							script.streamsActive[stream.channel.name][0] = stream.channel.display_name;
 							streamItem.cells[1].firstElementChild.innerHTML = stream.channel.display_name;
-							bdPluginStorage.set(script.file, "streams", script.streams);
+							BdApi.saveData(script.file, "streams", script.streams);
 						}
 						if (!script.streamsActive[stream.channel.name][3]) {
 							script.streamsActive[stream.channel.name][3] = stream.channel.logo;
 							streamItem.cells[0].style.backgroundImage = `url('${stream.channel.logo}')`;
-							bdPluginStorage.set(script.file, "streams", script.streams);
+							BdApi.saveData(script.file, "streams", script.streams);
 						}
 					}
 					else {
@@ -281,7 +281,7 @@ const TwitchStreamPanel = (function() {
 				for (let _s=streamItems.length; _s--;) {
 					const streamItem = streamItems[_s];
 					if (streamItem.classList.contains("tsp-stream_online") && !onlineStreams.includes(streamItem.id)) {
-						streamItem.cells[1].innerHTML = "";
+						streamItem.cells[1].lastElementChild.remove();
 						streamItem.cells[2].innerHTML = "";
 						streamItem.classList.remove("tsp-stream_online");
 						streamItem.classList.add("tsp-stream_offline");
@@ -332,9 +332,9 @@ const TwitchStreamPanel = (function() {
 				}),
 				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", innerHTML: "Clean Database (Creates Backup)",
 					onclick() {
-						bdPluginStorage.set(`${script.file}_backup`, "streams", script.streams);
+						BdApi.saveData(`${script.file}_backup`, "streams", script.streams);
 						script.streams = {};
-						bdPluginStorage.set(script.file, "streams", {});
+						BdApi.saveData(script.file, "streams", {});
 					}
 				})
 			])
@@ -370,7 +370,7 @@ const TwitchStreamPanel = (function() {
 	settingsSave = function(key, data) {
 		// save settings
 		script.settings[key] = data;
-		bdPluginStorage.set(script.file, "settings", script.settings);
+		BdApi.saveData(script.file, "settings", script.settings);
 		log("info", "Settings Saved", [key, data]);
 	},
 	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
@@ -422,7 +422,7 @@ const TwitchStreamPanel = (function() {
 											}
 										}
 									}
-									bdPluginStorage.set(script.file, "streams", script.streams);
+									BdApi.saveData(script.file, "streams", script.streams);
 									twitchStreamList.innerHTML = "";
 									twitchStreamList.appendChild(createServerList());
 									streamStatus.classList.remove("buttonBrandLink-3csEAP");
@@ -506,7 +506,7 @@ const TwitchStreamPanel = (function() {
 									streamsBackup = script.streams;
 									try {
 										script.streams = Object.assign(script.streams, JSON.parse(document.getElementById("tsp-stream_import-content").value));
-										bdPluginStorage.set(script.file, "streams", script.streams);
+										BdApi.saveData(script.file, "streams", script.streams);
 										twitchStreamList.innerHTML = "";
 										twitchStreamList.appendChild(createServerList());
 										streamStatus.classList.remove("buttonBrandLink-3csEAP");
@@ -569,7 +569,7 @@ const TwitchStreamPanel = (function() {
 										document.getElementById(`tsp_${server.id}_count`).innerHTML = streams_count;
 										streamsInsert();
 									}
-									bdPluginStorage.set(script.file, "streams", script.streams);
+									BdApi.saveData(script.file, "streams", script.streams);
 									this.parentNode.parentNode.remove();
 								}
 							})
@@ -617,7 +617,7 @@ const TwitchStreamPanel = (function() {
 						data[4] = memberData ? memberData.colorString : "";
 					}
 					script.streams[data[5]][data[1]] = data.splice(0,5);
-					bdPluginStorage.set(script.file, "streams", script.streams);
+					BdApi.saveData(script.file, "streams", script.streams);
 					streamStatus.classList.remove("buttonBrandLink-3csEAP");
 					streamStatus.classList.add("buttonGreenLink-211wfK");
 					streamStatus.textContent = "Saved Successfully!";
