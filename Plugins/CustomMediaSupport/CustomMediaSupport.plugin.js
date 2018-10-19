@@ -1,6 +1,6 @@
 //META{"name":"CustomMediaSupport","website":"https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport","source":"https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/CustomMediaSupport/CustomMediaSupport.plugin.js"}*//
 
-/* global bdPluginStorage, BdApi */
+/* global BdApi */
 
 const CustomMediaSupport = (function() {
 	// plugin settings
@@ -1186,9 +1186,9 @@ const CustomMediaSupport = (function() {
 			// remove media
 			const remove_elements = document.querySelectorAll(".customMedia, .customMenuIcon");
 			const remove_classes = document.querySelectorAll(".customIgnore, .customMediaToggled");
-			if (remove_elements[0]) {
-				while(remove_elements[0]) {
-					remove_elements[0].remove();
+			for (let _e=remove_elements.length; _e--;) {
+				if (remove_elements[_e]) {
+					remove_elements[_e].remove();
 				}
 			}
 			for (let _c=remove_classes.length; _c--;) {
