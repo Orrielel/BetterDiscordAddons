@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.4.2",
+		version: "1.4.3",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -78,12 +78,12 @@ const BetterImagePopups = (function() {
 	},
 	settingsLoad = function() {
 		// load settings
-		const storage = bdPluginStorage.get(script.file, "settings");
+		const storage = BdApi.loadData(script.file, "settings");
 		if (storage) {
 			script.settings = storage;
 		}
 		else {
-			bdPluginStorage.set(script.file, "settings", script.settings);
+			BdApi.saveData(script.file, "settings", script.settings);
 		}
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
@@ -327,7 +327,7 @@ const BetterImagePopups = (function() {
 	settingsSave = function(key, data) {
 		// save settings
 		script.settings[key] = data;
-		bdPluginStorage.set(script.file, "settings", script.settings);
+		BdApi.saveData(script.file, "settings", script.settings);
 		log("info", "Settings Saved", [key, data]);
 	},
 	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
