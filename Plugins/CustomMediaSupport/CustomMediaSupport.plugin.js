@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.9.0",
+		version: "2.9.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -81,7 +81,7 @@ const CustomMediaSupport = (function() {
 											message.insertBefore(container, message_body.nextSibling);
 											// cache embed html in database
 											script.archive.sadpanda[galleryKey] = {html: container.innerHTML, tags: tagsFilter.join(" ")};
-											bdPluginStorage.set(script.file, "archive", script.archive);
+											BdApi.saveData(script.file, "archive", script.archive);
 											// remove sadpanda images
 											const sadpandas = document.getElementsByClassName("messages-3amgkR")[0].querySelectorAll("img[href*='exhentai.org']");
 											if (sadpandas[0]) {
@@ -141,7 +141,7 @@ const CustomMediaSupport = (function() {
 											mediaReplace(message);
 											// cache embed html in database
 											script.archive.chan[threadKey] = {html: container.innerHTML, tags: post.board.shortname};
-											bdPluginStorage.set(script.file, "archive", script.archive);
+											BdApi.saveData(script.file, "archive", script.archive);
 											scrollElement(message.scrollHeight);
 										}, "GET", data);
 									}
@@ -193,7 +193,7 @@ const CustomMediaSupport = (function() {
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
 									script.archive.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
-									bdPluginStorage.set(script.file, "archive", script.archive);
+									BdApi.saveData(script.file, "archive", script.archive);
 								}
 								else {
 									log("error", "imgur", item);
@@ -223,7 +223,7 @@ const CustomMediaSupport = (function() {
 								// store in database to prevent api spam
 								if (data.fileSize !== "ERROR") {
 									script.archive.url[data.fileLink] = {href: data.href, fileTitle: data.fileTitle, fileSize: data.fileSize};
-									bdPluginStorage.set(script.file, "archive", script.archive);
+									BdApi.saveData(script.file, "archive", script.archive);
 								}
 								else {
 									log("error", "gfycat", gfyItem);
@@ -256,7 +256,7 @@ const CustomMediaSupport = (function() {
 										container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customSteam ${nameKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='embedPill-1Zntps'></div><div class='embedInner-1-fpTo'><div class='embedContentInner-FBnk7v'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop</a></div><div class='marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink customIgnore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d marginTop4-2BNfKC'><div class='scroller-2FKFPG embedDescription-1Cuq9a marginTop4-2BNfKC markup-2BOw-j textParserProcessed'>${file.description.replace(/\[[\w=:/.?&+*]+\]/g,"")}</div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div></div><div class='embedImage-2W1cML embedMarginLarge-YZDCEs marginTop8-1DLZ1n'><img class='image' src='${file.preview_url}'></div><div class='embedContentInner-FBnk7v'><div class='embedFields-2IPs5Z flex-1O1GKY directionRow-3v3tfG wrap-ZIn9Iy marginTop4-2BNfKC'><div class='embedFieldName-NFrena size14-3iUx6q weightMedium-2iZe9B'>Tags</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG marginLeft4-3VaXdt textParserProcessed'>${tags.join(", ")}</div></div></div></div></div>`});
 										// cache embed html in database
 										script.archive.steam[nameKey] = {html: container.innerHTML, tags: tags.join(" ")};
-										bdPluginStorage.set(script.file, "archive", script.archive);
+										BdApi.saveData(script.file, "archive", script.archive);
 									}
 									else if (!message.getElementsByClassName("customMediaError").length) {
 										container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia steam ${nameKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='customMediaError'>That item does not exist. It may have been removed by the author.</div></div>`});
@@ -408,7 +408,7 @@ const CustomMediaSupport = (function() {
 .customMedia ::-webkit-media-controls-play-button:hover, .customMedia ::-webkit-media-controls-fullscreen-button:hover, .customMedia ::-webkit-media-controls-mute-button:hover, .customMedia ::-internal-media-controls-download-button:hover {cursor: pointer; filter: brightness(2.5);}
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
 ::-webkit-media-controls-fullscreen-button {display: none;}
-.media-toggled {display: none !important;}
+.customMediaToggled {display: none !important;}
 /* hide download button */
 .customMedia.customVideo ::-webkit-media-controls {overflow: hidden !important}
 .customMedia.customVideo ::-webkit-media-controls-enclosure {width: calc(100% + 32px);margin-left: auto;}
@@ -539,19 +539,19 @@ const CustomMediaSupport = (function() {
 	},
 	settingsLoad = function() {
 		// load settings
-		const storage = bdPluginStorage.get(script.file, "settings"),
-		archive = bdPluginStorage.get(script.file, "archive");
+		const storage = BdApi.loadData(script.file, "settings"),
+		archive = BdApi.loadData(script.file, "archive");
 		if (storage) {
 			script.settings = storage;
 		}
 		else {
-			bdPluginStorage.set(script.file, "settings", script.settings);
+			BdApi.saveData(script.file, "settings", script.settings);
 		}
 		if (archive) {
 			archive.filter = [];
 			archive.proxy = {};
 			script.archive = archive;
-			bdPluginStorage.set(script.file, "archive", script.archive);
+			BdApi.saveData(script.file, "archive", script.archive);
 		}
 		if (typeof window.PluginUpdates !== "object" || !window.PluginUpdates) {
 			window.PluginUpdates = {plugins:{}};
@@ -623,7 +623,7 @@ const CustomMediaSupport = (function() {
 				if (media && script.archive.filter.includes(fileFilter)) {
 					let wrapper = media.closest(".containerCozy-B4noqO > div");
 					if (wrapper) {
-						wrapper.classList.add("media-toggled");
+						wrapper.classList.add("customMediaToggled");
 					}
 					if (script.archive.proxy[fileFilter] == "ERROR") {
 						const source = document.getElementById(`error_${fileFilter}`);
@@ -633,9 +633,9 @@ const CustomMediaSupport = (function() {
 							source.src = url;
 							if (sourceParent) {
 								sourceParent.load();
-								sourceParent.classList.remove("media-toggled");
+								sourceParent.classList.remove("customMediaToggled");
 								if (sourceParent.nextElementSibling) {
-									sourceParent.nextElementSibling.classList.add("media-toggled");
+									sourceParent.nextElementSibling.classList.add("customMediaToggled");
 								}
 							}
 						}
@@ -822,15 +822,15 @@ const CustomMediaSupport = (function() {
 								else {
 									script.archive.proxy[fileFilter] = "ERROR";
 									this.id = `error_${fileFilter}`;
-									this.parentNode.classList.add("media-toggled");
-									this.parentNode.parentNode.nextElementSibling.classList.remove("media-toggled");
+									this.parentNode.classList.add("customMediaToggled");
+									this.parentNode.parentNode.nextElementSibling.classList.remove("customMediaToggled");
 								}
 							}
 						}
 					})
 				)
 			]),
-			_createElement("div", {className: "customMediaError userSelectText-1o1dQ7 media-toggled", textContent: `Unable to embed link - ${href}`})
+			_createElement("div", {className: "customMediaError userSelectText-1o1dQ7 customMediaToggled", textContent: `Unable to embed link - ${href}`})
 		]);
 		if (mode == "return") {
 			return container;
@@ -840,7 +840,7 @@ const CustomMediaSupport = (function() {
 			embed = video ? video.closest(".embedVideo-3nf0O9") : false;
 			if (embed) {
 				embed.closest(".containerCozy-B4noqO").classList.add("media-replace");
-				embed.firstElementChild.classList.add("media-toggled");
+				embed.firstElementChild.classList.add("customMediaToggled");
 				embed.appendChild(container);
 				embed.style.height = "auto";
 			}
@@ -883,7 +883,7 @@ const CustomMediaSupport = (function() {
 					));
 					archiveInfo.count++;
 				}
-				headerFragments.appendChild(_createElement("div", {className: `defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText ${archiveName == "sadpanda" ? "customArchiveActiveButton" : ""}`, innerHTML: `<div class='size18-3EXdSj'>${archiveInfo.name} (<span id='customArchive${archiveInfo.id}Counter'>${archiveInfo.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() { archiveHandlerActive(this, archiveInfo.id);}}));
+				headerFragments.appendChild(_createElement("div", {className: `defaultColor-1_ajX0 cursorPointer-1ajlYk orrie-centerText ${archiveName == "sadpanda" ? "customArchiveActiveButton" : ""}`, innerHTML: `<div class='size18-3EXdSj'>${archiveInfo.name} (<span id='customArchive${archiveInfo.id}Counter'>${archiveInfo.count}</span>)</div><div class='divider-3573oO marginTop8-1DLZ1n marginBottom8-AtZOdT'></div>`, onclick() {archiveHandlerActive(this, archiveInfo.id);}}));
 				containerFragments.appendChild(_createElement("div", {className: `flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp wrap-ZIn9Iy ${archiveName == "sadpanda" ? "customArchiveActive" : ""}`, id: `customArchive${archiveInfo.id}`}, archiveInfo.count ? archiveFragment : _createElement("div", {className: "contents-18-Yxp", innerHTML: "<h3 class='titleDefault-a8-ZSr buttonBrandLink-3csEAP marginReset-236NPn weightMedium-2iZe9B size16-14cGz5 height24-3XzeJx flexChild-faoVW3 defaultColor-1_ajX0 customArchiveEmpty' style='flex: 1 1 auto;'>Shits Empty Bro</h3>"})));
 			}
 			if (archiveName !== "all") {
@@ -937,7 +937,7 @@ const CustomMediaSupport = (function() {
 	archiveHandlerDelete = function(elem, key, archive, counter) {
 		if (elem && key) {
 			delete script.archive[archive][key];
-			bdPluginStorage.set(script.file, "archive", script.archive);
+			BdApi.saveData(script.file, "archive", script.archive);
 			elem.parentNode.remove();
 			document.getElementById(counter).textContent--;
 		}
@@ -956,7 +956,7 @@ const CustomMediaSupport = (function() {
 		if (elem) {
 			elem.firstElementChild.textContent = "0";
 		}
-		bdPluginStorage.set(script.file, "archive", script.archive);
+		BdApi.saveData(script.file, "archive", script.archive);
 	},
 	insertCustomMenu = function(className, tooltip) {
 		const menuAnchor = document.getElementsByClassName("title-1aVOXw").length ? document.getElementsByClassName("title-1aVOXw")[0].nextElementSibling : false;
@@ -1061,7 +1061,7 @@ const CustomMediaSupport = (function() {
 	settingsSave = function(key, data) {
 		// save settings
 		script.settings[key] = data;
-		bdPluginStorage.set(script.file, "settings", script.settings);
+		BdApi.saveData(script.file, "settings", script.settings);
 		log("info", "Settings Saved", [key, data]);
 	},
 	settingsAnimate = function({nextElementSibling, previousElementSibling, style}, type, data) {
@@ -1113,7 +1113,7 @@ const CustomMediaSupport = (function() {
 			if (resp.status >= 200 && resp.status < 300) {
 				return resp.json();
 			}
-			throw new Error(resp.statusText);
+			throw new Error(resp);
 		}).then(function(resp) {
 			log("info", name, [api, resp, data]);
 			handler(resp, data);
@@ -1184,26 +1184,16 @@ const CustomMediaSupport = (function() {
 			BdApi.clearCSS(script.file);
 			BdApi.clearCSS("customFilters");
 			// remove media
-			const customMedia = document.getElementsByClassName("customMedia"),
-			ignoredLinks = document.getElementsByClassName("customIgnore"),
-			defaultMedia = document.getElementsByClassName("media-toggled"),
-			menuIcon = document.getElementsByClassName("customMenuIcon")[0];
-			if (menuIcon) {
-				menuIcon.remove();
-			}
-			if (customMedia[0]) {
-				while(customMedia[0]) {
-					customMedia[0].remove();
+			const remove_elements = document.querySelectorAll(".customMedia, .customMenuIcon");
+			const remove_classes = document.querySelectorAll(".customIgnore, .customMediaToggled");
+			if (remove_elements[0]) {
+				while(remove_elements[0]) {
+					remove_elements[0].remove();
 				}
 			}
-			for (let _l=ignoredLinks.length; _l--;) {
-				if (ignoredLinks[_l]) {
-					ignoredLinks[_l].classList.remove("customIgnore");
-				}
-			}
-			for (let _d=defaultMedia.length; _d--;) {
-				if (defaultMedia[_d]) {
-					defaultMedia[_d].classList.remove("media-toggled");
+			for (let _c=remove_classes.length; _c--;) {
+				if (remove_classes[_c]) {
+					remove_classes[_c].classList.remove("customIgnore", "customMediaToggled");
 				}
 			}
 		}
