@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.9.1",
+		version: "2.9.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -333,7 +333,8 @@ const CustomMediaSupport = (function() {
 			replace: ["steampowered.com"],
 			clone: {
 				"akamaihd.net": "steampowered.com",
-				"e-hentai.org": "exhentai.org"
+				"e-hentai.org": "exhentai.org",
+				"4channel.org": "4chan.org"
 			}
 		},
 		chan: {
@@ -384,7 +385,7 @@ const CustomMediaSupport = (function() {
 .customMedia.customAudio audio {margin-top: 5px; vertical-align: middle; width: 25vw; min-width: 500px;}
 .customMedia.customImg img {margin-top: 40px; min-height: 50px; min-width: 400px;}
 .customMedia.customImg .imageWrapper-2p5ogY img {position: static;}
-.customMedia.customVideo video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 225px;}
+.customMedia.customVideo video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 300px;}
 .customMedia.customVideo video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.customVideo.customMediaHorizontal video {max-width: calc(100vw - 740px); min-height: 35vh;}
 .customMedia.customVideo.customMediaVertical video {height: 60vh; max-width: 100%; max-height: unset;}
@@ -1113,7 +1114,7 @@ const CustomMediaSupport = (function() {
 			if (resp.status >= 200 && resp.status < 300) {
 				return resp.json();
 			}
-			throw new Error(resp);
+			throw new Error(`${resp.status} ${resp.statusText}: ${resp.url}`);
 		}).then(function(resp) {
 			log("info", name, [api, resp, data]);
 			handler(resp, data);
