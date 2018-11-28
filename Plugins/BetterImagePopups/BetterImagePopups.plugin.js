@@ -7,21 +7,22 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.4.4",
+		version: "1.4.5",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
 		raw: "https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/BetterImagePopups/BetterImagePopups.plugin.js",
 		discord: "https://discord.gg/YEZkpkj",
-		settings: {fullRes: true, minSize: false, height: "auto", width: "auto", debug: false},
+		settings: {fullRes: true, onClick: false, minSize: false, height: "auto", width: "auto", tooltips: false, debug: false},
 		settingsMenu: {
 			//        localized                  type     description
-			fullRes: ["Full Resolution Images",  "check", "Replaces images with full resolution.<br>NOTE: Zooming is always possible. Default is 25% per click.<br>Use CTRL (100%), SHIFT (50%) and ALT (200%) to manipulate the zooming clicks."],
-			onClick: ["Load on Click",           "check", "Only use full resolution when clicking the image -- disables zoom when not using full resolution"],
-			minSize: ["Minimum Size for Images", "check", "Use a minimum height/width for images (use 'auto' for no minimum limit)"],
-			height:  ["Height",                  "text",  "In pixels"],
-			width:   ["Width",                   "text",  "In pixels"],
-			debug:   ["Debug",                   "check", "Displays verbose stuff into the console"]
+			fullRes:  ["Full Resolution Images",  "check", "Replaces images with full resolution.<br>NOTE: Zooming is always possible. Default is 25% per click.<br>Use CTRL (100%), SHIFT (50%) and ALT (200%) to manipulate the zooming clicks."],
+			onClick:  ["Load on Click",           "check", "Only use full resolution when clicking the image -- disables zoom when not using full resolution"],
+			minSize:  ["Minimum Size for Images", "check", "Use a minimum height/width for images (use 'auto' for no minimum limit)"],
+			height:   ["Height",                  "text",  "In pixels"],
+			width:    ["Width",                   "text",  "In pixels"],
+			tooltips: ["Tooltips",                "check", "Hide tooltips"],
+			debug:    ["Debug",                   "check", "Displays verbose stuff into the console"]
 		},
 		css: {
 			script:`
@@ -150,6 +151,7 @@ const BetterImagePopups = (function() {
 			wrapper.removeAttribute("target");
 			img.fullRes = false;
 			if (script.settings.fullRes) {
+				img.fullRes = true;
 				container.appendChild(_createElement("div", {className: "bip-progress bip-toggled", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution (<span>0%</span>)</div>"}));
 				if (!script.settings.onClick) {
 					imageLoadHandler(img, container, fullSrc, proxy);
@@ -168,11 +170,13 @@ const BetterImagePopups = (function() {
 						zoomImage(click, "in", img, wrapper);
 					}
 				}),
-				_createElement("div", {className: "tooltip tooltip-brand tooltip-bottom", textContent: "Shift = 50%, Ctrl = 100% and Alt = 200%"})
+				!script.settings.tooltip ? _createElement("div", {className: "tooltip tooltip-brand tooltip-bottom", textContent: "Shift = 50%, Ctrl = 100% and Alt = 200%"}) : ""
 			]));
 			container.classList.add("orrie-tooltip", "orrie-relative");
 			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-size' class='bip-toggled'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-error' class='bip-toggled'></span></span>`}), container.lastElementChild);
-			container.appendChild(_createElement("div", {className: "tooltip tooltip-brand tooltip-top", textContent: script.settings.fullRes && script.settings.onClick ? "Click the image to load full resolution, then click the image to zoom": "Click the image to zoom"}));
+			if (!script.settings.tooltip) {
+				container.appendChild(_createElement("div", {className: "tooltip tooltip-brand tooltip-top", textContent: script.settings.fullRes && script.settings.onClick ? "Click the image to load full resolution, then click the image to zoom": "Click the image to zoom"}));
+			}
 			img.classList.add("bip-center");
 			img.style.cssText = "";
 			img.onclick = function() {
