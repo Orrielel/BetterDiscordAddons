@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.4.5",
+		version: "1.4.6",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -151,10 +151,9 @@ const BetterImagePopups = (function() {
 			wrapper.removeAttribute("target");
 			img.fullRes = false;
 			if (script.settings.fullRes) {
-				img.fullRes = true;
 				container.appendChild(_createElement("div", {className: "bip-progress bip-toggled", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution (<span>0%</span>)</div>"}));
 				if (!script.settings.onClick) {
-					imageLoadHandler(img, container, fullSrc, proxy);
+					imageLoadHandler(img, fullSrc, proxy);
 				}
 			}
 			node.classList.add("bip-container");
@@ -170,11 +169,11 @@ const BetterImagePopups = (function() {
 						zoomImage(click, "in", img, wrapper);
 					}
 				}),
-				!script.settings.tooltip ? _createElement("div", {className: "tooltip tooltip-brand tooltip-bottom", textContent: "Shift = 50%, Ctrl = 100% and Alt = 200%"}) : ""
+				!script.settings.tooltips ? _createElement("div", {className: "tooltip tooltip-brand tooltip-bottom", textContent: "Shift = 50%, Ctrl = 100% and Alt = 200%"}) : ""
 			]));
 			container.classList.add("orrie-tooltip", "orrie-relative");
 			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-size' class='bip-toggled'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-error' class='bip-toggled'></span></span>`}), container.lastElementChild);
-			if (!script.settings.tooltip) {
+			if (!script.settings.tooltips) {
 				container.appendChild(_createElement("div", {className: "tooltip tooltip-brand tooltip-top", textContent: script.settings.fullRes && script.settings.onClick ? "Click the image to load full resolution, then click the image to zoom": "Click the image to zoom"}));
 			}
 			img.classList.add("bip-center");
@@ -221,11 +220,9 @@ const BetterImagePopups = (function() {
 		}
 	},
 	imageLoadHandler = function(img, fullSrc, proxy) {
-		const progress_id = document.getElementById("bip-progress"),
-		progress_bar_id = document.getElementById("bip-progress_bar"),
-		size_id = document.getElementById("bip-size"),
-		error_id = document.getElementById("bip-error");
 		imageLoad(fullSrc, function(ratio) {
+			const progress_id = document.getElementById("bip-progress"),
+			progress_bar_id = document.getElementById("bip-progress_bar");
 			if (progress_id) {
 				progress_id.classList.remove("bip-toggled");
 			}
@@ -239,6 +236,8 @@ const BetterImagePopups = (function() {
 				}
 			}
 		}).then(function(blob) {
+			const progress_id = document.getElementById("bip-progress"),
+			size_id = document.getElementById("bip-size");
 			if (progress_id) {
 				progress_id.classList.add("bip-toggled");
 			}
@@ -251,6 +250,8 @@ const BetterImagePopups = (function() {
 				img.fullRes = true;
 			}
 		}, function(error) {
+			const progress_id = document.getElementById("bip-progress"),
+			error_id = document.getElementById("bip-error");
 			if (progress_id) {
 				progress_id.classList.add("bip-toggled");
 			}
