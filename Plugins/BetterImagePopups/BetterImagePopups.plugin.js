@@ -1,13 +1,13 @@
 //META{"name":"BetterImagePopups","website":"https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups","source":"https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/BetterImagePopups/BetterImagePopups.plugin.js"}*//
 
-/* global bdPluginStorage, BdApi */
+/* global BdApi */
 
 const BetterImagePopups = (function() {
 	// plugin settings
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.4.3",
+		version: "1.4.4",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -17,6 +17,7 @@ const BetterImagePopups = (function() {
 		settingsMenu: {
 			//        localized                  type     description
 			fullRes: ["Full Resolution Images",  "check", "Replaces images with full resolution.<br>NOTE: Zooming is always possible. Default is 25% per click.<br>Use CTRL (100%), SHIFT (50%) and ALT (200%) to manipulate the zooming clicks."],
+			onClick: ["Load on Click",           "check", "Only use full resolution when clicking the image -- disables zoom when not using full resolution"],
 			minSize: ["Minimum Size for Images", "check", "Use a minimum height/width for images (use 'auto' for no minimum limit)"],
 			height:  ["Height",                  "text",  "In pixels"],
 			width:   ["Width",                   "text",  "In pixels"],
@@ -147,47 +148,12 @@ const BetterImagePopups = (function() {
 			wrapper.href = fullSrc;
 			wrapper.style.cssText = "";
 			wrapper.removeAttribute("target");
+			img.fullRes = false;
 			if (script.settings.fullRes) {
-				imageLoad(fullSrc, function(ratio) {
-					const progress_bar_id = document.getElementById("bip-progress_bar");
-					if (progress_bar_id) {
-						if (ratio == -1) {
-							progress_bar_id.style.width = 0;
-						}
-						else {
-							progress_bar_id.style.width = `${ratio}%`;
-							progress_bar_id.lastElementChild.textContent = `${ratio}%`;
-						}
-					}
-				}).then(function(blob) {
-					const progress_id = document.getElementById("bip-progress"),
-					size_id = document.getElementById("bip-size");
-					if (progress_id) {
-						progress_id.classList.add("bip-toggled");
-					}
-					if (size_id) {
-						size_id.textContent = mediaSize(blob.size);
-						size_id.classList.remove("bip-toggled");
-					}
-					if (img) {
-						img.src = window.URL.createObjectURL(blob);
-					}
-				}, function(error) {
-					const progress_id = document.getElementById("bip-progress"),
-					error_id = document.getElementById("bip-error");
-					if (progress_id) {
-						progress_id.classList.add("bip-toggled");
-					}
-					if (error_id) {
-						error_id.classList.add("bip-toggled");
-						error_id.textContent = `${error.status} ${error.statusText}`;
-					}
-					if (img) {
-						img.src = proxy;
-					}
-					log("error", "imageLoad", error);
-				});
-				container.appendChild(_createElement("div", {className: "bip-progress", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution (<span>0%</span>)</div>"}));
+				container.appendChild(_createElement("div", {className: "bip-progress bip-toggled", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution (<span>0%</span>)</div>"}));
+				if (!script.settings.onClick) {
+					imageLoadHandler(img, container, fullSrc, proxy);
+				}
 			}
 			node.classList.add("bip-container");
 			node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb orrie-tooltip orrie-relative"}, [
@@ -206,26 +172,33 @@ const BetterImagePopups = (function() {
 			]));
 			container.classList.add("orrie-tooltip", "orrie-relative");
 			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-size' class='bip-toggled'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-error' class='bip-toggled'></span></span>`}), container.lastElementChild);
-			container.appendChild(_createElement("div", {className: "tooltip tooltip-brand tooltip-top", textContent: "Click the image to zoom"}));
+			container.appendChild(_createElement("div", {className: "tooltip tooltip-brand tooltip-top", textContent: script.settings.fullRes && script.settings.onClick ? "Click the image to load full resolution, then click the image to zoom": "Click the image to zoom"}));
 			img.classList.add("bip-center");
 			img.style.cssText = "";
 			img.onclick = function() {
-				this.classList.toggle("bip-center");
-				wrapper.classList.toggle("bip-scroller");
-				wrapper.classList.toggle("scroller-2FKFPG");
-				container.classList.toggle("scrollerWrap-2lJEkd");
-				node.classList.toggle("bip-scaling");
-				document.getElementById("bip-zoom").classList.toggle("bip-toggled");
-				if (img.scaled) {
-					document.getElementById("bip-scale").classList.toggle("bip-toggled");
+				if (img.fullRes) {
+					this.classList.toggle("bip-center");
+					wrapper.classList.toggle("bip-scroller");
+					wrapper.classList.toggle("scroller-2FKFPG");
+					container.classList.toggle("scrollerWrap-2lJEkd");
+					node.classList.toggle("bip-scaling");
+					document.getElementById("bip-zoom").classList.toggle("bip-toggled");
+					if (img.scaled) {
+						document.getElementById("bip-scale").classList.toggle("bip-toggled");
+					}
+					BdApi.clearCSS(`${script.file}-zoom`);
+					BdApi.injectCSS(`${script.file}-zoom`, `
+						.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%}
+						.bip-zoom-level:after{content: '${script.zoom}%';}
+						.bip-zoom-width:after{content: '${img.width*(script.zoom/100)}';}
+						.bip-zoom-height:after{content: '${img.height*(script.zoom/100)}';}
+					`);
 				}
-				BdApi.clearCSS(`${script.file}-zoom`);
-				BdApi.injectCSS(`${script.file}-zoom`, `
-					.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%}
-					.bip-zoom-level:after{content: '${script.zoom}%';}
-					.bip-zoom-width:after{content: '${img.width*(script.zoom/100)}';}
-					.bip-zoom-height:after{content: '${img.height*(script.zoom/100)}';}
-				`);
+				else {
+					if (script.settings.fullRes && script.settings.onClick) {
+						imageLoadHandler(img, fullSrc, proxy);
+					}
+				}
 			};
 			img.onload = function() {
 				const info_id = document.getElementById("bip-info");
@@ -242,6 +215,50 @@ const BetterImagePopups = (function() {
 				}
 			};
 		}
+	},
+	imageLoadHandler = function(img, fullSrc, proxy) {
+		const progress_id = document.getElementById("bip-progress"),
+		progress_bar_id = document.getElementById("bip-progress_bar"),
+		size_id = document.getElementById("bip-size"),
+		error_id = document.getElementById("bip-error");
+		imageLoad(fullSrc, function(ratio) {
+			if (progress_id) {
+				progress_id.classList.remove("bip-toggled");
+			}
+			if (progress_bar_id) {
+				if (ratio == -1) {
+					progress_bar_id.style.width = 0;
+				}
+				else {
+					progress_bar_id.style.width = `${ratio}%`;
+					progress_bar_id.lastElementChild.textContent = `${ratio}%`;
+				}
+			}
+		}).then(function(blob) {
+			if (progress_id) {
+				progress_id.classList.add("bip-toggled");
+			}
+			if (size_id) {
+				size_id.textContent = mediaSize(blob.size);
+				size_id.classList.remove("bip-toggled");
+			}
+			if (img) {
+				img.src = window.URL.createObjectURL(blob);
+				img.fullRes = true;
+			}
+		}, function(error) {
+			if (progress_id) {
+				progress_id.classList.add("bip-toggled");
+			}
+			if (error_id) {
+				error_id.classList.add("bip-toggled");
+				error_id.textContent = `${error.status} ${error.statusText}`;
+			}
+			if (img) {
+				img.src = proxy;
+			}
+			log("error", "imageLoad", error);
+		});
 	},
 	zoomImage = function({altKey, ctrlKey, shiftKey}, mode, img, wrapper) {
 		let steps = altKey ? 200 : ctrlKey ? 100 : shiftKey ? 50 : 25;
@@ -319,7 +336,7 @@ const BetterImagePopups = (function() {
 					})
 				);
 			case "text":
-				return _createElement("input", {className: "plugin-input plugin-input-text", placeholder: script.settings[key], type: "text", value: script.settings[key],
+				return _createElement("input", {className: "plugin-input plugin-input-text inputDefault-_djjkz input-cIJ7To size16-14cGz5", placeholder: script.settings[key], type: "text", value: script.settings[key],
 					onchange() {settingsSave(key, this.value);}
 				});
 		}
