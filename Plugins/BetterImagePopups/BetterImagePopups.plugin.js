@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.4.6",
+		version: "1.4.7",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -220,6 +220,8 @@ const BetterImagePopups = (function() {
 		}
 	},
 	imageLoadHandler = function(img, fullSrc, proxy) {
+		const progress_id = document.getElementById("bip-progress");
+		progress_id.classList.remove("bip-toggled");
 		imageLoad(fullSrc, function(ratio) {
 			const progress_id = document.getElementById("bip-progress"),
 			progress_bar_id = document.getElementById("bip-progress_bar");
@@ -261,6 +263,7 @@ const BetterImagePopups = (function() {
 			}
 			if (img) {
 				img.src = proxy;
+				img.fullRes = true;
 			}
 			log("error", "imageLoad", error);
 		});
