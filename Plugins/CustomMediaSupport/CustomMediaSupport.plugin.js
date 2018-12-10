@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.9.3",
+		version: "2.9.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -332,6 +332,7 @@ const CustomMediaSupport = (function() {
 				}
 			},
 			whitelist: ["4chan.org", "exhentai.org", "gfycat.com", "vocaroo.com", "pastebin.com", "wotlabs.net", "wot-life.com", "facebook.com", "instagram.com", "imgur.com", "streamable.com", "steampowered.com", "steamcommunity.com", "ifunny.co"],
+			blacklist: ["archive.org"],
 			replace: ["steampowered.com"],
 			clone: {
 				"akamaihd.net": "steampowered.com",
@@ -687,14 +688,14 @@ const CustomMediaSupport = (function() {
 					if (hostName && script.media.clone[hostName]) {
 						hostName = script.media.clone[hostName];
 					}
-					if (script.settings.embedding && message && fileType || script.media.whitelist.includes(hostName)) {
+					if (!script.media.blacklist.includes(hostName) && script.settings.embedding && message && fileType || script.media.whitelist.includes(hostName)) {
 						const message_body = message.firstElementChild,
 						fileSite = script.media.sites[hostName] || false;
 						let data = {
 							fileMedia: fileType ? script.media.types[fileType.toLowerCase()] : false,
 							fileName: hrefSplit[hrefSplit.length-1] ? hrefSplit[hrefSplit.length-1].match(/[^\.]*/)[0] : "",
 							fileFilter: hrefSplit.slice(-2).join("/"),
-							filePoster: "",
+							filePoster: message.getElementsByClassName("video-8eMOth").length ? message.getElementsByClassName("video-8eMOth")[0].poster : "",
 							fileReplace: false,
 							fileSize: message.getElementsByClassName("metadataSize-2UOOLK").length ? message.getElementsByClassName("metadataSize-2UOOLK")[0].textContent : "",
 							fileTitle: message.getElementsByClassName("embedTitleLink-1Zla9e").length ? message.getElementsByClassName("embedTitleLink-1Zla9e")[0].innerHTML : decodeURIComponent(hrefSplit[hrefSplit.length-1]),
@@ -782,6 +783,8 @@ const CustomMediaSupport = (function() {
 							}
 						}
 						this.volume = script.settings.volume;
+						// make sure loading error message is hidden
+						this.parentNode.nextElementSibling.classList.add("customMediaToggled");
 						// replace original accessory previews if they exist
 						if (!previewReplace) {
 							if (!script.archive.filter.includes(fileFilter)) {
@@ -817,10 +820,9 @@ const CustomMediaSupport = (function() {
 						onerror() {
 							if (!previewReplace) {
 								const proxy = script.archive.proxy[fileFilter];
-								if (proxy) {
+								if (proxy && proxy !== "ERROR") {
 									this.src = proxy;
 									this.parentNode.load();
-									delete script.archive.proxy[fileFilter];
 								}
 								else {
 									script.archive.proxy[fileFilter] = "ERROR";
@@ -1154,6 +1156,9 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
+					// if (node.closest(".messagesWrapper-3lZDfY")) {
+					// 	console.log(node.classList[0], node);
+					// }
 					switch(node.classList[0]) {
 						case "messagesWrapper-3lZDfY":
 						case "content-yTz4x3":
