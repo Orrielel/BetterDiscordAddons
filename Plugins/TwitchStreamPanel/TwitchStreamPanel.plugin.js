@@ -1,13 +1,13 @@
 //META{"name":"TwitchStreamPanel","website":"https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel","source":"https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/TwitchStreamPanel/TwitchStreamPanel.plugin.js"}*//
 
-/* global bdPluginStorage, BdApi, BDFDB */
+/* global BdApi, BDFDB */
 
 const TwitchStreamPanel = (function() {
 	// plugin settings
 	const script = {
 		name: "Twitch Stream Panel",
 		file: "TwitchStreamPanel",
-		version: "1.7.8",
+		version: "1.7.9",
 		author: "Orrie",
 		desc: "Adds a toggleable panel that gives you stream statuses from Twitch",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/TwitchStreamPanel",
@@ -85,13 +85,13 @@ const TwitchStreamPanel = (function() {
 .theme-dark .orrie-plugin {color: #B0B6B9;}
 /* tooltips */
 .orrie-tooltip {overflow: initial;}
-.orrie-tooltip:hover > .tooltip {display: initial;}
-.orrie-tooltip .tooltip {display: none; margin: 0; text-align: center; width: max-content;}
-.orrie-tooltip .tooltip-top {bottom: 135%; left: 50%; transform: translateX(-50%);}
-.orrie-tooltip .tooltip-bottom {top: 135%; left: 50%; transform: translateX(-50%);}
-.orrie-tooltip .tooltip-right {left: 135%; top: 50%; transform: translateY(-50%);}
-.orrie-tooltip .tooltip-left {right: 135%; top: 50%; transform: translateY(-50%);}
-.orrie-tooltip .tooltip:hover {display: none;}
+.orrie-tooltip:hover > .tooltip-1OS-Ti {display: initial;}
+.orrie-tooltip .tooltip-1OS-Ti {display: none; margin: 0; text-align: center; width: max-content;}
+.orrie-tooltip .top-1pTh1F {bottom: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip .bottom-19kp6S {top: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip .right-KM_vfY {left: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip .left-1wV7VO {right: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip .tooltip-1OS-Ti:hover {display: none;}
 			`
 		}
 	},
@@ -260,7 +260,12 @@ const TwitchStreamPanel = (function() {
 							streamItem.classList.add("tsp-stream_online");
 							BdApi.showToast(`${streamItem.name} is streaming with ${stream.viewers.toLocaleString()} viewers!`);
 						}
-						streamItem.cells[1].innerHTML += `<div class='tooltip tooltip-brand tooltip-bottom'>${stream.game}</div>`;
+						if (streamItem.cells[1].childElementCount == 1) {
+							streamItem.cells[1].appendChild(_createElement("div", {className: "tooltip-1OS-Ti brand-3tBTjG bottom-19kp6S", innerHTML: stream.game}));
+						}
+						else {
+							streamItem.cells[1].lastElementChild.innerHTML = stream.game;
+						}
 						streamItem.cells[2].innerHTML = stream.viewers.toLocaleString();
 						onlineStreams.push(streamName);
 						if (!script.streamsActive[stream.channel.name][0]) {
@@ -281,7 +286,9 @@ const TwitchStreamPanel = (function() {
 				for (let _s=streamItems.length; _s--;) {
 					const streamItem = streamItems[_s];
 					if (streamItem.classList.contains("tsp-stream_online") && !onlineStreams.includes(streamItem.id)) {
-						streamItem.cells[1].lastElementChild.remove();
+						if (streamItem.cells[1].childElementCount == 2) {
+							streamItem.cells[1].lastElementChild.remove();
+						}
 						streamItem.cells[2].innerHTML = "";
 						streamItem.classList.remove("tsp-stream_online");
 						streamItem.classList.add("tsp-stream_offline");
@@ -555,7 +562,7 @@ const TwitchStreamPanel = (function() {
 					const streamer = streams[_b_k[_b]];
 					streamFragment.appendChild(_createElement("tr", {innerHTML: `<td class='size14-3iUx6q' ${streamer[4] ? `style='color:${streamer[4]} !important'` : ""}>${streamer[0]}</td><td class='size14-3iUx6q'>${streamer[1]}</td><td class='size14-3iUx6q'>${streamer[3] ? `<img src='${streamer[3]}'/>` : ""}</td><td class='size14-3iUx6q'>${streamer[4] ? `<div style="color:${streamer[4]}">${streamer[4]}</div>` : "Default"}</td><td class='size14-3iUx6q'>${streamer[2]}</td>`},
 						_createElement("td", {className: "size14-3iUx6q"},
-							_createElement("button", {type: "button", className: "orrie-buttonRed orrie-relative orrie-tooltip", innerHTML: "✘<div class='tooltip tooltip-brand tooltip-left'>Remove Stream</div>",
+							_createElement("button", {type: "button", className: "orrie-buttonRed orrie-relative orrie-tooltip", innerHTML: "✘<div class='tooltip-1OS-Ti brand-3tBTjG left-1wV7VO'>Remove Stream</div>",
 								onclick() {
 									delete streams[streamer[1]];
 									script.streamsCache[server.id] = {};
@@ -654,7 +661,7 @@ const TwitchStreamPanel = (function() {
 			if (menuIcon) {
 				menuIcon.remove();
 			}
-			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='tooltip tooltip-black tooltip-bottom'>${tooltip}</div>`,
+			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='tooltip-1OS-Ti black-2bmmnj bottom-19kp6S'>${tooltip}</div>`,
 				onclick() {modalHandler(createStreamModal());}
 			}), menuAnchor.firstChild);
 		}
