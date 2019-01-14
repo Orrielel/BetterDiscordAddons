@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.9.8",
+		version: "2.9.9",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -500,8 +500,8 @@ const CustomMediaSupport = (function() {
 .customArchiveCleanMenu .customArchiveCleanMenuButton::after {content: ""; border: 1px solid rgba(255, 255, 255, 0.25); display: flex;}
 .customArchiveCleanMenu:hover .customArchiveCleanMenuButtons {display: block;}
 .customArchiveCleanMenu .customArchiveCleanMenuButton {margin-bottom: 0;}
-.customArchiveCleanMenu .orrie-tooltip .tooltip-left {right: calc(100% + 10px);}
-.customArchiveCleanMenu .orrie-tooltip .tooltip-right {left: calc(100% + 10px);}
+.customArchiveCleanMenu .orrie-tooltip .left-1wV7VO {right: calc(100% + 10px);}
+.customArchiveCleanMenu .orrie-tooltip .right-KM_vfY {left: calc(100% + 10px);}
 .customArchiveActiveButton .divider-3573oO {background-color: #a5a5a5;}
 .customArchiveContainer > div {display: none;}
 .customArchiveContainer .customArchiveActive {display: flex}
@@ -531,13 +531,13 @@ const CustomMediaSupport = (function() {
 .theme-dark .orrie-plugin {color: #B0B6B9;}
 /* tooltips */
 .orrie-tooltip {overflow: initial;}
-.orrie-tooltip:hover > .tooltip {display: initial;}
-.orrie-tooltip .tooltip {display: none; margin: 0; text-align: center; width: max-content;}
-.orrie-tooltip .tooltip-top {bottom: 135%; left: 50%; transform: translateX(-50%);}
-.orrie-tooltip .tooltip-bottom {top: 135%; left: 50%; transform: translateX(-50%);}
-.orrie-tooltip .tooltip-right {left: 135%; top: 50%; transform: translateY(-50%);}
-.orrie-tooltip .tooltip-left {right: 135%; top: 50%; transform: translateY(-50%);}
-.orrie-tooltip .tooltip:hover {display: none;}
+.orrie-tooltip:hover > .tooltip-1OS-Ti {display: initial;}
+.orrie-tooltip .tooltip-1OS-Ti {display: none; margin: 0; text-align: center; width: max-content;}
+.orrie-tooltip .top-1pTh1F {bottom: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip .bottom-19kp6S {top: 135%; left: 50%; transform: translateX(-50%);}
+.orrie-tooltip .right-KM_vfY {left: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip .left-1wV7VO {right: 135%; top: 50%; transform: translateY(-50%);}
+.orrie-tooltip .tooltip-1OS-Ti:hover {display: none;}
 			`
 		},
 		archive: {
@@ -746,8 +746,8 @@ const CustomMediaSupport = (function() {
 			case "audio":
 				if (mode !== "return") {
 					metaDataElement = fileMedia == "video" ? _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7 customIgnore' href='${href}' target='_blank'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
-						_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-brand tooltip-${previewReplace ? "left" : "top"}'>Download Video</div>`}),
-						_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip tooltip-brand tooltip-${previewReplace ? "left" : "top"}'>Popout Video</div>`, // &#128471;
+						_createElement("a", {className: "metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore", href, target: "_blank", innerHTML: `<svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip-1OS-Ti brand-3tBTjG ${previewReplace ? "left-1wV7VO" : "top-1pTh1F"}'>Download Video</div>`}),
+						_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip-1OS-Ti brand-3tBTjG ${previewReplace ? "left-1wV7VO" : "top-1pTh1F"}'>Popout Video</div>`, // &#128471;
 							onclick() {
 								const video = this.parentNode.nextElementSibling;
 								data.videoElement = video;
@@ -757,7 +757,7 @@ const CustomMediaSupport = (function() {
 								modalHandler(mediaEmbedding(data, "return"), data);
 							}
 						}),
-						_createElement("div", {className: "metadataButton metadataButtonExpand orrie-tooltip orrie-relative", innerHTML: "<div class='tooltip tooltip-brand tooltip-top'>Expand Video</div>", // &#128470
+						_createElement("div", {className: "metadataButton metadataButtonExpand orrie-tooltip orrie-relative", innerHTML: "<div class='tooltip-1OS-Ti brand-3tBTjG top-1pTh1F'>Expand Video</div>", // &#128470
 							onclick() {
 								const video = this.parentNode.nextElementSibling;
 								container.classList.toggle(video.videoWidth/video.videoHeight > 1.25 ? "customMediaHorizontal" : "customMediaVertical");
@@ -766,7 +766,7 @@ const CustomMediaSupport = (function() {
 								}
 							}
 						})
-					]) : _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf- customIgnore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip tooltip-brand tooltip-top'>Download Audio</div></a>`});
+					]) : _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf- customIgnore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip-1OS-Ti brand-3tBTjG top-1pTh1F'>Download Audio</div></a>`});
 				}
 				mediaProperties = {controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
 					onclick() {if (this.paused) {this.play();} else {this.pause();}},
@@ -808,7 +808,7 @@ const CustomMediaSupport = (function() {
 			case "iframe":
 				if (mode !== "return") {
 					metaDataElement = _createElement("div", {className: "metadata-13NcHb", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><div class='metadataName-14STf-'><a class='white-2qwKC7' href='${href}'>${fileTitle}</a></div><div class='metadataSize-2UOOLK'>${fileSize}</div></div>`}, [
-						_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip tooltip-brand tooltip-top'>Popout Media</div>`, // &#128471;
+						_createElement("div", {className: "metadataButton metadataButtonPopout orrie-tooltip orrie-relative", innerHTML: `<div class='tooltip-1OS-Ti brand-3tBTjG top-1pTh1F'>Popout Media</div>`, // &#128471;
 							onclick() {
 								modalHandler(mediaEmbedding(data, "return"), data);
 							}
@@ -892,7 +892,7 @@ const CustomMediaSupport = (function() {
 				for (let _dbe_k = Object.keys(archive), _dbe=_dbe_k.length; _dbe--;) {
 					const archiveKey = _dbe_k[_dbe];
 					archiveFragment.appendChild(_createElement("div", {className: `customMedia custom${archiveInfo.id} customFilter ${archive[archiveKey].tags ? archive[archiveKey].tags : ""}`, innerHTML: archive[archiveKey].html ? archive[archiveKey].html : archive[archiveKey]},
-						_createElement("div", {className: "flex-1O1GKY customArchiveDelete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-brand tooltip-bottom'>Delete</div>", onclick() {archiveHandlerDelete(this, archiveKey, archiveName, `customArchive${archiveInfo.id}Counter`);}})
+						_createElement("div", {className: "flex-1O1GKY customArchiveDelete orrie-tooltip", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip-1OS-Ti brand-3tBTjG bottom-19kp6S'>Delete</div>", onclick() {archiveHandlerDelete(this, archiveKey, archiveName, `customArchive${archiveInfo.id}Counter`);}})
 					));
 					archiveInfo.count++;
 				}
@@ -902,7 +902,7 @@ const CustomMediaSupport = (function() {
 			if (archiveName !== "all") {
 				archivesInfo.all.count += archiveInfo.count;
 			}
-			cleanMenuFragments.appendChild(_createElement("div", {className: `customArchiveCleanMenuButton itemDefault-3Jdr52 item-PXvHYJ ${archiveInfo.tooltip ? "orrie-tooltip" : ""}`, innerHTML: `${archiveInfo.name} (<span>${archiveInfo.count}</span>) ${archiveInfo.tooltip ? `<div class='tooltip tooltip-brand tooltip-left'>${archiveInfo.tooltip}</div>` : ""}`, onclick() {archiveClean(archiveName, archiveInfo.id, this);}}));
+			cleanMenuFragments.appendChild(_createElement("div", {className: `customArchiveCleanMenuButton itemDefault-3Jdr52 item-PXvHYJ ${archiveInfo.tooltip ? "orrie-tooltip" : ""}`, innerHTML: `${archiveInfo.name} (<span>${archiveInfo.count}</span>) ${archiveInfo.tooltip ? `<div class='tooltip-1OS-Ti brand-3tBTjG left-1wV7VO'>${archiveInfo.tooltip}</div>` : ""}`, onclick() {archiveClean(archiveName, archiveInfo.id, this);}}));
 		}
 		return _createElement("div", {className: "modal-3HD5ck userSelectText-1o1dQ7 sizeMedium-1fwIF2", innerHTML: "<div class='flex-1O1GKY directionRow-3v3tfG justifyStart-2NDFzi alignCenter-1dQNNs noWrap-3jynv6 header-1R_AjF' style='flex: 0 0 auto;'><div class='flexChild-faoVW3' style='flex: 1 1 auto;'><h4 class='h4-AQvcAz title-3sZWYQ size16-14cGz5 height20-mO2eIN weightSemiBold-NJexzi defaultColor-1_ajX0 defaultMarginh4-2vWMG5 marginReset-236NPn'>Archive Manager</h4></div><svg class='customModalCancel close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg></div>"}, [
 			_createElement("div", {className: "flex-1O1GKY directionRow-3v3tfG justifyCenter-3D2jYp inner-3wn6Q5 customArchiveHeader", style: "flex: 0 0 auto;"}, headerFragments),
@@ -914,7 +914,7 @@ const CustomMediaSupport = (function() {
 							BdApi.injectCSS("customFilters", `.customFilter:not(.${this.value.replace(/\s+/g,"").split(",").join(", .")}) {display:none;}`);
 						}
 					}),
-					_createElement("div", {className: "flex-1O1GKY customArchiveClean orrie-tooltip orrie-relative", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip tooltip-brand tooltip-bottom'>Clean Filters</div>",
+					_createElement("div", {className: "flex-1O1GKY customArchiveClean orrie-tooltip orrie-relative", innerHTML: "<svg class='close-18n9bP flexChild-faoVW3' xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 12 12'><g fill='none' fill-rule='evenodd'><path d='M0 0h12v12H0'></path><path class='fill' fill='currentColor' d='M9.5 3.205L8.795 2.5 6 5.295 3.205 2.5l-.705.705L5.295 6 2.5 8.795l.705.705L6 6.705 8.795 9.5l.705-.705L6.705 6'></path></g></svg><div class='tooltip-1OS-Ti brand-3tBTjG bottom-19kp6S'>Clean Filters</div>",
 						onclick() {
 							this.previousElementSibling.value = "";
 							BdApi.clearCSS("customFilters");
@@ -922,7 +922,7 @@ const CustomMediaSupport = (function() {
 					})
 				]),
 				_createElement("div", {className: "customArchiveCleanMenu"},
-					_createElement("div", {className: "customArchiveCleanMenu-wrapper orrie-tooltip orrie-relative", innerHTML: "<button type='button' class='userInfoViewingButton-2-jbH9 button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'><div class='contents-18-Yxp'>Cleaning Menu</div></button><div class='tooltip tooltip-brand tooltip-top'>Be very, very careful now!</div>"},
+					_createElement("div", {className: "customArchiveCleanMenu-wrapper orrie-tooltip orrie-relative", innerHTML: "<button type='button' class='userInfoViewingButton-2-jbH9 button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'><div class='contents-18-Yxp'>Cleaning Menu</div></button><div class='tooltip-1OS-Ti brand-3tBTjG top-1pTh1F'>Be very, very careful now!</div>"},
 						_createElement("div", {className: "customArchiveCleanMenuButtons cardPrimary-1Hv-to card-3Qj_Yx side-8zPYf6"}, cleanMenuFragments)
 					)
 				)
@@ -978,7 +978,7 @@ const CustomMediaSupport = (function() {
 			if (menuIcon) {
 				menuIcon.remove();
 			}
-			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='tooltip tooltip-black tooltip-bottom'>${tooltip}</div>`,
+			menuAnchor.insertBefore(_createElement("div", {className: `${className} iconMargin-2YXk4F icon-1R19_H orrie-relative orrie-tooltip`, innerHTML: `<div class='tooltip-1OS-Ti black-2bmmnj bottom-19kp6S'>${tooltip}</div>`,
 				onclick() {modalHandler(archiveHandler());}
 			}), menuAnchor.firstChild);
 		}
