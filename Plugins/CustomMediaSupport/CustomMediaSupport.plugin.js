@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "2.9.9",
+		version: "3.0.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -413,17 +413,21 @@ const CustomMediaSupport = (function() {
 .CustomMediaSupportModal .customModalText {margin: 8px auto 0;}
 .containerCozy-B4noqO.media-replace .customMedia.customVideo video {object-fit: fill; width: 100%;}
 .containerCozy-B4noqO.media-replace .metadataButtonExpand {display: none;}
+.customMediaToggled {display: none !important;}
 /* player style */
+/*
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 3px 3px; display: flex !important; opacity: 1 !important;}
 .customMedia ::-webkit-media-controls-play-button, .customMedia ::-webkit-media-controls-fullscreen-button, .customMedia ::-webkit-media-controls-mute-button, .customMedia ::-internal-media-controls-download-button {cursor: pointer; filter: brightness(1.5);}
 .customMedia ::-webkit-media-controls-play-button:hover, .customMedia ::-webkit-media-controls-fullscreen-button:hover, .customMedia ::-webkit-media-controls-mute-button:hover, .customMedia ::-internal-media-controls-download-button:hover {cursor: pointer; filter: brightness(2.5);}
 .customMedia ::-webkit-media-controls-timeline, .customMedia ::-webkit-media-controls-volume-slider {cursor: pointer; margin: 0 10px; padding: 3px 0;}
 ::-webkit-media-controls-fullscreen-button {display: none;}
-.customMediaToggled {display: none !important;}
+*/
 /* hide download button */
+/* 
 .customMedia.customVideo ::-webkit-media-controls {overflow: hidden !important}
 .customMedia.customVideo ::-webkit-media-controls-enclosure {width: calc(100% + 32px);margin-left: auto;}
+*/
 /* exhentai previews */
 .customSadpanda .gallery_info {background-color: #2E3033; border-radius: 5px; padding: 5px 5px 10px; width: 100%;}
 .customSadpanda .gallery_info .desc {color: #FFFFFF;}
