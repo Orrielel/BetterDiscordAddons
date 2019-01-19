@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.0.2",
+		version: "3.0.3",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -419,7 +419,7 @@ const CustomMediaSupport = (function() {
 .customMedia .mediaBarInteractionVolume-3QZqYd {background-color: unset; width: 90px;}
 .customMedia .mediaBarWrapper-3D7r67 {width: 90px;}
 .customMedia .videoControls-2kcYic {bottom: 0px; padding-bottom: 0px;}
-.customMedia .customMediaNoSound svg[name=Speaker] path {fill: #FF0404;}
+.customMedia .customMediaNoSound path {fill: #FF0404;}
 /*
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 3px 3px; display: flex !important; opacity: 1 !important;}
@@ -842,6 +842,7 @@ const CustomMediaSupport = (function() {
 						const controls = this.nextElementSibling.children;
 						if (this.webkitAudioDecodedByteCount === 0 && this.webkitVideoDecodedByteCount !== 0) {
 							controls[3].classList.add("customMediaNoSound");
+							controls[3].innerHTML = script.icons.muted;
 							controls[4].classList.add("customMediaToggled");
 						}
 						controls[1].firstElementChild.textContent = `${parseInt((this.currentTime/60)%60)}:${(`0${parseInt(this.currentTime%60)}`).slice(-2)}`;
