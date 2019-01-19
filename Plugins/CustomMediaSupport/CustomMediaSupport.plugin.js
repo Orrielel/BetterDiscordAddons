@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.0.1",
+		version: "3.0.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -840,7 +840,7 @@ const CustomMediaSupport = (function() {
 					},
 					ontimeupdate() {
 						const controls = this.nextElementSibling.children;
-						if (this.webkitAudioDecodedByteCount == 0) {
+						if (this.webkitAudioDecodedByteCount === 0 && this.webkitVideoDecodedByteCount !== 0) {
 							controls[3].classList.add("customMediaNoSound");
 							controls[4].classList.add("customMediaToggled");
 						}
@@ -876,6 +876,9 @@ const CustomMediaSupport = (function() {
 							e.preventDefault();
 							const mouseup = () => {
 								this.leftButtonPressed = false;
+								if (video.wasPlaying) {
+									video.play();
+								}
 								document.removeEventListener('mouseup', mouseup);
 							};
 							document.addEventListener('mouseup', mouseup, false);
@@ -887,6 +890,9 @@ const CustomMediaSupport = (function() {
 							bubble.textContent = `${parseInt((time/60)%60)}:${(`0${parseInt(time%60)}`).slice(-2)}`;
 							bubble.style.left = `${time/video.duration*100}%`;
 							if (this.leftButtonPressed) {
+								if (!video.paused) {
+									video.wasPlaying = true;
+								}
 								video.pause();
 								video.currentTime = (video.duration*((e.pageX-(this.getBoundingClientRect().left+document.body.scrollLeft))/this.offsetWidth)*100)/100;
 							}
@@ -897,9 +903,11 @@ const CustomMediaSupport = (function() {
 							const video = this.parentNode.previousElementSibling;
 							if (video.muted === true) {
 								video.muted = false;
+								this.innerHTML = script.icons.speaker;
 							}
 							else {
 								video.muted = true;
+								this.innerHTML = script.icons.muted;
 							}
 						}
 					}),
