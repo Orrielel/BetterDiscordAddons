@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.0.0",
+		version: "3.0.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -393,10 +393,10 @@ const CustomMediaSupport = (function() {
 .customMedia .metadataButton:hover {opacity: 1;}
 .customMedia .metadataButtonPopout {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAVCAYAAABc6S4mAAAAbklEQVR4AWP4//8/dkwdYEIVC0Yt2AjEDiTgWlItmA7ik4AD6W5BBRAfwcAI8BzEJ4C34LOgmgqReWHkWLCERHwPv72YFnCSkmLoYwEiiCqxYEGqWYBLDckWjFqwlUT8lTgLKAaELbhLIT6GywIA5SnsLtcbhqwAAAAASUVORK5CYII=) no-repeat center / 18px;}
 .customMedia .metadataButtonExpand {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAVCAYAAABc6S4mAAAAO0lEQVR4AWP4//9/8n/aAR+SLRi1IBKIHSjE2fgsUARiBgqx5WC3YNSCUQtGLRi1YCuVMP3rg7s0wj4AGC3DMn4UuAEAAAAASUVORK5CYII=) no-repeat center / 18px;}
-.customMedia.customAudio audio {margin-top: 5px; vertical-align: middle; width: 25vw; min-width: 500px;}
+.customMedia.customAudio .audioControls-2HsaU6 {vertical-align: middle; width: 25vw; min-width: 500px;}
 .customMedia.customImg img {margin-top: 40px; min-height: 50px; min-width: 400px;}
 .customMedia.customImg .imageWrapper-2p5ogY img {position: static;}
-.customMedia.customVideo video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; padding-bottom: 32px; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 300px;}
+.customMedia.customVideo video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 300px;}
 .customMedia.customVideo video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.customVideo.customMediaHorizontal video {max-width: calc(100vw - 740px); min-height: 35vh;}
 .customMedia.customVideo.customMediaVertical video {height: 60vh; max-width: 100%; max-height: unset;}
@@ -415,6 +415,11 @@ const CustomMediaSupport = (function() {
 .containerCozy-B4noqO.media-replace .metadataButtonExpand {display: none;}
 .customMediaToggled {display: none !important;}
 /* player style */
+.customMedia .audioVolumeWrapper-2t9juP, .customMedia .videoVolumeWrapper-3syuC- {align-self: stretch; display: flex; bottom: unset; position: unset; right: unset; transform: unset;}
+.customMedia .mediaBarInteractionVolume-3QZqYd {background-color: unset; width: 90px;}
+.customMedia .mediaBarWrapper-3D7r67 {width: 90px;}
+.customMedia .videoControls-2kcYic {bottom: 0px; padding-bottom: 0px;}
+.customMedia .customMediaNoSound svg[name=Speaker] path {fill: #FF0404;}
 /*
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
 .customMedia ::-webkit-media-controls-panel {background-color: #202225; border-radius: 0 0 3px 3px; display: flex !important; opacity: 1 !important;}
@@ -424,7 +429,7 @@ const CustomMediaSupport = (function() {
 ::-webkit-media-controls-fullscreen-button {display: none;}
 */
 /* hide download button */
-/* 
+/*
 .customMedia.customVideo ::-webkit-media-controls {overflow: hidden !important}
 .customMedia.customVideo ::-webkit-media-controls-enclosure {width: calc(100% + 32px);margin-left: auto;}
 */
@@ -437,6 +442,7 @@ const CustomMediaSupport = (function() {
 .customSadpanda .gallery_preview {padding: 0; width: 1px;}
 .customSadpanda .gallery_preview img {max-height: 250px;}
 .customSadpanda .embed-IeVjo6 {max-width: 750px;}
+.customSadpanda .embedInner-1-fpTo {flex-grow: 1;}
 .customSadpanda .embedPill-1Zntps.cat-Doujinshi {background-color: #FF2525;}
 .customSadpanda .embedPill-1Zntps.cat-Manga {background-color: #FFB225;}
 .customSadpanda .embedPill-1Zntps.cat-Artistcg {background-color: #E8D825;}
@@ -460,6 +466,7 @@ const CustomMediaSupport = (function() {
 /* 4chan previews */
 .customChan {color: #AAAAAA;}
 .customChan .embed-IeVjo6 {max-width: 640px; min-width: 520px;}
+.customChan .embedInner-1-fpTo {flex-grow: 1;}
 .customChan .embed-IeVjo6 .board-sfw {background-color: #9099D0;}
 .customChan .embed-IeVjo6 .board-nsfw {background-color: #FFBEAF;}
 .customChan .thread_head {position: relative;}
@@ -544,6 +551,13 @@ const CustomMediaSupport = (function() {
 .orrie-tooltip .tooltip-1OS-Ti:hover {display: none;}
 			`
 		},
+		icons: {
+			"play": `<svg name="Play" class="controlIcon-3cRbti" width="16" height="16" viewBox="0 0 24 24"><polygon fill="currentColor" points="0 0 0 14 11 7" transform="translate(7 5)"></path></svg>`,
+			"pause": `<svg name="Pause" class="controlIcon-3cRbti da-controlIcon" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M0,14 L4,14 L4,0 L0,0 L0,14 L0,14 Z M8,0 L8,14 L12,14 L12,0 L8,0 L8,0 Z" transform="translate(6 5)"></path></svg>`,
+			"replay": `<svg name="Replay" class="controlIcon-3cRbti da-controlIcon" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12,5 L12,1 L7,6 L12,11 L12,7 C15.31,7 18,9.69 18,13 C18,16.31 15.31,19 12,19 C8.69,19 6,16.31 6,13 L4,13 C4,17.42 7.58,21 12,21 C16.42,21 20,17.42 20,13 C20,8.58 16.42,5 12,5 L12,5 Z"></path></svg>`,
+			"speaker": `<svg name="Speaker" class="controlIcon-3cRbti" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M9.33333333,2 L9.33333333,3.37333333 C11.26,3.94666667 12.6666667,5.73333333 12.6666667,7.84666667 C12.6666667,9.96 11.26,11.74 9.33333333,12.3133333 L9.33333333,13.6933333 C12,13.0866667 14,10.7 14,7.84666667 C14,4.99333333 12,2.60666667 9.33333333,2 L9.33333333,2 Z M11,7.84666667 C11,6.66666667 10.3333333,5.65333333 9.33333333,5.16 L9.33333333,10.5133333 C10.3333333,10.04 11,9.02 11,7.84666667 L11,7.84666667 Z M2,5.84666667 L2,9.84666667 L4.66666667,9.84666667 L8,13.18 L8,2.51333333 L4.66666667,5.84666667 L2,5.84666667 L2,5.84666667 Z"></path></svg>`,
+			"muted": `<svg name="SpeakerOff" class="controlIcon-3cRbti da-controlIcon" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M13.5,9 C13.5,7.23 12.48,5.71 11,4.97 L11,7.18 L13.45,9.63 C13.48,9.43 13.5,9.22 13.5,9 L13.5,9 Z M16,9 C16,9.94 15.8,10.82 15.46,11.64 L16.97,13.15 C17.63,11.91 18,10.5 18,9 C18,4.72 15.01,1.14 11,0.23 L11,2.29 C13.89,3.15 16,5.83 16,9 L16,9 Z M1.27,0 L0,1.27 L4.73,6 L0,6 L0,12 L4,12 L9,17 L9,10.27 L13.25,14.52 C12.58,15.04 11.83,15.45 11,15.7 L11,17.76 C12.38,17.45 13.63,16.81 14.69,15.95 L16.73,18 L18,16.73 L9,7.73 L1.27,0 L1.27,0 Z M9,1 L6.91,3.09 L9,5.18 L9,1 L9,1 Z" transform="translate(3 3)"></path></svg>`
+		},
 		archive: {
 			chan: {},
 			filter: [],
@@ -595,6 +609,7 @@ const CustomMediaSupport = (function() {
 				data.videoElement.currentTime = video.currentTime;
 				if (!video.paused) {
 					data.videoElement.play();
+					data.videoElement.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
 				}
 			}
 			modal.remove();
@@ -744,7 +759,7 @@ const CustomMediaSupport = (function() {
 		log("info", "mediaEmbedding", data);
 		const {fileMedia, fileTitle, fileType, fileSize, filePoster, fileReplace, fileFilter, href, hostName, message, message_body} = data,
 		previewReplace = script.media.replace.includes(hostName);
-		let metaDataElement, mediaProperties;
+		let metaDataElement, mediaProperties, mediaControls;
 		switch(fileMedia) {
 			case "video":
 			case "audio":
@@ -758,6 +773,7 @@ const CustomMediaSupport = (function() {
 								data.currentTime = video.currentTime;
 								data.playing = !video.paused;
 								video.pause();
+								video.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
 								modalHandler(mediaEmbedding(data, "return"), data);
 							}
 						}),
@@ -772,8 +788,17 @@ const CustomMediaSupport = (function() {
 						})
 					]) : _createElement("div", {className: "audioMetadata-3zOuGv", innerHTML: `<div class='metadataContent-3c_ZXw userSelectText-1o1dQ7'><a class='metadataName-14STf- customIgnore' href='${href}' target='_blank'>${fileTitle}</a><div class='metadataSize-2UOOLK'>${fileSize}</div></div><a class='metadataDownload-1fk90V orrie-tooltip orrie-relative customIgnore' href='${href}' target='_blank'><svg viewBox='0 0 24 24' name='Download' class='metadataIcon-2FyCKU' width='24' height='24'><g fill='none' fill-rule='evenodd'><path d='M0 0h24v24H0z'></path><path class='fill' fill='currentColor' d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'></path></g></svg><div class='tooltip-1OS-Ti brand-3tBTjG top-1pTh1F'>Download Audio</div></a>`});
 				}
-				mediaProperties = {controls: true, preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
-					onclick() {if (this.paused) {this.play();} else {this.pause();}},
+				mediaProperties = {preload: script.settings.preload ? "metadata" : "none", loop: script.settings.loop, autoplay: script.settings.autoplay, poster: filePoster,
+					onclick() {
+						if (this.paused) {
+							this.play();
+							this.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
+						}
+						else {
+							this.pause();
+							this.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
+						}
+					},
 					onloadedmetadata() {
 						if (fileMedia == "video") {
 							data.fileRes = `${this.videoWidth}px × ${this.videoHeight}px`;
@@ -781,20 +806,27 @@ const CustomMediaSupport = (function() {
 								this.onmouseover = function() {
 									if (this.paused) {
 										this.play();
+										this.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
 									}
 								};
 								this.onmouseout = function() {
 									this.pause();
+									this.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
 								};
 							}
 							if (data.currentTime) {
 								this.currentTime = data.currentTime;
 								if (data.playing) {
 									this.play();
+									this.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
 								}
 							}
 						}
+						// volume
 						this.volume = script.settings.volume;
+						this.nextElementSibling.children[4].firstElementChild.firstElementChild.firstElementChild.style.width = `${script.settings.volume*100}%`;
+						// total runtime
+						this.nextElementSibling.children[1].lastElementChild.textContent = `${parseInt((this.duration / 60) % 60)}:${(`0${parseInt(this.duration % 60)}`).slice(-2)}`;
 						// make sure loading error message is hidden
 						this.parentNode.nextElementSibling.classList.add("customMediaToggled");
 						// replace original accessory previews if they exist
@@ -805,8 +837,111 @@ const CustomMediaSupport = (function() {
 							mediaReplace(message);
 						}
 						scrollElement(message.scrollHeight);
+					},
+					ontimeupdate() {
+						const controls = this.nextElementSibling.children;
+						if (this.webkitAudioDecodedByteCount == 0) {
+							controls[3].classList.add("customMediaNoSound");
+							controls[4].classList.add("customMediaToggled");
+						}
+						controls[1].firstElementChild.textContent = `${parseInt((this.currentTime/60)%60)}:${(`0${parseInt(this.currentTime%60)}`).slice(-2)}`;
+						controls[2].firstElementChild.firstElementChild.children[2].style.width = `${(100/this.duration)*this.currentTime}%`;
+					},
+					onended() {
+						this.nextElementSibling.firstElementChild.innerHTML = script.icons.replay;
 					}
 				};
+				mediaControls = _createElement("div" , {className: fileMedia == "video" ? "videoControls-2kcYic" : "audioControls-2HsaU6"}, [
+					_createElement("div", {tabindex: "0", role: "button", innerHTML: script.icons.play,
+						onclick() {
+							const video = this.parentNode.previousElementSibling;
+							if (video.paused) {
+								video.play();
+								this.innerHTML = script.icons.play;
+							} else {
+								video.pause();
+								this.innerHTML = script.icons.pause;
+							}
+						}
+					}),
+					_createElement("div", {className: "durationTimeWrapper-OugPFt", innerHTML: "<span class='durationTimeDisplay-jww5fr weightMedium-2iZe9B'>0:00</span><span class='durationTimeSeparator-2_xpJ7 weightMedium-2iZe9B'>/</span><span class='durationTimeDisplay-jww5fr weightMedium-2iZe9B'>0:00</span>"}),
+					_createElement("div", {className: "horizontal-3Sq5iO", innerHTML: "<div class='mediaBarInteraction-37i2O4'><div class='mediaBarWrapper-3D7r67 fakeEdges-27pgtp'><div class='buffer-26XPkd fakeEdges-27pgtp' style='width: 0%; left: 0%;'></div><div class='mediaBarPreview-1jfyFs fakeEdges-27pgtp' style='width: 0%;'></div><div class='mediaBarProgress-1xaPtl fakeEdges-27pgtp' style='width: 0%;'><span class='mediaBarGrabber-1FqnbN'/></div><div class='bubble-3qRl2J' style='left: 0%;'>0:0</div></div></div>",
+						onclick(e) {
+							const video = this.parentNode.previousElementSibling;
+							video.currentTime = (video.duration*((e.pageX-(this.getBoundingClientRect().left+document.body.scrollLeft))/this.offsetWidth)*100)/100;
+						},
+						onmousedown(e) {
+							const video = this.parentNode.previousElementSibling;
+							this.leftButtonPressed = true;
+							e.preventDefault();
+							const mouseup = () => {
+								this.leftButtonPressed = false;
+								document.removeEventListener('mouseup', mouseup);
+							};
+							document.addEventListener('mouseup', mouseup, false);
+						},
+						onmousemove(e) {
+							const video = this.parentNode.previousElementSibling,
+							bubble = this.firstElementChild.firstElementChild.lastElementChild,
+							time = (video.duration*((e.pageX-(this.getBoundingClientRect().left+document.body.scrollLeft))/this.offsetWidth)*100)/100;
+							bubble.textContent = `${parseInt((time/60)%60)}:${(`0${parseInt(time%60)}`).slice(-2)}`;
+							bubble.style.left = `${time/video.duration*100}%`;
+							if (this.leftButtonPressed) {
+								video.pause();
+								video.currentTime = (video.duration*((e.pageX-(this.getBoundingClientRect().left+document.body.scrollLeft))/this.offsetWidth)*100)/100;
+							}
+						}
+					}),
+					_createElement("div", {className: "flex-1O1GKY", innerHTML: `<div tabindex='0' role='button'>${script.icons.speaker}</div>`,
+						onclick() {
+							const video = this.parentNode.previousElementSibling;
+							if (video.muted === true) {
+								video.muted = false;
+							}
+							else {
+								video.muted = true;
+							}
+						}
+					}),
+					_createElement("div", {className: fileMedia == "video" ? "videoVolumeWrapper-3syuC-" : "audioVolumeWrapper-2t9juP", innerHTML: "<div class='mediaBarInteraction-37i2O4 mediaBarInteractionVolume-3QZqYd'><div class='mediaBarWrapper-3D7r67 fakeEdges-27pgtp mediaBarWrapperVolume-354-jo'><div class='mediaBarProgress-1xaPtl fakeEdges-27pgtp' style='width: 100%;'><span class='mediaBarGrabber-1FqnbN'/></div></div></div>",
+						onclick(e) {
+							const video = this.parentNode.previousElementSibling,
+							volumeBar = this.firstElementChild,
+							volume = (Math.ceil((e.pageX-(volumeBar.getBoundingClientRect().left+document.body.scrollLeft))/5)*5)/volumeBar.offsetWidth;
+							video.volume = volume;
+							volumeBar.firstElementChild.firstElementChild.style.width = `${volume*100}%`;
+						},
+						onmousedown(e) {
+							this.leftButtonPressed = true;
+							e.preventDefault();
+							const mouseup = () => {
+								this.leftButtonPressed = false;
+								document.removeEventListener('mouseup', mouseup);
+							};
+							document.addEventListener('mouseup', mouseup, false);
+						},
+						onmousemove(e) {
+							if (this.leftButtonPressed) {
+								const volumeBar = this.firstElementChild,
+								speakerIcon = this.previousElementSibling.firstElementChild,
+								volume = (Math.ceil((e.pageX-(volumeBar.getBoundingClientRect().left+document.body.scrollLeft))/5)*5)/volumeBar.offsetWidth;
+								this.parentNode.previousElementSibling.volume = volume;
+								volumeBar.firstElementChild.firstElementChild.style.width = `${volume*100}%`;
+								if (volume == 0) {
+									speakerIcon.innerHTML = script.icons.muted;
+								}
+								else if (speakerIcon.innerHTML !== script.icons.speaker) {
+									speakerIcon.innerHTML = script.icons.speaker;
+								}
+							}
+						}
+					}),
+					fileMedia == "video" ? _createElement("div", {tabindex: "0", role: "button", innerHTML: "<svg class='controlIcon-3cRbti' name='FullScreen' width='16' height='16' viewBox='0 0 24 24' style='margin-left: 0px;'><path fill='currentColor' d='M7,14 L5,14 L5,19 L10,19 L10,17 L7,17 L7,14 L7,14 Z M5,10 L7,10 L7,7 L10,7 L10,5 L5,5 L5,10 L5,10 Z M17,17 L14,17 L14,19 L19,19 L19,14 L17,14 L17,17 L17,17 Z M14,5 L14,7 L17,7 L17,10 L19,10 L19,5 L14,5 L14,5 Z'/></svg>",
+						onclick() {
+							this.parentNode.previousElementSibling.webkitRequestFullscreen();
+						}
+					}) : ""
+				]);
 				break;
 			case "img":
 			case "iframe":
@@ -845,7 +980,8 @@ const CustomMediaSupport = (function() {
 							}
 						}
 					})
-				)
+				),
+				mediaControls
 			]),
 			_createElement("div", {className: "customMediaError userSelectText-1o1dQ7 customMediaToggled", textContent: `Unable to embed link - ${href}`})
 		]);
