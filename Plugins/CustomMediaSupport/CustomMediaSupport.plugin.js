@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.0.6",
+		version: "3.0.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -360,21 +360,22 @@ const CustomMediaSupport = (function() {
 				"https://archive.loveisover.me": ["c","d","e","i","lgbt","t","u"]
 			}
 		},
-		settings: {embedding: true, api: true, loop: true, volume: 0.25, preload: true, autoplay: false, hoverPlay: false, board: true, sadpanda: true, greentext: true, debug: false},
+		settings: {embedding: true, api: true, loop: true, volume: 0.25, preload: true, autoplay: false, hoverPlay: false, controls: true, board: true, sadpanda: true, greentext: true, debug: false},
 		settingsMenu: {
-			//          localized                 type     description
-			embedding: ["Media Embedding",        "check", "Embeds or replaces supported elements:<br>mp4, m4v, ogv, ogm, webm, mov; mp3, ogg, oga, wav, wma, m4a, aac, flac; pdf"],
-			api:       ["Embedding API",          "check", "Use APIs for embedding when possible -- data will be stored per session"],
-			loop:      ["Loop",                   "check", "Loops media"],
-			volume:    ["Volume",                 "range", "Default volume &#8213; 25%"],
-			preload:   ["Preload",                "check", "Preload media"],
-			autoplay:  ["Autoplay",               "check", "Not recommended &#8213; RIP CPU"],
-			hoverPlay: ["Play on Hover",          "check", "Play media on mouse hover"],
-			board:     ["4chan",                  "check", "Embed 4chan thread links -- data will be stored indefinitely"],
-			sadpanda:  ["Sadpanda",               "check", "Embed Sadpanda galleries -- data will be stored indefinitely"],
-			greentext: ["Greentext",              "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
-			imagePop:  ["Full Resolution Images", "check", "Only in dedicated script: <a href='https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups' target='_blank'>BetterImagePopups</a>"],
-			debug:     ["Debug",                  "check", "Displays verbose stuff into the console"]
+			//          localized                  type     description
+			embedding: ["Media Embedding",         "check", "Embeds or replaces supported elements:<br>mp4, m4v, ogv, ogm, webm, mov; mp3, ogg, oga, wav, wma, m4a, aac, flac; pdf"],
+			api:       ["Embedding API",           "check", "Use APIs for embedding when possible -- data will be stored per session"],
+			loop:      ["Loop",                    "check", "Loops media"],
+			volume:    ["Volume",                  "range", "Default volume &#8213; 25%"],
+			preload:   ["Preload",                 "check", "Preload media"],
+			autoplay:  ["Autoplay",                "check", "Not recommended &#8213; RIP CPU"],
+			hoverPlay: ["Play on Hover",           "check", "Play media on mouse hover"],
+			controls:  ["Media Controls Position", "check", "Position of media controls. On = Hovering at bottom, Off = Below player"],
+			board:     ["4chan",                   "check", "Embed 4chan thread links -- data will be stored indefinitely"],
+			sadpanda:  ["Sadpanda",                "check", "Embed Sadpanda galleries -- data will be stored indefinitely"],
+			greentext: ["Greentext",               "check", "<span class='greentext'>&gt;ISHYGDDT</span>"],
+			imagePop:  ["Full Resolution Images",  "check", "Only in dedicated script: <a href='https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups' target='_blank'>BetterImagePopups</a>"],
+			debug:     ["Debug",                   "check", "Displays verbose stuff into the console"]
 		},
 		css: {
 			script: `
@@ -385,7 +386,7 @@ const CustomMediaSupport = (function() {
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-IeVjo6 {max-width: unset;}
 .customMedia .customMediaError {color: #F04747; margin: 0; max-width: 75vh; padding: 5px 10px;}
-.customMedia .metadata-13NcHb {border-radius: 3px; display: flex; height: auto; margin: 0; padding: 10px 12px 35px; top: 0; z-index: auto;}
+.customMedia .metadata-13NcHb {border-radius: 3px; display: flex; height: auto; margin: 0; padding: 10px 12px 35px; top: -1px; z-index: auto;}
 .customMedia .metadataContent-3c_ZXw {overflow: hidden;}
 .customMedia .metadataName-14STf- a {color: #FFFFFF; opacity: 0.6;}
 .customMedia .metadataName-14STf-:hover a {opacity: 1;}
@@ -420,8 +421,8 @@ const CustomMediaSupport = (function() {
 .customMedia .mediaBarInteractionVolume-3QZqYd {background-color: unset; width: 90px;}
 .customMedia .mediaBarWrapper-3D7r67 {width: 90px;}
 .customMedia .videoControls-2kcYic {bottom: 0px; display: flex; padding-bottom: 0px; position: initial;}
-.customMedia.customVideo .videoControls-2kcYic {display: none; margin-top: -30px; z-index: 1;}
-.customMedia.customVideo .imageWrapper-2p5ogY:hover .videoControls-2kcYic {display: flex;}
+.customMedia.customVideo .customMediaHover .videoControls-2kcYic {display: none; margin-top: -30px; z-index: 1;}
+.customMedia.customVideo .customMediaHover:hover .videoControls-2kcYic {display: flex;}
 .customMedia .customMediaNoSound path {fill: #FF0404;}
 /*
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
@@ -898,6 +899,9 @@ const CustomMediaSupport = (function() {
 								if (!video.paused) {
 									video.wasPlaying = true;
 								}
+								else {
+									video.wasPlaying = false;
+								}
 								video.pause();
 								video.currentTime = (video.duration*((e.pageX-(this.getBoundingClientRect().left+document.body.scrollLeft))/this.offsetWidth)*100)/100;
 							}
@@ -973,7 +977,7 @@ const CustomMediaSupport = (function() {
 				log("error", "mediaEmbed", href);
 		}
 		const container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia custom${fileMedia.replace(/\w/, c => c.toUpperCase())}`, fileFilter}, [
-			_createElement("div", {className: script.classes[fileMedia]}, [
+			_createElement("div", {className: `${script.classes[fileMedia]} ${script.settings.controls && fileMedia == "video" ? "customMediaHover" : "customMediaBelow"}`}, [
 				metaDataElement,
 				_createElement(fileMedia, mediaProperties,
 					_createElement("source", {src: href,
