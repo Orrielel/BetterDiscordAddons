@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.0.5",
+		version: "3.0.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -396,7 +396,7 @@ const CustomMediaSupport = (function() {
 .customMedia.customAudio .audioControls-2HsaU6 {vertical-align: middle; width: 25vw; min-width: 500px;}
 .customMedia.customImg img {margin-top: 40px; min-height: 50px; min-width: 400px;}
 .customMedia.customImg .imageWrapper-2p5ogY img {position: static;}
-.customMedia.customVideo video {cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 300px;}
+.customMedia.customVideo video {align-self: center; cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 300px;}
 .customMedia.customVideo video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.customVideo.customMediaHorizontal video {max-width: calc(100vw - 740px); min-height: 35vh;}
 .customMedia.customVideo.customMediaVertical video {height: 60vh; max-width: 100%; max-height: unset;}
