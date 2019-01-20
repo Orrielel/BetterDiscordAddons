@@ -418,7 +418,7 @@ const CustomMediaSupport = (function() {
 .customMedia .audioVolumeWrapper-2t9juP, .customMedia .videoVolumeWrapper-3syuC- {align-self: stretch; display: flex; bottom: unset; position: unset; right: unset; transform: unset;}
 .customMedia .mediaBarInteractionVolume-3QZqYd {background-color: unset; width: 90px;}
 .customMedia .mediaBarWrapper-3D7r67 {width: 90px;}
-.customMedia .videoControls-2kcYic {bottom: 0px; padding-bottom: 0px;}
+.customMedia .videoControls-2kcYic {bottom: 0px; display: flex; padding-bottom: 0px;}
 .customMedia .customMediaNoSound path {fill: #FF0404;}
 /*
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
