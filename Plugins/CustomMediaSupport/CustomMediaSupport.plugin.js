@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.0.4",
+		version: "3.0.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -402,6 +402,7 @@ const CustomMediaSupport = (function() {
 .customMedia.customVideo.customMediaVertical video {height: 60vh; max-width: 100%; max-height: unset;}
 .customMedia.customVideo.customMediaHorizontal .metadataButtonExpand::after, .customMedia.customVideo.customMediaVertical .metadataButtonExpand::after {border: 3px solid #3A71C1; content: ''; display: inline-flex; height: 9px; margin-left: 1px; vertical-align: middle; width: 13px;}
 .customMedia.customVideo .metadata-13NcHb {display: none; z-index: 1;}
+.customMedia.customVideo .imageWrapper-2p5ogY {display: flex; flex-direction: column; margin-bottom: 30px;}
 .customMedia.customVideo .imageWrapper-2p5ogY:hover .metadata-13NcHb {display: flex;}
 .customMedia.customIframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle; z-index: 1;}
 .customMedia.customIframe .metadata-13NcHb {max-width: 100%; min-width: 500px;}
@@ -418,7 +419,8 @@ const CustomMediaSupport = (function() {
 .customMedia .audioVolumeWrapper-2t9juP, .customMedia .videoVolumeWrapper-3syuC- {align-self: stretch; display: flex; bottom: unset; position: unset; right: unset; transform: unset;}
 .customMedia .mediaBarInteractionVolume-3QZqYd {background-color: unset; width: 90px;}
 .customMedia .mediaBarWrapper-3D7r67 {width: 90px;}
-.customMedia .videoControls-2kcYic {bottom: 0px; display: flex; padding-bottom: 0px;}
+.customMedia .videoControls-2kcYic {bottom: 0px; display: flex; padding-bottom: 0px; position: initial;}
+.customMedia.customVideo .videoControls-2kcYic {margin-bottom: -30px;}
 .customMedia .customMediaNoSound path {fill: #FF0404;}
 /*
 .customMedia ::-webkit-media-controls-current-time-display, .customMedia ::-webkit-media-controls-time-remaining-display {color: #BEBEBE}
@@ -665,8 +667,8 @@ const CustomMediaSupport = (function() {
 							if (sourceParent) {
 								sourceParent.load();
 								sourceParent.classList.remove("customMediaToggled");
-								if (sourceParent.nextElementSibling) {
-									sourceParent.nextElementSibling.classList.add("customMediaToggled");
+								if (sourceParent.closest(".imageWrapper-2p5ogY")) {
+									sourceParent.closest(".imageWrapper-2p5ogY").nextElementSibling.classList.add("customMediaToggled");
 								}
 							}
 						}
@@ -828,7 +830,7 @@ const CustomMediaSupport = (function() {
 						// total runtime
 						this.nextElementSibling.children[1].lastElementChild.textContent = `${parseInt((this.duration / 60) % 60)}:${(`0${parseInt(this.duration % 60)}`).slice(-2)}`;
 						// make sure loading error message is hidden
-						this.parentNode.nextElementSibling.classList.add("customMediaToggled");
+						this.closest(".imageWrapper-2p5ogY").nextElementSibling.classList.add("customMediaToggled");
 						// replace original accessory previews if they exist
 						if (!previewReplace) {
 							if (!script.archive.filter.includes(fileFilter)) {
