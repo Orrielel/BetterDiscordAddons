@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.0.3",
+		version: "3.0.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -609,7 +609,7 @@ const CustomMediaSupport = (function() {
 				data.videoElement.currentTime = video.currentTime;
 				if (!video.paused) {
 					data.videoElement.play();
-					data.videoElement.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
+					data.videoElement.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
 				}
 			}
 			modal.remove();
@@ -773,7 +773,7 @@ const CustomMediaSupport = (function() {
 								data.currentTime = video.currentTime;
 								data.playing = !video.paused;
 								video.pause();
-								video.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
+								video.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
 								modalHandler(mediaEmbedding(data, "return"), data);
 							}
 						}),
@@ -792,11 +792,11 @@ const CustomMediaSupport = (function() {
 					onclick() {
 						if (this.paused) {
 							this.play();
-							this.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
+							this.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
 						}
 						else {
 							this.pause();
-							this.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
+							this.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
 						}
 					},
 					onloadedmetadata() {
@@ -806,19 +806,19 @@ const CustomMediaSupport = (function() {
 								this.onmouseover = function() {
 									if (this.paused) {
 										this.play();
-										this.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
+										this.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
 									}
 								};
 								this.onmouseout = function() {
 									this.pause();
-									this.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
+									this.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
 								};
 							}
 							if (data.currentTime) {
 								this.currentTime = data.currentTime;
 								if (data.playing) {
 									this.play();
-									this.nextElementSibling.firstElementChild.innerHTML = script.icons.play;
+									this.nextElementSibling.firstElementChild.innerHTML = script.icons.pause;
 								}
 							}
 						}
@@ -840,7 +840,8 @@ const CustomMediaSupport = (function() {
 					},
 					ontimeupdate() {
 						const controls = this.nextElementSibling.children;
-						if (this.webkitAudioDecodedByteCount === 0 && this.webkitVideoDecodedByteCount !== 0) {
+						if (!this.muted && this.webkitAudioDecodedByteCount === 0 && this.webkitVideoDecodedByteCount !== 0) {
+							this.muted = true;
 							controls[3].classList.add("customMediaNoSound");
 							controls[3].innerHTML = script.icons.muted;
 							controls[4].classList.add("customMediaToggled");
@@ -858,10 +859,10 @@ const CustomMediaSupport = (function() {
 							const video = this.parentNode.previousElementSibling;
 							if (video.paused) {
 								video.play();
-								this.innerHTML = script.icons.play;
+								this.innerHTML = script.icons.pause;
 							} else {
 								video.pause();
-								this.innerHTML = script.icons.pause;
+								this.innerHTML = script.icons.play;
 							}
 						}
 					}),
