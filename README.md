@@ -1,7 +1,7 @@
 # BetterDiscordAddons
 Just a few plugins for BetterDiscord
 
-#### Support: https://discord.gg/YEZkpkj
+#### Support: Orrie#1000 on Discord
 
 ## Plugins
  - [CustomMediaSupport](https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport) - Embeds HTML5, adds previews for different sites, and some more.
