@@ -7,12 +7,11 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.0.7",
+		version: "3.0.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
 		raw: "https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/CustomMediaSupport/CustomMediaSupport.plugin.js",
-		discord: "https://discord.gg/YEZkpkj",
 		check: {
 			media: false,
 			replace: false,
@@ -386,10 +385,14 @@ const CustomMediaSupport = (function() {
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embed-IeVjo6 {max-width: unset;}
 .customMedia .customMediaError {color: #F04747; margin: 0; max-width: 75vh; padding: 5px 10px;}
-.customMedia .metadata-13NcHb {border-radius: 3px; display: flex; height: auto; margin: 0; padding: 10px 12px 35px; top: -1px; z-index: auto;}
+.customMedia .metadata-13NcHb {border-radius: 3px; display: flex; height: auto; margin: 0; padding: 10px 12px 35px; top: -1px;}
+.customMedia .metadata-13NcHb > *:not(.metadataContent-3c_ZXw) {background-color: rgba(0, 0, 0, 0.25); border: 1px solid rgba(0, 0, 0, 0.50); border-radius: 5px; margin: 0 1px; z-index: 1;}
+.customMedia .metadata-13NcHb .metadataIcon-2FyCKU {height: 24px;}
+.customMedia .metadata-13NcHb .metadataDownload-1fk90V {height: 22px; width: 24px;}
 .customMedia .metadataContent-3c_ZXw {overflow: hidden;}
-.customMedia .metadataName-14STf- a {color: #FFFFFF; opacity: 0.6;}
-.customMedia .metadataName-14STf-:hover a {opacity: 1;}
+.customMedia .metadataName-14STf- a {color: #FFFFFF; opacity: 0.6; z-index: 1;}
+.customMedia .metadataName-14STf- a:hover {opacity: 1;}
+.customMedia .metadataSize-2UOOLK {z-index: 1;}
 .customMedia .metadataButton {cursor: pointer; height: 22px; opacity: 0.6; min-width: 22px;} /* font-size: 22px; font-weight: bold; */
 .customMedia .metadataButton:hover {opacity: 1;}
 .customMedia .metadataButtonPopout {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAVCAYAAABc6S4mAAAAbklEQVR4AWP4//8/dkwdYEIVC0Yt2AjEDiTgWlItmA7ik4AD6W5BBRAfwcAI8BzEJ4C34LOgmgqReWHkWLCERHwPv72YFnCSkmLoYwEiiCqxYEGqWYBLDckWjFqwlUT8lTgLKAaELbhLIT6GywIA5SnsLtcbhqwAAAAASUVORK5CYII=) no-repeat center / 18px;}
@@ -402,7 +405,7 @@ const CustomMediaSupport = (function() {
 .customMedia.customVideo.customMediaHorizontal video {max-width: calc(100vw - 740px); min-height: 35vh;}
 .customMedia.customVideo.customMediaVertical video {height: 60vh; max-width: 100%; max-height: unset;}
 .customMedia.customVideo.customMediaHorizontal .metadataButtonExpand::after, .customMedia.customVideo.customMediaVertical .metadataButtonExpand::after {border: 3px solid #3A71C1; content: ''; display: inline-flex; height: 9px; margin-left: 1px; vertical-align: middle; width: 13px;}
-.customMedia.customVideo .metadata-13NcHb {display: none; z-index: 1;}
+.customMedia.customVideo .metadata-13NcHb {background: none; display: none; padding: 10px 10px 0;}
 .customMedia.customVideo .imageWrapper-2p5ogY {display: flex; flex-direction: column; min-width: 400px;}
 .customMedia.customVideo .imageWrapper-2p5ogY:hover .metadata-13NcHb {display: flex;}
 .customMedia.customIframe iframe {margin-top: 40px; max-width: 100%; min-width: 500px; min-height: 300px; max-height: 600px; resize: both; overflow: auto; vertical-align: middle; z-index: 1;}
@@ -557,10 +560,10 @@ const CustomMediaSupport = (function() {
 		},
 		icons: {
 			"play": `<svg name="Play" class="controlIcon-3cRbti" width="16" height="16" viewBox="0 0 24 24"><polygon fill="currentColor" points="0 0 0 14 11 7" transform="translate(7 5)"></path></svg>`,
-			"pause": `<svg name="Pause" class="controlIcon-3cRbti da-controlIcon" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M0,14 L4,14 L4,0 L0,0 L0,14 L0,14 Z M8,0 L8,14 L12,14 L12,0 L8,0 L8,0 Z" transform="translate(6 5)"></path></svg>`,
-			"replay": `<svg name="Replay" class="controlIcon-3cRbti da-controlIcon" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12,5 L12,1 L7,6 L12,11 L12,7 C15.31,7 18,9.69 18,13 C18,16.31 15.31,19 12,19 C8.69,19 6,16.31 6,13 L4,13 C4,17.42 7.58,21 12,21 C16.42,21 20,17.42 20,13 C20,8.58 16.42,5 12,5 L12,5 Z"></path></svg>`,
+			"pause": `<svg name="Pause" class="controlIcon-3cRbti" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M0,14 L4,14 L4,0 L0,0 L0,14 L0,14 Z M8,0 L8,14 L12,14 L12,0 L8,0 L8,0 Z" transform="translate(6 5)"></path></svg>`,
+			"replay": `<svg name="Replay" class="controlIcon-3cRbti" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12,5 L12,1 L7,6 L12,11 L12,7 C15.31,7 18,9.69 18,13 C18,16.31 15.31,19 12,19 C8.69,19 6,16.31 6,13 L4,13 C4,17.42 7.58,21 12,21 C16.42,21 20,17.42 20,13 C20,8.58 16.42,5 12,5 L12,5 Z"></path></svg>`,
 			"speaker": `<svg name="Speaker" class="controlIcon-3cRbti" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M9.33333333,2 L9.33333333,3.37333333 C11.26,3.94666667 12.6666667,5.73333333 12.6666667,7.84666667 C12.6666667,9.96 11.26,11.74 9.33333333,12.3133333 L9.33333333,13.6933333 C12,13.0866667 14,10.7 14,7.84666667 C14,4.99333333 12,2.60666667 9.33333333,2 L9.33333333,2 Z M11,7.84666667 C11,6.66666667 10.3333333,5.65333333 9.33333333,5.16 L9.33333333,10.5133333 C10.3333333,10.04 11,9.02 11,7.84666667 L11,7.84666667 Z M2,5.84666667 L2,9.84666667 L4.66666667,9.84666667 L8,13.18 L8,2.51333333 L4.66666667,5.84666667 L2,5.84666667 L2,5.84666667 Z"></path></svg>`,
-			"muted": `<svg name="SpeakerOff" class="controlIcon-3cRbti da-controlIcon" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M13.5,9 C13.5,7.23 12.48,5.71 11,4.97 L11,7.18 L13.45,9.63 C13.48,9.43 13.5,9.22 13.5,9 L13.5,9 Z M16,9 C16,9.94 15.8,10.82 15.46,11.64 L16.97,13.15 C17.63,11.91 18,10.5 18,9 C18,4.72 15.01,1.14 11,0.23 L11,2.29 C13.89,3.15 16,5.83 16,9 L16,9 Z M1.27,0 L0,1.27 L4.73,6 L0,6 L0,12 L4,12 L9,17 L9,10.27 L13.25,14.52 C12.58,15.04 11.83,15.45 11,15.7 L11,17.76 C12.38,17.45 13.63,16.81 14.69,15.95 L16.73,18 L18,16.73 L9,7.73 L1.27,0 L1.27,0 Z M9,1 L6.91,3.09 L9,5.18 L9,1 L9,1 Z" transform="translate(3 3)"></path></svg>`
+			"muted": `<svg name="SpeakerOff" class="controlIcon-3cRbti" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M13.5,9 C13.5,7.23 12.48,5.71 11,4.97 L11,7.18 L13.45,9.63 C13.48,9.43 13.5,9.22 13.5,9 L13.5,9 Z M16,9 C16,9.94 15.8,10.82 15.46,11.64 L16.97,13.15 C17.63,11.91 18,10.5 18,9 C18,4.72 15.01,1.14 11,0.23 L11,2.29 C13.89,3.15 16,5.83 16,9 L16,9 Z M1.27,0 L0,1.27 L4.73,6 L0,6 L0,12 L4,12 L9,17 L9,10.27 L13.25,14.52 C12.58,15.04 11.83,15.45 11,15.7 L11,17.76 C12.38,17.45 13.63,16.81 14.69,15.95 L16.73,18 L18,16.73 L9,7.73 L1.27,0 L1.27,0 Z M9,1 L6.91,3.09 L9,5.18 L9,1 L9,1 Z" transform="translate(3 3)"></path></svg>`
 		},
 		archive: {
 			chan: {},
@@ -880,6 +883,7 @@ const CustomMediaSupport = (function() {
 							const video = this.parentNode.previousElementSibling;
 							this.leftButtonPressed = true;
 							e.preventDefault();
+							video.wasPlaying = !video.paused;
 							const mouseup = () => {
 								this.leftButtonPressed = false;
 								if (video.wasPlaying) {
@@ -896,12 +900,6 @@ const CustomMediaSupport = (function() {
 							bubble.textContent = `${parseInt((time/60)%60)}:${(`0${parseInt(time%60)}`).slice(-2)}`;
 							bubble.style.left = `${time/video.duration*100}%`;
 							if (this.leftButtonPressed) {
-								if (!video.paused) {
-									video.wasPlaying = true;
-								}
-								else {
-									video.wasPlaying = false;
-								}
 								video.pause();
 								video.currentTime = (video.duration*((e.pageX-(this.getBoundingClientRect().left+document.body.scrollLeft))/this.offsetWidth)*100)/100;
 							}
@@ -1192,13 +1190,13 @@ const CustomMediaSupport = (function() {
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
 			_createElement("div", {className: "flex-1O1GKY justifyAround-1n1pnI"}, [
-				_createElement("a", {href: script.discord, target: "_blank", rel: "noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
 				_createElement("a", {href: script.url, target: "_blank", rel: "noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"}),
 				_createElement("button", {type: "button", className: "button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN orrie-buttonRed", textContent: `Clean Database`,
 					onclick() {archiveClean("all");}
 				})
 			]),
 			_createElement("div", {className: "orrie-centerText marginTop8-1DLZ1n", textContent: "Use the Archive Manager to tidy up the database, or clean it alltogether"}),
+			_createElement("div", {className: "orrie-centerText marginTop8-1DLZ1n", textContent: "Add Orrie#1000 for support"}),
 		]);
 	},
 	settingsType = function(key, props) {
