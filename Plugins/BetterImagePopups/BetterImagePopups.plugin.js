@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.4.8",
+		version: "1.4.9",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -40,7 +40,7 @@ const BetterImagePopups = (function() {
 .bip-container .downloadLink-1ywL9o {text-transform: capitalize;}
 .bip-container .bip-controls {margin: 0 auto; padding: 10px 25px; visibility: hidden;}
 .bip-container.bip-scaling .bip-controls {visibility: visible;}
-.bip-container .bip-controls > div:not(.tooltip) {display: inline-block;}
+.bip-container .bip-controls > div:not(.tooltip-1OS-Ti) {display: inline-block;}
 .bip-container .bip-zoom {border-radius: 5px; border: 2px solid; cursor: pointer; line-height: 20px; margin: 0 10px; padding: 0px 5px; text-align: center; width: 10px;}
 .bip-toggled {display: none !important;}
 .bip-container .orrie-tooltip .top-1pTh1F {bottom: calc(100% + 10px);}
@@ -157,7 +157,7 @@ const BetterImagePopups = (function() {
 				}
 			}
 			node.classList.add("bip-container");
-			node.firstElementChild.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb orrie-tooltip orrie-relative"}, [
+			container.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb orrie-tooltip orrie-relative"}, [
 				_createElement("div", {className: "bip-zoom downloadLink-1ywL9o", textContent: "-",
 					onclick(click) {
 						zoomImage(click, "out", img, wrapper);
