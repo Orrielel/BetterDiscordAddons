@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.1.0",
+		version: "3.1.1",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -144,7 +144,7 @@ const CustomMediaSupport = (function() {
 											script.archive.chan[threadKey] = {html: container.innerHTML, tags: post.board.shortname};
 											BdApi.saveData(script.file, "archive", script.archive);
 											scrollElement(message.scrollHeight);
-										}, "GET", data);
+										}, "GET", data, true);
 									}
 								}
 								if (!script.archive.filter.includes(`thread/${data.postnumber[0]}`)) {
@@ -206,7 +206,7 @@ const CustomMediaSupport = (function() {
 								}
 								mediaEmbedding(data);
 							}
-						}, "GET", data);
+						}, "GET", data, true);
 					}
 				},
 				"gfycat.com": {
@@ -230,7 +230,7 @@ const CustomMediaSupport = (function() {
 									log("error", "gfycat", gfyItem);
 								}
 							}
-						}, "GET", data);
+						}, "GET", data, true);
 					}
 				},
 				"steamcommunity.com": {
@@ -267,7 +267,7 @@ const CustomMediaSupport = (function() {
 									message.insertBefore(container, message_body.nextSibling);
 									mediaReplace(message);
 									scrollElement(message.scrollHeight);
-								}, "POST", data);
+								}, "POST", data, true);
 							}
 							if (!script.archive.filter.includes(data.fileFilter)) {
 								script.archive.filter.push(data.fileFilter);
@@ -1266,7 +1266,7 @@ const CustomMediaSupport = (function() {
 		}
 		return element;
 	},
-	request = function(name, api, handler, method, data) {
+	request = function(name, api, handler, method, data, cors) {
 		// request handler
 		let headers = {
 			"Accept": "application/json",
@@ -1293,7 +1293,7 @@ const CustomMediaSupport = (function() {
 		//}
 		//else {
 			log("info", name, "use fetch() with proxy");
-			fetch(`https://cors-anywhere.herokuapp.com/${api}`, {
+			fetch(`${cors ? "https://cors-anywhere.herokuapp.com/" : ""}${api}`, {
 				method,
 				headers,
 				body: data.apiData ? data.apiData : null
