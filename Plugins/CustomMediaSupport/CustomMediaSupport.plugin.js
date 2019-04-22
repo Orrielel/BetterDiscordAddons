@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.1.1",
+		version: "3.1.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -52,7 +52,7 @@ const CustomMediaSupport = (function() {
 								}
 								else {
 									data.apiData = `{"method":"gdata","gidlist":[["${data.hrefSplit[4]}","${data.hrefSplit[5]}"]],"namespace":1}`;
-									request("sadpanda", "https://e-hentai.org/api.php", function(resp, {message, message_body}) {
+									request({name: "sadpanda", api: "https://e-hentai.org/api.php", method: "POST", data}, function(resp, {message, message_body}) {
 										// fetch sadpanda gallery information
 										const gallery = resp.gmetadata[0];
 										if (gallery) {
@@ -93,7 +93,7 @@ const CustomMediaSupport = (function() {
 										else {
 											log("error", "sadpandaFetch - galleries returns empty?", resp);
 										}
-									}, "POST", data);
+									});
 								}
 								if (!script.archive.filter.includes(galleryKey)) {
 									script.archive.filter.push(galleryKey);
@@ -119,7 +119,7 @@ const CustomMediaSupport = (function() {
 								else {
 									data.archive = archiveCheck(data.hrefSplit[3]);
 									if (data.archive) {
-										request("4chan", `${data.archive}/_/api/chan/thread/?board=${data.hrefSplit[3]}&num=${data.postnumber[0]}`, function(resp, {archive, message, message_body, href, hrefSplit, postnumber}) {
+										request({name: "4chan", api: `${data.archive}/_/api/chan/thread/?board=${data.hrefSplit[3]}&num=${data.postnumber[0]}`, method: "GET", cors: true, data}, function(resp, {archive, message, message_body, href, hrefSplit, postnumber}) {
 											// fetch knitting image board information
 											const thread = resp[postnumber[0]],
 											post = thread.posts && thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
@@ -144,7 +144,7 @@ const CustomMediaSupport = (function() {
 											script.archive.chan[threadKey] = {html: container.innerHTML, tags: post.board.shortname};
 											BdApi.saveData(script.file, "archive", script.archive);
 											scrollElement(message.scrollHeight);
-										}, "GET", data, true);
+										});
 									}
 								}
 								if (!script.archive.filter.includes(`thread/${data.postnumber[0]}`)) {
@@ -183,7 +183,7 @@ const CustomMediaSupport = (function() {
 						return {fileMedia, fileReplace: false, href};
 					},
 					api(data) {
-						request("imgur", `https://api.imgur.com/3/image/${data.fileName}`, function(resp, data) {
+						request({name: "imgur", api: `https://api.imgur.com/3/image/${data.fileName}`, method: "GET", cors: true, fallback: true, data}, function(resp, data) {
 							const item = resp.success ? resp.data : false;
 							if (item) {
 								data.href = item.mp4;
@@ -206,7 +206,7 @@ const CustomMediaSupport = (function() {
 								}
 								mediaEmbedding(data);
 							}
-						}, "GET", data, true);
+						});
 					}
 				},
 				"gfycat.com": {
@@ -214,7 +214,7 @@ const CustomMediaSupport = (function() {
 						return {fileMedia: "video", fileName: fileName.replace("-mobile",""), fileReplace: true, href};
 					},
 					api(data) {
-						request("gfycat", `https://api.gfycat.com/v1/gfycats/${data.fileName}`, function({gfyItem}, data) {
+						request({name: "gfycat", api: `https://api.gfycat.com/v1/gfycats/${data.fileName}`, method: "GET", cors: true, fallback: true, data}, function({gfyItem}, data) {
 							if (gfyItem) {
 								data.href = gfyItem.mp4Url;
 								data.fileTitle = gfyItem.gfyName;
@@ -230,7 +230,7 @@ const CustomMediaSupport = (function() {
 									log("error", "gfycat", gfyItem);
 								}
 							}
-						}, "GET", data, true);
+						});
 					}
 				},
 				"steamcommunity.com": {
@@ -248,7 +248,7 @@ const CustomMediaSupport = (function() {
 							}
 							else {
 								data.apiData = `itemcount=1&publishedfileids[0]=${fileKey}&format=json`;
-								request("steam", `https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/`, function({response}, {message, message_body}) {
+								request({name: "steam", api: `https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/`, method: "POST", cors: true, data}, function({response}, {message, message_body}) {
 									// fetch knitting image board information
 									const file = response.publishedfiledetails[0];
 									let container;
@@ -267,7 +267,7 @@ const CustomMediaSupport = (function() {
 									message.insertBefore(container, message_body.nextSibling);
 									mediaReplace(message);
 									scrollElement(message.scrollHeight);
-								}, "POST", data, true);
+								});
 							}
 							if (!script.archive.filter.includes(data.fileFilter)) {
 								script.archive.filter.push(data.fileFilter);
@@ -620,10 +620,13 @@ const CustomMediaSupport = (function() {
 				}
 			}
 			modal.remove();
-		};
+		},
+		modalParent = document.getElementById("app-mount").lastElementChild;
+		// modify modalContent if there's relevant data
 		if (data) {
 			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb userSelectText-1o1dQ7 customModalText", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
 		}
+		// create modal structure
 		const modal = _createElement("span", {className: `${script.file}Modal orriePluginModal`}, [
 			_createElement("div", {className: "backdrop-1wrmKB", onclick() {removeModal(modal);}}),
 			_createElement("div", {className: "modal-1UGdnR"},
@@ -634,7 +637,12 @@ const CustomMediaSupport = (function() {
 		if (button) {
 			button.addEventListener('click', function() {removeModal(modal);}, false);
 		}
-		document.getElementById("app-mount").lastElementChild.appendChild(modal);
+		if (modalParent.classList.contains("layerContainer-yqaFcK")) {
+			modalParent.previousElementSibling.appendChild(modal);
+		}
+		else {
+			modalParent.appendChild(modal);
+		}
 	},
 	mediaCheck = function(message, fileFilter) {
 		const mediaElements = message.getElementsByClassName("customMedia");
@@ -1266,7 +1274,8 @@ const CustomMediaSupport = (function() {
 		}
 		return element;
 	},
-	request = function(name, api, handler, method, data, cors) {
+	request = function({name, api, method, cors, fallback, data}, handler) {
+		log("info", name, "use fetch() with proxy");
 		// request handler
 		let headers = {
 			"Accept": "application/json",
@@ -1275,38 +1284,22 @@ const CustomMediaSupport = (function() {
 		if (script.headers[name]) {
 			headers = Object.assign(headers, script.headers[name]);
 		}
-		//if (jQuery) {
-		//	log("info", name, "use jQuery Ajax");
-		//	jQuery.ajax({
-		//		type: method,
-		//		url: api,
-		//		crossdomain: true,
-		//		async: true,
-		//		data: data.apiData ? data.apiData : null,
-		//		dataType: "json"
-		//	}).done(function(resp) {
-		//		log("info", name, [api, resp, data]);
-		//		handler(resp, data);
-		//	}).fail(function(resp) {
-		//		console.error(`${resp.status} ${resp.statusText}: ${resp.url}`);
-		//	});
-		//}
-		//else {
-			log("info", name, "use fetch() with proxy");
-			fetch(`${cors ? "https://cors-anywhere.herokuapp.com/" : ""}${api}`, {
-				method,
-				headers,
-				body: data.apiData ? data.apiData : null
-			}).then(function(resp) {
-				if (resp.status >= 200 && resp.status < 300) {
-					return resp.json();
-				}
-				throw new Error(`${resp.status} ${resp.statusText}: ${resp.url}`);
-			}).then(function(resp) {
-				log("info", name, [api, resp, data]);
-				handler(resp, data);
-			});
-		//}
+		fetch(`${cors ? "https://cors-anywhere.herokuapp.com/" : ""}${api}`, {
+			method,
+			headers,
+			body: data.apiData ? data.apiData : null
+		}).then(function(resp) {
+			if (resp.status >= 200 && resp.status < 300) {
+				return resp.json();
+			}
+			else if (fallback) {
+				mediaEmbedding(data);
+			}
+			throw new Error(`${resp.status} ${resp.statusText}: ${resp.url}`);
+		}).then(function(resp) {
+			log("info", name, [api, resp, data]);
+			handler(resp, data);
+		});
 	};
 	// return class construction
 	return class CustomMediaSupport {
