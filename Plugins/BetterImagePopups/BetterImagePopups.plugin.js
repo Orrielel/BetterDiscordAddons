@@ -7,16 +7,17 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.5.0",
+		version: "1.5.1",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
 		raw: "https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/BetterImagePopups/BetterImagePopups.plugin.js",
 		discord: "https://discord.gg/YEZkpkj",
-		settings: {fullRes: true, onClick: false, minSize: false, height: "auto", width: "auto", tooltips: false, debug: false},
+		settings: {fullRes: true, fileSize: false, onClick: false, minSize: false, height: "auto", width: "auto", tooltips: false, debug: false},
 		settingsMenu: {
 			//        localized                  type     description
 			fullRes:  ["Full Resolution Images",  "check", "Replaces images with full resolution.<br>NOTE: Zooming is always possible. Default is 25% per click.<br>Use CTRL (100%), SHIFT (50%) and ALT (200%) to manipulate the zooming clicks."],
+			fileSize: ["Get Filesize",            "check", "Get image filesize -- Loads the image through a proxy"],
 			onClick:  ["Load on Click",           "check", "Only use full resolution when clicking the image -- disables zoom when not using full resolution"],
 			minSize:  ["Minimum Size for Images", "check", "Use a minimum height/width for images (use 'auto' for no minimum limit)"],
 			height:   ["Height",                  "text",  "In pixels"],
@@ -151,9 +152,15 @@ const BetterImagePopups = (function() {
 			wrapper.removeAttribute("target");
 			img.fullRes = false;
 			if (script.settings.fullRes) {
-				container.appendChild(_createElement("div", {className: "bip-progress bip-toggled", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution (<span>0%</span>)</div>"}));
-				if (!script.settings.onClick) {
-					imageLoadHandler(img, fullSrc, proxy);
+				if (script.settings.fileSize) {
+					container.appendChild(_createElement("div", {className: "bip-progress bip-toggled", id: "bip-progress", innerHTML: "<div class='bip-progress_bar' id='bip-progress_bar'>Loading Full Resolution (<span>0%</span>)</div>"}));
+					if (!script.settings.onClick) {
+						imageLoadHandler(img, fullSrc, proxy);
+					}
+				}
+				else {
+					img.src = proxy;
+					img.fullRes = true;
 				}
 			}
 			node.classList.add("bip-container");
