@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.1.3",
+		version: "3.1.4",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -345,7 +345,8 @@ const CustomMediaSupport = (function() {
 			"203770": "Crusader Kings II",
 			"236850": "Europa Universalis IV",
 			"281990": "Stellaris",
-			"394360": "Hearts of Iron IV"
+			"394360": "Hearts of Iron IV",
+			"859580": "Imperator Rome"
 		},
 		chan: {
 			nsfw: ["aco","b","bant","d","e","gif","h","hc","hm","hr","pol","r","r9k","s","s4s","soc","t","u","y"],
@@ -620,7 +621,7 @@ const CustomMediaSupport = (function() {
 			}
 			modal.remove();
 		},
-		modalParent = document.getElementById("app-mount").lastElementChild;
+		modalParent = document.getElementById("app-mount").lastElementChild.lastElementChild;
 		// modify modalContent if there's relevant data
 		if (data) {
 			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb userSelectText-1o1dQ7 customModalText", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
@@ -715,7 +716,7 @@ const CustomMediaSupport = (function() {
 		if (!script.check.media) {
 			script.check.media = true;
 			let parent = type == "metadata" ? node.closest(".messageCozy-2JPAPA") : node;
-			const links = parent.querySelectorAll(script.classes[type]);
+			const links = parent ? parent.querySelectorAll(script.classes[type]) : false;
 			log("info", `mediaConvert ${type}`, {parent, links});
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
