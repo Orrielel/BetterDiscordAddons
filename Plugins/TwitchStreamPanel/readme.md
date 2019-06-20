@@ -1,6 +1,6 @@
 # Discontinued -- Not updating anymore
 
-# Twitch Stream Panel - [Download](https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/TwitchStreamPanel/TwitchStreamPanel.plugin.js)
+# Twitch Stream Panel
 
 ### Quick Rundown
 
