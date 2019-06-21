@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.5.1",
+		version: "1.5.2",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -55,8 +55,8 @@ const BetterImagePopups = (function() {
 			`,
 			shared: `
 .orriePluginModal .backdrop-1wrmKB {background-color: #000000; opacity: 0.85;}
-.orriePluginModal .modal-1UGdnR {opacity: 1;}
-.orriePluginModal .modal-3HD5ck {padding: 0 20px; width: 800px;}
+.orriePluginModal .modal-36zFtW {opacity: 1;}
+.orriePluginModal .modal-3v8ziU {padding: 0 20px; width: 800px;}
 .orriePluginModal .description-3_Ncsb {font-size: 16px; line-height: 24px;}
 .orrie-plugin .buttonBrandFilled-3Mv0Ra a {color: #FFFFFF !important;}
 .orrie-buttonRed, .bda-slist .orrie-buttonRed {background-color: #F04747 !important;}
@@ -419,7 +419,7 @@ const BetterImagePopups = (function() {
 		observer({addedNodes}) {
 			if (addedNodes.length > 0) {
 				const node = addedNodes[0];
-				if (node.classList && node.classList.contains("modal-1UGdnR")) {
+				if (node.classList && node.classList.contains("modal-36zFtW")) {
 					const wrapper = node.getElementsByClassName("imageWrapper-2p5ogY")[0];
 					if (wrapper && !wrapper.classList.contains("embedVideoImageComponent-34z3di") && !node.getElementsByClassName("uploadModal-2ifh8j")[0]) {
 						BdApi.clearCSS(`${script.file}-zoom`);
