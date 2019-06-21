@@ -721,7 +721,6 @@ const CustomMediaSupport = (function() {
 			let parent = type == "metadata" ? node.closest(".messageCozy-2JPAPA") : node;
 			const links = parent ? parent.querySelectorAll(script.classes[type]) : false;
 			log("info", `mediaConvert ${type}`, {parent, links});
-			console.log(`mediaConvert ${type}`, {parent, links});
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.tagName == "VIDEO" && !link.getAttribute("src") && link.getElementsByTagName("SOURCE").length) {
@@ -1340,9 +1339,9 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
-					if (node.closest(".messagesWrapper-3lZDfY")) {
-						console.log(node.classList[0], node);
-					}
+					//if (node.closest(".messagesWrapper-3lZDfY")) {
+					//	console.log(node.classList[0], node);
+					//}
 					switch(node.classList[0]) {
 						case "chat-3bRxxu":
 						case "content-yTz4x3":
