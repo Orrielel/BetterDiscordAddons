@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.5.3",
+		version: "1.5.4",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -31,10 +31,10 @@ const BetterImagePopups = (function() {
 .bip-container .scrollerWrap-2lJEkd {display: initial; min-height: unset;}
 .bip-container .imageWrapper-2p5ogY img {position: static;}
 .bip-container .spinner-2enMB9 {position: absolute;}
-.bip-container .bip-scroller {margin-bottom: 6px; max-height: calc(100vh - 160px); max-width: calc(100vw - 160px); overflow: auto;}
+.bip-container .bip-scroller {margin-bottom: 6px; max-height: calc(100vh - 220px); max-width: calc(100vw - 220px); overflow: auto;}
 .bip-container .bip-scroller img {vertical-align: middle;}
 .bip-container .bip-scroller::-webkit-scrollbar-corner {background: rgba(0,0,0,0);}
-.bip-container .bip-center {max-height: calc(100vh - 160px); max-width: calc(100vw - 160px);}
+.bip-container .bip-center {max-height: calc(100vh - 220px); max-width: calc(100vw - 220px);}
 .bip-container .bip-description {font-size: 16px; line-height: 24px;}
 .bip-container .bip-description > span {margin-left: 4px;}
 .bip-container .bip-description > span+span:before {content: "–"; font-weight: bold; margin-right: 4px;}
