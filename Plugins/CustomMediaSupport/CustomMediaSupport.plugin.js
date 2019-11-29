@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.1.9",
+		version: "3.2.0",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -76,7 +76,7 @@ const CustomMediaSupport = (function() {
 												}
 											}
 											const galleryKey = `${gallery.gid}_${gallery.token}`,
-											container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customSadpanda gallery${galleryKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j embed cat-${gallery.category}'><div class='grid-1nZz7S'/><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsString}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='customIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
+											container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customSadpanda gallery${galleryKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j embed cat-${gallery.category.toLowerCase().replace(" ","")}'><div class='grid-1nZz7S'/><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsString}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='customIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
 											message.insertBefore(container, message_body.nextSibling);
 											// cache embed html in database
 											script.archive.sadpanda[galleryKey] = {html: container.innerHTML, tags: tagsFilter.join(" ")};
@@ -454,26 +454,26 @@ const CustomMediaSupport = (function() {
 .customSadpanda .gallery_preview img {max-height: 250px;}
 .customSadpanda .embed-IeVjo6 {max-width: 750px;}
 .customSadpanda .embedInner-1-fpTo {flex-grow: 1;}
-.customSadpanda .embedFull-2tM8--.cat-Doujinshi {border-color: #FF2525;}
-.customSadpanda .embedFull-2tM8--.cat-Manga {border-color: #FFB225;}
-.customSadpanda .embedFull-2tM8--.cat-Artistcg {border-color: #E8D825;}
-.customSadpanda .embedFull-2tM8--.cat-Gamecg {border-color: #259225;}
-.customSadpanda .embedFull-2tM8--.cat-Western {border-color: #9AFF38;}
-.customSadpanda .embedFull-2tM8--.cat-Non-H {border-color: #38ACFF;}
-.customSadpanda .embedFull-2tM8--.cat-Imageset {border-color: #2525FF;}
-.customSadpanda .embedFull-2tM8--.cat-Cosplay {border-color: #652594;}
-.customSadpanda .embedFull-2tM8--.cat-Asianporn {border-color #F2A7F2;}
-.customSadpanda .embedFull-2tM8--.cat-Misc {border-color: #D3D3D3;}
-.customSadpanda .gallery_info .cat-Doujinshi {color: #FF2525;}
-.customSadpanda .gallery_info .cat-Manga {color: #FFB225;}
-.customSadpanda .gallery_info .cat-Artistcg {color: #E8D825;}
-.customSadpanda .gallery_info .cat-Gamecg {color: #259225;}
-.customSadpanda .gallery_info .cat-Western {color: #9AFF38;}
-.customSadpanda .gallery_info .cat-Non-H {color: #38ACFF;}
-.customSadpanda .gallery_info .cat-Imageset {color: #2525FF;}
-.customSadpanda .gallery_info .cat-Cosplay {color: #652594;}
-.customSadpanda .gallery_info .cat-Asianporn {color: #F2A7F2;}
-.customSadpanda .gallery_info .cat-Misc {color: #D3D3D3;}
+.customSadpanda .embedFull-2tM8--.cat-doujinshi {border-color: #FF2525;}
+.customSadpanda .embedFull-2tM8--.cat-manga {border-color: #FFB225;}
+.customSadpanda .embedFull-2tM8--.cat-artistcg {border-color: #E8D825;}
+.customSadpanda .embedFull-2tM8--.cat-aamecg {border-color: #259225;}
+.customSadpanda .embedFull-2tM8--.cat-western {border-color: #9AFF38;}
+.customSadpanda .embedFull-2tM8--.cat-non-h {border-color: #38ACFF;}
+.customSadpanda .embedFull-2tM8--.cat-imageset {border-color: #2525FF;}
+.customSadpanda .embedFull-2tM8--.cat-cosplay {border-color: #652594;}
+.customSadpanda .embedFull-2tM8--.cat-asianporn {border-color #F2A7F2;}
+.customSadpanda .embedFull-2tM8--.cat-misc {border-color: #D3D3D3;}
+.customSadpanda .gallery_info .cat-doujinshi {color: #FF2525;}
+.customSadpanda .gallery_info .cat-manga {color: #FFB225;}
+.customSadpanda .gallery_info .cat-artistcg {color: #E8D825;}
+.customSadpanda .gallery_info .cat-gamecg {color: #259225;}
+.customSadpanda .gallery_info .cat-western {color: #9AFF38;}
+.customSadpanda .gallery_info .cat-non-h {color: #38ACFF;}
+.customSadpanda .gallery_info .cat-imageset {color: #2525FF;}
+.customSadpanda .gallery_info .cat-cosplay {color: #652594;}
+.customSadpanda .gallery_info .cat-asianporn {color: #F2A7F2;}
+.customSadpanda .gallery_info .cat-misc {color: #D3D3D3;}
 /* 4chan previews */
 .customChan {color: #AAAAAA; display: inline-flex;}
 .customChan .embed-IeVjo6 {max-width: 640px; min-width: 520px;}
@@ -1167,7 +1167,7 @@ const CustomMediaSupport = (function() {
 		// parse messages for text conversion
 		if (!script.check.textParser) {
 			script.check.textParser = true;
-			const messages = (node.classList.contains("edited-DL9ECl") ? node.closest(".containerCozy-336-Cz") : node).querySelectorAll(".markup-2BOw-j:not(.textParserProcessed)");
+			const messages = ((node.classList.contains("edited-DL9ECl") || node.classList.contains("icon-3UTRNc")) && node.closest(".containerCozy-336-Cz") ? node.closest(".containerCozy-336-Cz") : node).querySelectorAll(".markup-2BOw-j:not(.textParserProcessed)");
 			log("info", "textParser", messages);
 			for (let _m=messages.length; _m--;) {
 				const elem = messages[_m];
@@ -1359,7 +1359,7 @@ const CustomMediaSupport = (function() {
 							}
 							/* falls through */
 						case "containerCozyBounded-1rKFAn":
-						case "messageCozy-2JPAPA":
+						case "containerCozy-336-Cz":
 							mediaConvert("messages", node);
 							mediaReplace(node);
 							textParser(node);
@@ -1374,6 +1374,7 @@ const CustomMediaSupport = (function() {
 							mediaReplace(node);
 							break;
 						case "edited-DL9ECl":
+						case "icon-3UTRNc":
 							textParser(node);
 							break;
 					}
