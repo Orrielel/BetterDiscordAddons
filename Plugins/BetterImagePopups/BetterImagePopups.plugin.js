@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.5.5",
+		version: "1.5.6",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -38,7 +38,6 @@ const BetterImagePopups = (function() {
 .bip-container .bip-description {font-size: 16px; line-height: 24px;}
 .bip-container .bip-description > span {margin-left: 4px;}
 .bip-container .bip-description > span+span:before {content: "–"; font-weight: bold; margin-right: 4px;}
-.bip-container .downloadLink-1ywL9o {align-self: unset; text-transform: capitalize;}
 .bip-container .bip-controls {margin: 0 auto; padding: 10px 25px; visibility: hidden;}
 .bip-container.bip-scaling .bip-controls {visibility: visible;}
 .bip-container .bip-controls > div:not(.tooltip-2QfLtc) {display: inline-block;}
@@ -47,6 +46,10 @@ const BetterImagePopups = (function() {
 .bip-container .orrie-tooltip .tooltipTop-XDDSxx {bottom: calc(100% + 10px);}
 .bip-container .orrie-tooltip .tooltipBottom-3ARrEK {top: 100%;}
 .bip-container.bip-scaling .scrollerWrap-2lJEkd .tooltip {display: none;}
+.bip-container .downloadLink-1ywL9o {align-self: unset; text-transform: capitalize;}
+.bip-container .bip-seperator {margin: 0 5px;}
+.bip-container span.downloadLink-1ywL9o {display: none;}
+
 // progress bar
 @-webkit-keyframes progress-bar-stripes {from {background-position: 40px 0;} to {background-position: 0 0;}}
 @keyframes progress-bar-stripes {from { background-position: 40px 0;} to { background-position: 0 0;}}
@@ -146,7 +149,8 @@ const BetterImagePopups = (function() {
 		if (img.src && wrapper.getElementsByTagName("VIDEO").length === 0) {
 			const proxy = img.src.split("?")[0],
 			container = wrapper.parentNode,
-			fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy;
+			fullSrc = /\/external\//.test(proxy) ? proxy.match(/http[s\/\.][\w\.\-\/]+/g)[0].replace(/https\/|http\//,"https://") : proxy,
+			imageActions = container.querySelectorAll("a.downloadLink-1ywL9o");
 			wrapper.href = fullSrc;
 			wrapper.style.cssText = "";
 			wrapper.removeAttribute("target");
@@ -164,6 +168,13 @@ const BetterImagePopups = (function() {
 				}
 			}
 			node.classList.add("bip-container");
+			if (imageActions.length == 2) {
+				container.appendChild(_createElement("div", {className: "bip-actions"}, [
+					imageActions[0],
+					_createElement("div", {className: "downloadLink-1ywL9o bip-seperator", textContent: " | "}),
+					imageActions[1]
+				]));
+			}
 			container.appendChild(_createElement("div", {className: "bip-controls description-3_Ncsb orrie-tooltip orrie-relative"}, [
 				_createElement("div", {className: "bip-zoom downloadLink-1ywL9o", textContent: "-",
 					onclick(click) {
