@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.2.1",
+		version: "3.2.2",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -23,7 +23,7 @@ const CustomMediaSupport = (function() {
 			audio:  "wrapperAudio-1jDe0Q wrapper-2TxpI8",
 			img:    "imageWrapper-2p5ogY noScroll-3xWe_g",
 			iframe: "imageWrapper-2p5ogY noScroll-3xWe_g",
-			messages: ".markup-2BOw-j > a:not(.customIgnore), .containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V",
+			messages: ".markupRtl-3M0hmN > a:not(.customIgnore), .containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V",
 			metadata: ".containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V:not(.customIgnore), .containerCozy-B4noqO:not(.media-replace) .embedVideo-3nf0O9:not(.customIgnore)"
 		},
 		headers: {
@@ -402,11 +402,11 @@ const CustomMediaSupport = (function() {
 .customMedia.customAudio .audioControls-2HsaU6 {vertical-align: middle; width: 25vw; min-width: 500px;}
 .customMedia.customImg img {margin-top: 40px; min-height: 50px; min-width: 400px;}
 .customMedia.customImg .imageWrapper-2p5ogY img {position: static;}
-.customMedia.customVideo video {align-self: center; cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; vertical-align: middle; width: auto; max-width: 25vw; max-height: 50vh; min-width: 300px;}
+.customMedia.customVideo video {align-self: center; cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; vertical-align: middle; width: auto; max-width: 25vw; max-height: 25vh; min-width: 300px;}
 .customMedia.customVideo video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.customVideo.customMediaHorizontal video {max-width: calc(100vw - 740px); min-height: 35vh;}
 .customMedia.customVideo.customMediaVertical video {height: 60vh; max-width: 100%; max-height: unset;}
-.customMedia.customVideo.customMediaHorizontal .metadataButtonExpand::after, .customMedia.customVideo.customMediaVertical .metadataButtonExpand::after {border: 3px solid #3A71C1; content: ''; display: inline-flex; height: 9px; margin-left: 1px; vertical-align: middle; width: 13px;}
+.customMedia.customVideo.customMediaHorizontal .metadataButtonExpand::after, .customMedia.customVideo.customMediaVertical .metadataButtonExpand::after {border: 3px solid #3A71C1; content: ''; display: inline-flex; height: 10px; margin-left: 2px; vertical-align: middle; width: 12px;}
 .customMedia.customVideo .metadata-13NcHb {background: none; display: none; padding: 10px 10px 0;}
 .customMedia.customVideo .imageWrapper-2p5ogY {display: flex; flex-direction: column; min-width: 400px; overflow: visible;}
 .customMedia.customVideo .imageWrapper-2p5ogY:hover .metadata-13NcHb {display: flex;}
@@ -1349,7 +1349,7 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
-					//if (node.closest(".containerCozyBounded-1rKFAn")) {
+					//if (node.closest(".chatContent-a9vAAp")) {
 					//	console.log(node.classList[0], node);
 					//}
 					switch(node.classList[0]) {
@@ -1367,6 +1367,7 @@ const CustomMediaSupport = (function() {
 							break;
 						case "metadataIcon-2FyCKU":
 						case "iconPlay-2kgvwV":
+						case "gifTag-31zFY8":
 							mediaConvert("metadata", node);
 							mediaReplace(node);
 							break;
