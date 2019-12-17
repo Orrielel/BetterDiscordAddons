@@ -353,7 +353,7 @@ const CustomMediaSupport = (function() {
 			archives: {
 				"https://archived.moe": ["3","a","aco","adv","an","asp","b","biz","c","cgl","ck","cm","co","con","d","diy","e","f","fa","fit","g","gd","gif","h","hc","his","hm","hr","i","ic","int","jp","k","lgbt","lit","m","mlp","mu","n","news","o","out","p","po","pol","q","qa","qst","r","r9k","s","s4s","sci","soc","sp","t","tg","toy","trash","trv","tv","u","v","vg","vip","vp","vr","w","wg","wsg","wsr","x","y"],
 				"https://desuarchive.org": ["a","aco","an","c","co","d","fit","gif","his","int","k","m","mlp","qa","r9k","tg","trash","vr","wsg"],
-				"https://boards.fireden.net": ["a","cm","ic","sci","tg","v","vg","y"],
+				"https://boards.fireden.net": ["cm","ic","sci","tg","y"],
 				"https://archiveofsins.com": ["h","hc","hm","r","s","soc"],
 				"https://archive.nyafuu.org": ["bant","asp","c","e","n","news","out","p","toy","vip","vp","w","wg","wsr"],
 				"https://archive.loveisover.me": ["c","d","e","i","lgbt","t","u"]
@@ -381,10 +381,11 @@ const CustomMediaSupport = (function() {
 /* custom embeds */
 .customMedia {color: hsla(0,0%,100%,0.7);}
 .messageCozy-2JPAPA .customMedia {padding: 0; position: relative; margin-bottom: 0;}
+.customMedia .grid-1nZz7S {grid-auto-rows: min-content; grid-template-rows: unset;}
 .customMedia table {border-spacing: 0;}
 .customMedia table td {font-size: 0.875rem; vertical-align: top;}
 .customMedia .embedFields-even {grid-template-columns: 50% 50%;}
-.customMedia .embedFields-minMax {grid-template-columns: min-content max-content;}
+.customMedia .embedFields-minMax {grid-template-columns: min-content auto;}
 .customMedia .embed-IeVjo6 {max-width: unset;}
 .customMedia .customMediaError {color: #F04747; margin: 0; max-width: 75vh; padding: 5px 10px;}
 .customMedia .metadata-13NcHb {border-radius: 3px; display: flex; height: auto; margin: 0; padding: 10px 12px 35px; top: -1px;}
@@ -451,7 +452,7 @@ const CustomMediaSupport = (function() {
 .customSadpanda .gallery_info .tag::after{content: ',';}
 .customSadpanda .gallery_info .tag:last-child::after {content: '';}
 .customSadpanda .gallery_preview {padding: 0; width: 1px;}
-.customSadpanda .gallery_preview img {max-height: 250px;}
+.customSadpanda .gallery_preview img {max-height: 300px;}
 .customSadpanda .embed-IeVjo6 {max-width: 750px;}
 .customSadpanda .embedInner-1-fpTo {flex-grow: 1;}
 .customSadpanda .embedFull-2tM8--.cat-doujinshi {border-color: #FF2525;}
@@ -477,8 +478,8 @@ const CustomMediaSupport = (function() {
 /* 4chan previews */
 .customChan {color: #AAAAAA; display: inline-flex;}
 .customChan .embed-IeVjo6 {max-width: 640px; min-width: 520px;}
-.customChan .embedFull-2tM8-- .board-sfw {background-color: #9099D0;}
-.customChan .embedFull-2tM8-- .board-nsfw {background-color: #FFBEAF;}
+.customChan .embedFull-2tM8--.board-sfw {border-color: #9099D0;}
+.customChan .embedFull-2tM8--.board-nsfw {border-color: #FFBEAF;}
 .customChan .embedInner-1-fpTo {flex-grow: 1;}
 .customChan .thread_head {position: relative;}
 .customChan .thread_head .thread_posttype {font-weight: bold; line-height: 30px; margin: 0 5px;}
@@ -487,6 +488,7 @@ const CustomMediaSupport = (function() {
 .customChan .thread_link {font-weight: 500; white-space: nowrap;}
 .customChan .thread_link span {display: inline; margin: 0 5px;}
 .customChan .thread_info {white-space: nowrap;}
+.customChan .thread_info span {margin-right: 3px;}
 .customChan .thread_info .thread_title {display: inline-block; font-weight: bold; max-width: 278px; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom;}
 .customChan .thread_info .thread_creator {color: #30A75C;}
 .customChan .thread_preview {padding: 0; width: 1px;}
@@ -529,7 +531,7 @@ const CustomMediaSupport = (function() {
 .customArchiveContainer > div {display: none;}
 .customArchiveContainer .customArchiveActive {display: flex}
 .customArchiveContainer .customMedia {margin: 5px 10px; position: relative;}
-.customArchiveContainer .customMedia .embed-IeVjo6 {flex-grow: 1; height: 100%; max-width: unset;}
+.customArchiveContainer .customMedia .embed-IeVjo6 {flex-grow: 1; height: 100%; max-width: unset; width: inherit;}
 .customArchiveContainer .customMedia.customSteam .embed-IeVjo6 {max-width: 400px;}
 .customArchiveDelete {position: absolute; top: 3px; right: 3px;}
 .customArchiveDelete:hover .close-hhyjWJ, .customArchiveClean:hover .close-hhyjWJ {background-color: rgba(240, 71, 71, 0.5);}
@@ -539,6 +541,7 @@ const CustomMediaSupport = (function() {
 #customArchiveChan .customChan {width: 620px;}
 #customArchiveChan .thread_head .thread_data {right: 30px;}
 #customArchiveSteam .customSteam {width: 400px;}
+#customArchiveSteam .customSteam .grid-1nZz7S {grid-auto-columns: 368px; grid-template-columns: unset;}
 			`,
 			shared: `
 .orriePluginModal .backdrop-1wrmKB {background-color: #000000; opacity: 0.85;}
@@ -717,13 +720,13 @@ const CustomMediaSupport = (function() {
 		}
 		return false;
 	},
-	mediaConvert = function(type, node) {
+	mediaConvert = function(type, node, name) {
 		// main media function -- checks every anchor element in messages
 		if (!script.check.media) {
 			script.check.media = true;
 			let parent = type == "metadata" ? node.closest(".messageCozy-2JPAPA") : node;
 			const links = parent ? parent.querySelectorAll(script.classes[type]) : false;
-			log("info", `mediaConvert ${type}`, {parent, links});
+			log("info", `mediaConvert - ${type} - ${name}`, {parent, links});
 			for (let _l=links.length; _l--;) {
 				const link = links[_l];
 				if (link.tagName == "VIDEO" && !link.getAttribute("src") && link.getElementsByTagName("SOURCE").length) {
@@ -1164,12 +1167,12 @@ const CustomMediaSupport = (function() {
 			}), menuAnchor.firstChild);
 		}
 	},
-	textParser = function(node) {
+	textParser = function(node, name) {
 		// parse messages for text conversion
 		if (!script.check.textParser) {
 			script.check.textParser = true;
 			const messages = ((node.classList.contains("edited-DL9ECl") || node.classList.contains("icon-3UTRNc")) && node.closest(".containerCozy-336-Cz") ? node.closest(".containerCozy-336-Cz") : node).querySelectorAll(".markup-2BOw-j:not(.textParserProcessed)");
-			log("info", "textParser", messages);
+			log("info", `textParser - ${name}`, messages);
 			for (let _m=messages.length; _m--;) {
 				const elem = messages[_m];
 				if (elem.firstElementChild && elem.firstElementChild.tagName == "PRE") {
@@ -1341,8 +1344,8 @@ const CustomMediaSupport = (function() {
 			insertCustomMenu("customMenuIcon", `${script.name} Archive`);
 			const messages = document.getElementsByClassName("messages-3amgkR")[0];
 			if (messages) {
-				mediaConvert("messages", messages);
-				textParser(messages);
+				mediaConvert("messages", messages, "start");
+				textParser(messages, "start");
 			}
 		}
 		observer({addedNodes}) {
@@ -1352,7 +1355,8 @@ const CustomMediaSupport = (function() {
 					//if (node.closest(".chatContent-a9vAAp")) {
 					//	console.log(node.classList[0], node);
 					//}
-					switch(node.classList[0]) {
+					const name = node.classList[0];
+					switch(name) {
 						case "chatContent-a9vAAp":
 						case "chat-3bRxxu":
 							if (!document.getElementsByClassName("customMenuIcon")[0]) {
@@ -1361,14 +1365,14 @@ const CustomMediaSupport = (function() {
 							/* falls through */
 						case "containerCozyBounded-1rKFAn":
 						case "containerCozy-336-Cz":
-							mediaConvert("messages", node);
+							mediaConvert("messages", node, name);
 							mediaReplace(node);
-							textParser(node);
+							textParser(node, name);
 							break;
 						case "metadataIcon-2FyCKU":
 						case "iconPlay-2kgvwV":
 						case "gifTag-31zFY8":
-							mediaConvert("metadata", node);
+							mediaConvert("metadata", node, name);
 							mediaReplace(node);
 							break;
 						case "wrapperPaused-19pWuK":
@@ -1377,7 +1381,7 @@ const CustomMediaSupport = (function() {
 							break;
 						case "edited-DL9ECl":
 						case "icon-3UTRNc":
-							textParser(node);
+							textParser(node, name);
 							break;
 					}
 				}
