@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.2.2",
+		version: "3.2.3",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -23,7 +23,7 @@ const CustomMediaSupport = (function() {
 			audio:  "wrapperAudio-1jDe0Q wrapper-2TxpI8",
 			img:    "imageWrapper-2p5ogY noScroll-3xWe_g",
 			iframe: "imageWrapper-2p5ogY noScroll-3xWe_g",
-			messages: ".markupRtl-3M0hmN > a:not(.customIgnore), .containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V",
+			messages: ".markupRtl-3M0hmN > a:not(.customIgnore), .containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V, .containerCozy-B4noqO:not(.media-replace) .fileNameLink-9GuxCo",
 			metadata: ".containerCozy-B4noqO:not(.media-replace) .metadataDownload-1fk90V:not(.customIgnore), .containerCozy-B4noqO:not(.media-replace) .embedVideo-3nf0O9:not(.customIgnore)"
 		},
 		headers: {
@@ -45,7 +45,7 @@ const CustomMediaSupport = (function() {
 						if (script.settings.sadpanda && /\/g\//.test(data.href)) {
 							const galleryKey = `${data.hrefSplit[4]}_${data.hrefSplit[5]}`;
 							if (!data.message.getElementsByClassName(`gallery${galleryKey}`).length) {
-								const entry  = script.archive.sadpanda[galleryKey];
+								const entry = script.archive.sadpanda[galleryKey];
 								if (entry && entry.html) {
 									data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customSadpanda gallery${galleryKey}`, innerHTML: entry.html}), data.message_body.nextSibling);
 									scrollElement(data.message.scrollHeight);
@@ -111,7 +111,7 @@ const CustomMediaSupport = (function() {
 							data.postnumber = data.hrefSplit[5].match(/\d+/g);
 							const threadKey = `${data.hrefSplit[3]}_${data.postnumber[1] ? data.hrefSplit[5].replace("#","_") : data.hrefSplit[5]}`;
 							if (!data.message.getElementsByClassName(`post${threadKey}`).length) {
-								const entry  = script.archive.chan[threadKey];
+								const entry = script.archive.chan[threadKey];
 								if (entry && entry.html) {
 									data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: entry.html}), data.message_body.nextSibling);
 									scrollElement(data.message.scrollHeight);
@@ -121,29 +121,31 @@ const CustomMediaSupport = (function() {
 									if (data.archive) {
 										request({name: "4chan", api: `${data.archive}/_/api/chan/thread/?board=${data.hrefSplit[3]}&num=${data.postnumber[0]}`, method: "GET", cors: true, data}, function(resp, {archive, message, message_body, href, hrefSplit, postnumber}) {
 											// fetch knitting image board information
-											const thread = resp[postnumber[0]],
-											post = thread.posts && thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
-											threadKey = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
-											isReply = thread.posts && thread.posts[postnumber[1]] ? true : false,
-											isNotSafe = script.chan.nsfw.includes(hrefSplit[3]),
-											boardUrl = `https://boards.${isNotSafe ? "4chan" : "4channel"}.org/${post.board.shortname}/`,
-											counts = thread.posts ? (function(posts) {
-												let reply = 0, media = 1;
-												for (let _p_k=Object.keys(posts), _p=_p_k.length; _p--;) {
-													reply++;
-													if (posts[_p_k[_p]].media) {
-														media++;
+											if (!resp.error) {
+												const thread = resp[postnumber[0]],
+												post = thread.posts && thread.posts[postnumber[1]] ? thread.posts[postnumber[1]] : thread.op,
+												threadKey = `${post.board.shortname}_${postnumber[1] ? `${postnumber[0]}_p${postnumber[1]}` : postnumber[0]}`,
+												isReply = thread.posts && thread.posts[postnumber[1]] ? true : false,
+												isNotSafe = script.chan.nsfw.includes(hrefSplit[3]),
+												boardUrl = `https://boards.${isNotSafe ? "4chan" : "4channel"}.org/${post.board.shortname}/`,
+												counts = thread.posts ? (function(posts) {
+													let reply = 0, media = 1;
+													for (let _p_k=Object.keys(posts), _p=_p_k.length; _p--;) {
+														reply++;
+														if (posts[_p_k[_p]].media) {
+															media++;
+														}
 													}
-												}
-												return [reply, media];
-											})(thread.posts) : [0,1],
-											container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j ${isNotSafe ? "board-nsfw" : "board-sfw"} embed'><div class='grid-1nZz7S'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='${boardUrl}' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${isReply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='customIgnore' href='${boardUrl}thread/${postnumber[0]}' target='_blank' rel='noreferrer'>${boardUrl}thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span><span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span><span class='thread_postid'><a class='customIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='customIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='customIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
-											message.insertBefore(container, message_body.nextSibling);
-											mediaReplace(message);
-											// cache embed html in database
-											script.archive.chan[threadKey] = {html: container.innerHTML, tags: post.board.shortname};
-											BdApi.saveData(script.file, "archive", script.archive);
-											scrollElement(message.scrollHeight);
+													return [reply, media];
+												})(thread.posts) : [0,1],
+												container = _createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j ${isNotSafe ? "board-nsfw" : "board-sfw"} embed'><div class='grid-1nZz7S'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='${boardUrl}' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${isReply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='customIgnore' href='${boardUrl}thread/${postnumber[0]}' target='_blank' rel='noreferrer'>${boardUrl}thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span><span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span><span class='thread_postid'><a class='customIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='customIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='customIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+												message.insertBefore(container, message_body.nextSibling);
+												mediaReplace(message);
+												// cache embed html in database
+												script.archive.chan[threadKey] = {html: container.innerHTML, tags: post.board.shortname};
+												BdApi.saveData(script.file, "archive", script.archive);
+												scrollElement(message.scrollHeight);
+											}
 										});
 									}
 								}
@@ -241,7 +243,7 @@ const CustomMediaSupport = (function() {
 						const fileKey = data.href.match(/\d+/g)[0],
 						nameKey = `steam${fileKey}`;
 						if (!data.message.getElementsByClassName(nameKey).length) {
-							const entry  = script.archive.steam[nameKey];
+							const entry = script.archive.steam[nameKey];
 							if (entry && entry.html) {
 								data.message.insertBefore(_createElement("div", {className: `containerCozy-B4noqO container-1e22Ot customMedia customSteam ${nameKey}`, innerHTML: entry.html}), data.message_body.nextSibling);
 								scrollElement(data.message.scrollHeight);
@@ -351,7 +353,7 @@ const CustomMediaSupport = (function() {
 		chan: {
 			nsfw: ["aco","b","bant","d","e","gif","h","hc","hm","hr","pol","r","r9k","s","s4s","soc","t","u","y"],
 			archives: {
-				"https://archived.moe": ["3","a","aco","adv","an","asp","b","biz","c","cgl","ck","cm","co","con","d","diy","e","f","fa","fit","g","gd","gif","h","hc","his","hm","hr","i","ic","int","jp","k","lgbt","lit","m","mlp","mu","n","news","o","out","p","po","pol","q","qa","qst","r","r9k","s","s4s","sci","soc","sp","t","tg","toy","trash","trv","tv","u","v","vg","vip","vp","vr","w","wg","wsg","wsr","x","y"],
+				"https://archived.moe": ["bant", "3","a","aco","adv","an","asp","b","biz","c","cgl","ck","cm","co","con","d","diy","e","f","fa","fit","g","gd","gif","h","hc","his","hm","hr","i","ic","int","jp","k","lgbt","lit","m","mlp","mu","n","news","o","out","p","po","pol","q","qa","qst","r","r9k","s","s4s","sci","soc","sp","t","tg","toy","trash","trv","tv","u","v","vg","vip","vp","vr","w","wg","wsg","wsr","x","y"],
 				"https://desuarchive.org": ["a","aco","an","c","co","d","fit","gif","his","int","k","m","mlp","qa","r9k","tg","trash","vr","wsg"],
 				"https://boards.fireden.net": ["cm","ic","sci","tg","y"],
 				"https://archiveofsins.com": ["h","hc","hm","r","s","soc"],
