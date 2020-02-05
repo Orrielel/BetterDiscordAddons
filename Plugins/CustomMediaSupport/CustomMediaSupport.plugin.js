@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.2.4",
+		version: "3.2.5",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -48,7 +48,7 @@ const CustomMediaSupport = (function() {
 							if (!data.message.getElementsByClassName(`gallery${galleryKey}`).length) {
 								const entry = script.archive.sadpanda[galleryKey];
 								if (entry && entry.html) {
-									data.message.insertBefore(_createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customSadpanda gallery${galleryKey}`, innerHTML: entry.html}), data.media_container.nextSibling);
+									data.message.insertBefore(_createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customSadpanda gallery${galleryKey}`, innerHTML: entry.html}), data.media_container);
 									scrollElement(data.message.scrollHeight);
 								}
 								else {
@@ -78,7 +78,7 @@ const CustomMediaSupport = (function() {
 											}
 											const galleryKey = `${gallery.gid}_${gallery.token}`,
 											container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customSadpanda gallery${galleryKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j embed cat-${gallery.category.toLowerCase().replace(" ","")}'><div class='grid-1nZz7S'/><table><tr><td colspan='2'><div><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='https://exhentai.org/' target='_blank' rel='noreferrer'>ExHentai</a></div><div class='marginTop4-2BNfKC marginBottom4-2qk4Hy'><a class='embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customIgnore' href='https://exhentai.org/g/${gallery.gid}/${gallery.token}/' target='_blank' rel='noreferrer'>${gallery.title}</a>${gallery.expunged ? " <span class='custom_warning'>(Expunged)</span>" : ""}</div></td></tr><tr><td class='gallery_preview'><img class='image' src='${gallery.thumb}'></td><td class='gallery_info'><table><tr><td>Category:</td><td class='desc cat-${gallery.category.toLowerCase().replace(" ","")}'>${gallery.category}</td></tr><tr><td>Rating:</td><td class='desc'>${gallery.rating}</td></tr><tr><td>Images:</td><td class='desc'>${gallery.filecount}</td></tr><tr><td>Uploaded:</td><td class='desc'>${new Date(gallery.posted*1000).toLocaleString('en-GB')}</td></tr><tr><td>Tags:</td><td><table>${tagsString}</table></td></tr><tr><td>Size:</td><td class='desc'>${mediaSize(gallery.filesize)}</td></tr><tr><td>Torrent:</td><td class='desc'><a class='customIgnore' href='https://exhentai.org/gallerytorrents.php?gid=${gallery.gid}&t=${gallery.token}' target='_blank' rel='noreferrer'>Search</a></td></tr></table></td></tr></table></div></div>`});
-											message.insertBefore(container, media_container.nextSibling);
+											message.insertBefore(container, media_container);
 											// cache embed html in database
 											script.archive.sadpanda[galleryKey] = {html: container.innerHTML, tags: tagsFilter.join(" ")};
 											BdApi.saveData(script.file, "archive", script.archive);
@@ -114,7 +114,7 @@ const CustomMediaSupport = (function() {
 							if (!data.message.getElementsByClassName(`post${threadKey}`).length) {
 								const entry = script.archive.chan[threadKey];
 								if (entry && entry.html) {
-									data.message.insertBefore(_createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: entry.html}), data.media_container.nextSibling);
+									data.message.insertBefore(_createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: entry.html}), data.media_container);
 									scrollElement(data.message.scrollHeight);
 								}
 								else {
@@ -140,7 +140,7 @@ const CustomMediaSupport = (function() {
 													return [reply, media];
 												})(thread.posts) : [0,1],
 												container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j ${isNotSafe ? "board-nsfw" : "board-sfw"} embed'><div class='grid-1nZz7S'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='${boardUrl}' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${isReply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='customIgnore' href='${boardUrl}thread/${postnumber[0]}' target='_blank' rel='noreferrer'>${boardUrl}thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span><span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span><span class='thread_postid'><a class='customIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='customIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='customIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
-												message.insertBefore(container, media_container.nextSibling);
+												message.insertBefore(container, media_container);
 												mediaReplace(message);
 												// cache embed html in database
 												script.archive.chan[threadKey] = {html: container.innerHTML, tags: post.board.shortname};
@@ -246,7 +246,7 @@ const CustomMediaSupport = (function() {
 						if (!data.message.getElementsByClassName(nameKey).length) {
 							const entry = script.archive.steam[nameKey];
 							if (entry && entry.html) {
-								data.message.insertBefore(_createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customSteam ${nameKey}`, innerHTML: entry.html}), data.media_container.nextSibling);
+								data.message.insertBefore(_createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customSteam ${nameKey}`, innerHTML: entry.html}), data.media_container);
 								scrollElement(data.message.scrollHeight);
 							}
 							else {
@@ -267,7 +267,7 @@ const CustomMediaSupport = (function() {
 									else if (!message.getElementsByClassName("customMediaError").length) {
 										container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia steam ${nameKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='customMediaError'>That item does not exist. It may have been removed by the author.</div></div>`});
 									}
-									message.insertBefore(container, media_container.nextSibling);
+									message.insertBefore(container, media_container);
 									mediaReplace(message);
 									scrollElement(message.scrollHeight);
 								});
@@ -1055,7 +1055,7 @@ const CustomMediaSupport = (function() {
 			}
 		}
 		else {
-			message.insertBefore(container, media_container.nextSibling);
+			message.insertBefore(container, media_container);
 		}
 		// replace original accessory previews if they exist
 		if ((fileReplace || (fileMedia == "video" || fileMedia == "audio")) && !previewReplace) {
