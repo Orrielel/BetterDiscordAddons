@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.2.5",
+		version: "3.2.6",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -32,7 +32,7 @@ const CustomMediaSupport = (function() {
 		},
 		media: {
 			types: {
-				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", webp: "video", mov: "video",
+				mp4: "video", m4v: "video", ogv: "video", ogm: "video", webm: "video", mov: "video",
 				mp3: "audio", ogg: "audio", oga: "audio", wav: "audio", wma: "audio", m4a: "audio", aac: "audio", flac: "audio",
 				pdf: "iframe",
 				jfif: "img"
@@ -635,7 +635,7 @@ const CustomMediaSupport = (function() {
 			}
 			modal.remove();
 		},
-		modalParent = document.getElementById("app-mount").lastElementChild.lastElementChild;
+		modalParent = document.getElementsByClassName("popouts-2bnG9Z")[0].nextElementSibling;
 		// modify modalContent if there's relevant data
 		if (data) {
 			modalContent.appendChild(_createElement("div", {className: "description-3_Ncsb userSelectText-1o1dQ7 customModalText", textContent: `${data.fileTitle}${data.fileSize ? ` - ${data.fileSize}` : ""}${data.fileRes ? ` - ${data.fileRes}` : ""}`}));
@@ -651,11 +651,11 @@ const CustomMediaSupport = (function() {
 		if (button) {
 			button.addEventListener('click', function() {removeModal(modal);}, false);
 		}
-		if (modalParent.classList.contains("layerContainer-yqaFcK")) {
-			modalParent.previousElementSibling.appendChild(modal);
+		if (modalParent){
+			modalParent.appendChild(modal);
 		}
 		else {
-			modalParent.appendChild(modal);
+			log("error", "modal insertion", modalContent);
 		}
 	},
 	mediaCheck = function(message, fileFilter) {
