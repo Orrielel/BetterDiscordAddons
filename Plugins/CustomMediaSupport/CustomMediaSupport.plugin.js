@@ -1368,9 +1368,9 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
-					if (node.closest(".chatContent-a9vAAp")) {
-						console.log(node.classList[0], node);
-					}
+					//if (node.closest(".chatContent-a9vAAp")) {
+					//	console.log(node.classList[0], node);
+					//}
 					const name = node.classList[0];
 					switch(name) {
 						case "chatContent-a9vAAp":
