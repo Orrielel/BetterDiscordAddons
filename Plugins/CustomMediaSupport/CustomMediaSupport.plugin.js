@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.2.6",
+		version: "3.2.7",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -139,7 +139,7 @@ const CustomMediaSupport = (function() {
 													}
 													return [reply, media];
 												})(thread.posts) : [0,1],
-												container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j ${isNotSafe ? "board-nsfw" : "board-sfw"} embed'><div class='grid-1nZz7S'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='${boardUrl}' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${isReply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='customIgnore' href='${boardUrl}thread/${postnumber[0]}' target='_blank' rel='noreferrer'>${boardUrl}thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span><span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span><span class='thread_postid'><a class='customIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='customIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'>${post.comment_processed}</td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='customIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
+												container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customChan post${threadKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j ${isNotSafe ? "board-nsfw" : "board-sfw"} embed'><div class='grid-1nZz7S'><table><tr><td colspan='4'><div class='thread_head'><a class='embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG customIgnore' href='${boardUrl}' target='_blank' rel='noreferrer'>4chan /${post.board.shortname}/ - ${post.board.name}</a><table class='thread_data'><tr><td rowspan='2'><span class='thread_posttype'>${isReply ? "Reply" : "OP"}</span></td><td>Replies:</td><td>${counts[0]}</td></tr><tr><td>Images:</td><td>${counts[1]}</td></tr></table></div><div class='thread_link marginTop4-2BNfKC '>Thread: <a class='customIgnore' href='${boardUrl}thread/${postnumber[0]}' target='_blank' rel='noreferrer'>${boardUrl}thread/${postnumber[0]}</a><span class='size14-3iUx6q weightMedium-2iZe9B custom_warning'>${post.deleted == "1" ? "(Deleted)" : post.locked == "1" ? "(Locked)" : ""}</span></div><div class='thread_info marginTop4-2BNfKC marginBottom4-2qk4Hy'>${post.title_processed ? `<span class='thread_title' title='${post.title_processed}'>${post.title_processed}</span>` : ""}<span class='thread_creator'>${post.name_processed}</span><span class='thread_time'>${new Date(post.timestamp*1000).toLocaleString("en-GB")}</span><span class='thread_postid'><a class='customIgnore' href='${href}' target='_blank' rel='noreferrer'>No.${post.num}</a></span></div></td></tr><tr><td class='thread_preview'>${post.media && post.media.thumb_link ? `<a class='customIgnore' href='${post.media.remote_media_link}' target='_blank' rel='noreferrer'><img class='image' src='${post.media.thumb_link}'></a>` : ""}</td><td class='thread_comment' colspan='3'><div class='thread_comment_scroller scrollerWrap-2lJEkd scrollerThemed-2oenus themeGhostHairline-DBD-2d scrollerFade-1Ijw5y'><div class='scroller-3sQKXg scroller-2FKFPG'>${post.comment_processed}</div></div></td></tr><tr><td class='thread_foot' colspan='4'>Data from <a class='customIgnore' href='${archive}' target='_blank' rel='noreferrer'>${archive}</a></td></tr></table></div></div>`});
 												message.insertBefore(container, media_container);
 												mediaReplace(message);
 												// cache embed html in database
@@ -500,6 +500,8 @@ const CustomMediaSupport = (function() {
 .customChan .thread_comment {background-color: hsla(0,0%,0%,0.15); border-radius: 5px; padding: 5px 5px 10px; width: 100%; word-break: break-word;}
 .customChan .thread_comment a {word-break: break-word;}
 .customChan .thread_comment br {display: none;}
+.customChan .thread_comment .thread_comment_scroller {max-height: 280px;}
+.customChan .thread_comment .thread_comment_scroller .scroller-2FKFPG {overflow-y: auto;}
 .customChan .thread_foot {padding: 10px 2px 0;}
 .custom_warning {color: #F32323;}
 /* steam workshop previews */
@@ -613,7 +615,7 @@ const CustomMediaSupport = (function() {
 	log = function(method, title, data) {
 		// logging function
 		if (script.settings.debug || method == "error") {
-			console[method](`%c[${script.file}]%c ${title}`, "color: purple; font-weight: bold;", "", new Date().toLocaleTimeString("en-GB"), data ? data : "");
+			console[method](`%c[${script.file}]%c ${new Date().toLocaleTimeString("en-GB")}: ${title}`, "color: purple; font-weight: bold;", "", data ? data : "");
 		}
 	},
 	scrollElement = function(scrollDistance = 0, parentClass = "messages-3amgkR", forceScroll = false) {
@@ -651,7 +653,7 @@ const CustomMediaSupport = (function() {
 		if (button) {
 			button.addEventListener('click', function() {removeModal(modal);}, false);
 		}
-		if (modalParent){
+		if (modalParent) {
 			modalParent.appendChild(modal);
 		}
 		else {
@@ -1366,9 +1368,9 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
-					//if (node.closest(".chatContent-a9vAAp")) {
-					//	console.log(node.classList[0], node);
-					//}
+					if (node.closest(".chatContent-a9vAAp")) {
+						console.log(node.classList[0], node);
+					}
 					const name = node.classList[0];
 					switch(name) {
 						case "chatContent-a9vAAp":
