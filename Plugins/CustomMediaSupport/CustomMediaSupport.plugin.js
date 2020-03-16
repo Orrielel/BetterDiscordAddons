@@ -7,7 +7,7 @@ const CustomMediaSupport = (function() {
 	const script = {
 		name: "Custom Media Support",
 		file: "CustomMediaSupport",
-		version: "3.2.7",
+		version: "3.2.8",
 		author: "Orrie",
 		desc: "Makes Discord better for shitlords, entities, genderfluids and otherkin, by adding extensive support for media embedding and previews of popular sites with pictures",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/CustomMediaSupport",
@@ -23,8 +23,8 @@ const CustomMediaSupport = (function() {
 			audio:  "wrapperAudio-1jDe0Q wrapper-2TxpI8",
 			img:    "imageWrapper-2p5ogY noScroll-3xWe_g",
 			iframe: "imageWrapper-2p5ogY noScroll-3xWe_g",
-			messages: ".markupRtl-3M0hmN > a:not(.customIgnore), .container-1ov-mD:not(.media-replace) .metadataDownload-1fk90V, .container-1ov-mD:not(.media-replace) .fileNameLink-9GuxCo",
-			metadata: ".container-1ov-mD:not(.media-replace) .metadataDownload-1fk90V:not(.customIgnore), .container-1ov-mD:not(.media-replace) .embedVideo-3nf0O9:not(.customIgnore)"
+			messages: ".da-markup > a:not(.customIgnore), .da-container:not(.media-replace) .da-metadataDownload",
+			metadata: ".da-container:not(.media-replace) .da-metadataDownload:not(.customIgnore), .da-container:not(.media-replace) .embedVideo-3nf0O9:not(.customIgnore)"
 		},
 		headers: {
 			imgur: {"Authorization": "Client-ID b975f50eb16a396"},
@@ -160,27 +160,21 @@ const CustomMediaSupport = (function() {
 				},
 				"imgur.com": {
 					data({href, message, fileMedia, fileLink}) {
-						const check = message.querySelector(`a.embedTitleLink-1Zla9e[href='${href.replace("//m.","//")}']`);
-						if (check && check.closest(".embedContent-3fnYWm").nextElementSibling && /\.jpg|\.jpeg|\.png|\.gif$/.test(check.closest(".embedContent-3fnYWm").nextElementSibling.getAttribute("href"))) {
-							return {fileMedia: "ignore", fileReplace: false, href};
+						const video = message.getElementsByTagName("video")[0];
+						if (video) {
+							const source = video.firstElementChild ? video.firstElementChild.src : video.src,
+							hrefSplit = source.split("/");
+							return {
+								fileMedia: script.media.types[source.match(/\w+$/)[0].toLowerCase()],
+								fileTitle: hrefSplit[hrefSplit.length-1],
+								fileReplace: true, href: source, hrefSplit
+							};
 						}
-						else {
-							const video = message.getElementsByTagName("video")[0];
-							if (video) {
-								const source = video.firstElementChild ? video.firstElementChild.src : video.src,
-								hrefSplit = source.split("/");
-								return {
-									fileMedia: script.media.types[source.match(/\w+$/)[0].toLowerCase()],
-									fileTitle: hrefSplit[hrefSplit.length-1],
-									fileReplace: true, href: source, hrefSplit
-								};
-							}
-							// dirty fix for discord previews
-							if (/gifv/.test(fileLink)) {
-								const parsedLink = fileLink.replace("https://i.","").replace(".gifv","");
-								if (!script.archive.filter.includes(parsedLink)) {
-									script.archive.filter.push(parsedLink);
-								}
+						// dirty fix for discord previews
+						if (/gifv/.test(fileLink)) {
+							const parsedLink = fileLink.replace("https://i.","").replace(".gifv","");
+							if (!script.archive.filter.includes(parsedLink)) {
+								script.archive.filter.push(parsedLink);
 							}
 						}
 						return {fileMedia, fileReplace: false, href};
@@ -248,6 +242,7 @@ const CustomMediaSupport = (function() {
 							if (entry && entry.html) {
 								data.message.insertBefore(_createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customSteam ${nameKey}`, innerHTML: entry.html}), data.media_container);
 								scrollElement(data.message.scrollHeight);
+								mediaReplace(data.message);
 							}
 							else {
 								data.apiData = `itemcount=1&publishedfileids[0]=${fileKey}&format=json`;
@@ -255,27 +250,26 @@ const CustomMediaSupport = (function() {
 									// fetch knitting image board information
 									const file = response.publishedfiledetails[0];
 									let container;
-									if (file.result == 1 && file.consumer_app_id == file.creator_app_id) {
+									if (file.result == 1 && file.consumer_app_id) {
 										const tags = file.tags.map(({tag}) => tag),
-										game = script.workshop[file.creator_app_id] ? script.workshop[file.creator_app_id] : "Unspecified Game";
+										game = script.workshop[file.consumer_app_id] ? script.workshop[file.consumer_app_id] : "Unspecified Game";
 										tags.unshift(game);
-										container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customSteam ${nameKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j embed'><div class='grid-1nZz7S'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.creator_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop - ${game}</a></div><div class='marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink customIgnore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d marginTop4-2BNfKC'><div class='scroller-2FKFPG embedDescription-1Cuq9a marginTop4-2BNfKC markup-2BOw-j textParserProcessed'>${file.description.replace(/\[[\w=:/.?&+*]+\]/g,"")}</div></div><div class='embedFields-2IPs5Z embedFields-even marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z embedFields-even marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div><div class="embedWrapper-3AbfJJ embedMedia-1guQoW embedImage-2W1cML"><img class='image' src='${file.preview_url}'></div><div class='embedFields-2IPs5Z embedFields-minMax marginTop4-2BNfKC'><div class='embedFieldName-NFrena size14-3iUx6q weightMedium-2iZe9B'>Tags</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG marginLeft4-3VaXdt textParserProcessed'>${tags.join(", ")}</div></div></div></div>`});
+										container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia customSteam ${nameKey}`, innerHTML: `<div class='embedWrapper-3AbfJJ embedFull-2tM8-- embed-IeVjo6 markup-2BOw-j embed'><div class='grid-1nZz7S'><div><a tabindex='0' class='anchor-3Z-8Bb embedProviderLink-2Pq1Uw embedLink-1G1K1D embedProvider-3k5pfl size12-3R0845 weightNormal-WI4TcG' href='https://steamcommunity.com/app/${file.consumer_app_id}/workshop/' rel='noreferrer noopener' target='_blank' role='button'>Steam Workshop - ${game}</a></div><div class='marginTop4-2BNfKC'><a tabindex='0' class='anchor-3Z-8Bb embedTitleLink-1Zla9e embedLink-1G1K1D embedTitle-3OXDkz size14-3iUx6q weightMedium-2iZe9B customMediaLink customIgnore' href='https://steamcommunity.com/sharedfiles/filedetails/?id=${file.publishedfileid}' rel='noreferrer noopener' target='_blank' role='button'>${file.title}</a></div><div class='scrollerWrap-2lJEkd embedInner-1-fpTo scrollerThemed-2oenus themeGhostHairline-DBD-2d marginTop4-2BNfKC'><div class='scroller-2FKFPG embedDescription-1Cuq9a marginTop4-2BNfKC markup-2BOw-j textParserProcessed'>${file.description.replace(/\[[\w=:/.?&+*]+\]/g,"")}</div></div><div class='embedFields-2IPs5Z embedFields-even marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Subscriptions</div><div class='embedFieldValue-nELq2s textParserProcessed'>${file.subscriptions}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Size</div><div class='embedFieldValue-nELq2s textParserProcessed'>${mediaSize(file.file_size)}</div></div></div><div class='embedFields-2IPs5Z embedFields-even marginTop4-2BNfKC'><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Time Created</div><div class='embedFieldValue-nELq2s textParserProcessed'>${new Date(file.time_created*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_created*1000).toLocaleTimeString("en-GB")}</div></div><div class='embedField-1v-Pnh marginTop4-2BNfKC embedFieldInline-3-e-XX'><div class='embedFieldName-NFrena marginBottom4-2qk4Hy size14-3iUx6q weightMedium-2iZe9B'>Last Updated</div><div class='embedFieldValue-nELq2s textParserProcessed'>${new Date(file.time_updated*1000).toLocaleDateString("en-GB")} @ ${new Date(file.time_updated*1000).toLocaleTimeString("en-GB")}</div></div></div><div class="embedWrapper-3AbfJJ embedMedia-1guQoW embedImage-2W1cML"><img class='image' src='${file.preview_url}'></div><div class='embedFields-2IPs5Z embedFields-minMax marginTop4-2BNfKC'><div class='embedFieldName-NFrena size14-3iUx6q weightMedium-2iZe9B'>Tags</div><div class='embedFieldValue-nELq2s size14-3iUx6q weightNormal-WI4TcG marginLeft4-3VaXdt textParserProcessed'>${tags.join(", ")}</div></div></div></div>`});
 										// cache embed html in database
 										script.archive.steam[nameKey] = {html: container.innerHTML, tags: tags.join(" ")};
 										BdApi.saveData(script.file, "archive", script.archive);
+										message.insertBefore(container, media_container);
+										mediaReplace(message);
+										scrollElement(message.scrollHeight);
 									}
-									else if (!message.getElementsByClassName("customMediaError").length) {
-										container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia steam ${nameKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='customMediaError'>That item does not exist. It may have been removed by the author.</div></div>`});
-									}
-									message.insertBefore(container, media_container);
-									mediaReplace(message);
-									scrollElement(message.scrollHeight);
+									//else if (!message.getElementsByClassName("customMediaError").length) {
+									//	container = _createElement("div", {className: `container-1ov-mD container-1e22Ot customMedia steam ${nameKey}`, innerHTML: `<div class='embed-IeVjo6 flex-1O1GKY embed'><div class='customMediaError'>That item does not exist. It may have been removed by the author.</div></div>`});
+									//}
 								});
 							}
 							if (!script.archive.filter.includes(data.fileFilter)) {
 								script.archive.filter.push(data.fileFilter);
 							}
-							mediaReplace(data.message);
 						}
 					}
 				},
@@ -312,9 +306,14 @@ const CustomMediaSupport = (function() {
 						}
 					}
 				},
+				"voca.ro": {
+					data({href, hrefSplit}) {
+						return {fileMedia: "audio", fileReplace: false, href: `https://media.vocaroo.com/mp3/${hrefSplit[3]}`};
+					}
+				},
 				"vocaroo.com": {
 					data({href, hrefSplit}) {
-						return {fileMedia: "audio", fileReplace: false, href: /\/i\//.test(href) ? `https://vocaroo.com/media_command.php?media=${hrefSplit[4]}&command=download_webm` : false};
+						return {fileMedia: "audio", fileReplace: false, href: /\/i\//.test(href) ? `https://old.vocaroo.com/media_command.php?media=${hrefSplit[4]}&command=download_mp3` : false};
 					}
 				},
 				"wotlabs.net": {
@@ -335,7 +334,7 @@ const CustomMediaSupport = (function() {
 					}
 				}
 			},
-			whitelist: ["4chan.org", "exhentai.org", "gfycat.com", "vocaroo.com", "pastebin.com", "wotlabs.net", "wot-life.com", "facebook.com", "instagram.com", "imgur.com", "streamable.com", "steampowered.com", "steamcommunity.com", "ifunny.co"],
+			whitelist: ["4chan.org", "exhentai.org", "gfycat.com", "voca.ro", "vocaroo.com", "pastebin.com", "wotlabs.net", "wot-life.com", "facebook.com", "instagram.com", "imgur.com", "streamable.com", "steampowered.com", "steamcommunity.com", "ifunny.co"],
 			blacklist: [], // "archive.org"
 			replace: ["steampowered.com"],
 			clone: {
@@ -345,6 +344,7 @@ const CustomMediaSupport = (function() {
 			}
 		},
 		workshop: {
+			"550": "Left 4 Dead 2",
 			"203770": "Crusader Kings II",
 			"236850": "Europa Universalis IV",
 			"281990": "Stellaris",
@@ -406,7 +406,7 @@ const CustomMediaSupport = (function() {
 .customMedia.customAudio .audioControls-2HsaU6 {vertical-align: middle; width: 25vw; min-width: 500px;}
 .customMedia.customImg img {cursor: pointer; min-height: 50px; max-width: 400px; max-height: 300px;}
 .customMedia.customImg .imageWrapper-2p5ogY img {position: static;}
-.customMedia.customVideo video {align-self: center; cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; vertical-align: middle; width: auto; max-width: 25vw; max-height: 25vh; min-width: 300px;}
+.customMedia.customVideo video {align-self: center; cursor: pointer; border-radius: 3px 3px 0 0; margin: 0; vertical-align: middle; width: auto; max-width: 20vw; max-height: 25vh; min-width: 300px;}
 .customMedia.customVideo video::-webkit-media-controls {padding-top: 32px;}
 .customMedia.customVideo.customMediaHorizontal video {max-width: calc(100vw - 740px); min-height: 35vh;}
 .customMedia.customVideo.customMediaVertical video {height: 60vh; max-width: 100%; max-height: unset;}
@@ -731,7 +731,7 @@ const CustomMediaSupport = (function() {
 		// main media function -- checks every anchor element in messages
 		if (!script.check.media) {
 			script.check.media = true;
-			let parent = type == "metadata" ? node.closest(".message-2qnXI6") : node;
+			let parent = type == "metadata" ? node.closest(".da-message") : node;
 			const links = parent ? parent.querySelectorAll(script.classes[type]) : false;
 			log("info", `mediaConvert - ${type} - ${name}`, {parent, links});
 			for (let _l=links.length; _l--;) {
@@ -743,7 +743,7 @@ const CustomMediaSupport = (function() {
 					const fileLink = link.tagName == "VIDEO" || link.tagName == "SOURCE" ? link.getAttribute("src") : link.getAttribute("href"),
 					href = decodeURI(encodeURI((/\/external\//.test(fileLink) && fileLink.match(/(https\/[\w-./\\_]+)/g) ? fileLink.match(/(https\/[\w-./\\_]+)/g)[0].replace("https/","https://") : fileLink).replace("http:", "https:").replace("www.","").replace(".gifv", ".mp4"))),
 					hrefSplit = href.split("/"),
-					message = link.closest(".container-3FojY8"),
+					message = link.closest(".da-message"),
 					fileType = href.match(/\.(\w+$)/) ? href.match(/\.(\w+$)/)[1] : false;
 					let hostName = hrefSplit[2].match(/([\w\-]+\.\w+)$/) ? hrefSplit[2].match(/([\w\-]+\.\w+)$/)[0] : false;
 					if (hostName && script.media.clone[hostName]) {
@@ -1187,7 +1187,7 @@ const CustomMediaSupport = (function() {
 		// parse messages for text conversion
 		if (!script.check.textParser) {
 			script.check.textParser = true;
-			const messages = node.classList.contains("markup-2BOw-j") ? [node] : node.querySelectorAll(".markup-2BOw-j:not(.textParserProcessed)");
+			const messages = node.classList.contains("da-markup") ? [node] : node.querySelectorAll(".da-markup:not(.textParserProcessed)");
 			log("info", `textParser - ${name}`, messages);
 			for (let _m=messages.length; _m--;) {
 				const elem = messages[_m];
@@ -1368,34 +1368,35 @@ const CustomMediaSupport = (function() {
 			if (addedNodes.length > 0 && document.getElementsByClassName("messages-3amgkR").length) {
 				const node = addedNodes[0];
 				if (node.nodeType == 1 && node.className) {
-					//if (node.closest(".chatContent-a9vAAp")) {
-					//	console.log(node.classList[0], node);
+					//if (node.closest(".da-message")) {
+					//	console.log(`observer ${node.classList[0]}`, node);
 					//}
 					const name = node.classList[0];
-					switch(name) {
-						case "chatContent-a9vAAp":
-						case "chat-3bRxxu":
+					switch(true) {
+						case node.classList.contains("da-chatContent"):
+						case node.classList.contains("da-chat"):
 							if (!document.getElementsByClassName("customMenuIcon")[0]) {
 								insertCustomMenu("customMenuIcon", `${script.name} Archive`);
 							}
 							/* falls through */
-						case "containerCozy-336-Cz":
-						case "message-2qnXI6":
+						case node.classList.contains("da-message"):
 							mediaConvert("messages", node, name);
 							mediaReplace(node);
 							textParser(node, name);
 							break;
-						case "metadataIcon-2FyCKU":
-						case "iconPlay-2kgvwV":
-						case "gifTag-31zFY8":
+						case node.classList.contains("metadataIcon-2FyCKU"):
+						case node.classList.contains("iconPlay-2kgvwV"):
+						case node.classList.contains("da-gifTag"):
+						case node.classList.contains("gifFavoriteButton-2SKrBk"):
+						case node.classList.contains("da-wrapperPaused"):
 							mediaConvert("metadata", node, name);
 							mediaReplace(node);
 							break;
-						case "wrapperPaused-19pWuK":
-						case "embedGIFV-3_ebID":
+						case node.classList.contains("embedGIFV-3_ebID"):
 							mediaReplace(node);
 							break;
-						case "markup-2BOw-j":
+						case node.classList.contains("da-markup"):
+						case node.classList.contains("da-edited"):
 							textParser(node, name);
 							break;
 					}
