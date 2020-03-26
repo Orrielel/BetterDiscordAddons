@@ -7,16 +7,16 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.5.7",
+		version: "1.5.8",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
 		raw: "https://raw.githubusercontent.com/Orrielel/BetterDiscordAddons/master/Plugins/BetterImagePopups/BetterImagePopups.plugin.js",
-		discord: "https://discord.gg/YEZkpkj",
-		settings: {fullRes: true, fileSize: false, onClick: false, minSize: false, height: "auto", width: "auto", tooltips: false, debug: false},
+		settings: {fullRes: true, zooming: true, fileSize: false, onClick: false, minSize: false, height: "auto", width: "auto", tooltips: false, debug: false},
 		settingsMenu: {
 			//        localized                  type     description
-			fullRes:  ["Full Resolution Images",  "check", "Replaces images with full resolution.<br>NOTE: Zooming is always possible. Default is 25% per click.<br>Use CTRL (100%), SHIFT (50%) and ALT (200%) to manipulate the zooming clicks."],
+			fullRes:  ["Full Resolution Images",  "check", "Replaces images with full resolution"],
+			zooming:  ["Image Zooming",           "check", "Enables image zooming on click; Default is 25% per click.<br>Use CTRL (100%), SHIFT (50%) and ALT (200%) to manipulate the zooming clicks."],
 			fileSize: ["Get Filesize",            "check", "Get image filesize -- Loads the image through a proxy"],
 			onClick:  ["Load on Click",           "check", "Only use full resolution when clicking the image -- disables zoom when not using full resolution"],
 			minSize:  ["Minimum Size for Images", "check", "Use a minimum height/width for images (use 'auto' for no minimum limit)"],
@@ -191,36 +191,38 @@ const BetterImagePopups = (function() {
 			]));
 			container.classList.add("orrie-tooltip", "orrie-relative");
 			container.insertBefore(_createElement("div", {className: "bip-description description-3_Ncsb userSelectText-1o1dQ7", innerHTML: `<span id='bip-info'></span><span id='bip-size' class='bip-toggled'></span><span id='bip-scale' class='bip-toggled'></span><span id='bip-zoom' class='bip-toggled'>Zoomed to <span class='bip-zoom-width'></span>px × <span class='bip-zoom-height'></span>px</span><span id='bip-error' class='bip-toggled'></span></span>`}), container.lastElementChild);
-			if (!script.settings.tooltips) {
+			if (!script.settings.tooltips && script.settings.zooming) {
 				container.appendChild(_createElement("div", {className: "tooltip-2QfLtc tooltipBrand-g03Nz8 tooltipTop-XDDSxx", innerHTML: `<div class='tooltipPointer-3ZfirK'></div>${script.settings.fullRes && script.settings.onClick ? "Click the image to load full resolution, then click the image to zoom": "Click the image to zoom"}`}));
 			}
 			img.classList.add("bip-center");
 			img.style.cssText = "";
-			img.onclick = function() {
-				if (img.fullRes) {
-					this.classList.toggle("bip-center");
-					wrapper.classList.toggle("bip-scroller");
-					wrapper.classList.toggle("scroller-2FKFPG");
-					container.classList.toggle("scrollerWrap-2lJEkd");
-					node.classList.toggle("bip-scaling");
-					document.getElementById("bip-zoom").classList.toggle("bip-toggled");
-					if (img.scaled) {
-						document.getElementById("bip-scale").classList.toggle("bip-toggled");
+			if (script.settings.zooming) {
+				img.onclick = function() {
+					if (img.fullRes) {
+						this.classList.toggle("bip-center");
+						wrapper.classList.toggle("bip-scroller");
+						wrapper.classList.toggle("scroller-2FKFPG");
+						container.classList.toggle("scrollerWrap-2lJEkd");
+						node.classList.toggle("bip-scaling");
+						document.getElementById("bip-zoom").classList.toggle("bip-toggled");
+						if (img.scaled) {
+							document.getElementById("bip-scale").classList.toggle("bip-toggled");
+						}
+						BdApi.clearCSS(`${script.file}-zoom`);
+						BdApi.injectCSS(`${script.file}-zoom`, `
+							.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%}
+							.bip-zoom-level:after{content: '${script.zoom}%';}
+							.bip-zoom-width:after{content: '${img.width*(script.zoom/100)}';}
+							.bip-zoom-height:after{content: '${img.height*(script.zoom/100)}';}
+						`);
 					}
-					BdApi.clearCSS(`${script.file}-zoom`);
-					BdApi.injectCSS(`${script.file}-zoom`, `
-						.bip-container .imageWrapper-2p5ogY.bip-scroller img {zoom: ${script.zoom}%}
-						.bip-zoom-level:after{content: '${script.zoom}%';}
-						.bip-zoom-width:after{content: '${img.width*(script.zoom/100)}';}
-						.bip-zoom-height:after{content: '${img.height*(script.zoom/100)}';}
-					`);
-				}
-				else {
-					if (script.settings.fullRes && script.settings.onClick) {
-						imageLoadHandler(img, fullSrc, proxy);
+					else {
+						if (script.settings.fullRes && script.settings.onClick) {
+							imageLoadHandler(img, fullSrc, proxy);
+						}
 					}
-				}
-			};
+				};
+			}
 			img.onload = function() {
 				const info_id = document.getElementById("bip-info");
 				if (info_id) {
@@ -335,7 +337,6 @@ const BetterImagePopups = (function() {
 				_createElement("div", {className: "plugin-controls"}, settingsFragment)
 			]),
 			_createElement("div", {className: "flex-1O1GKY justifyAround-1n1pnI"}, [
-				_createElement("a", {href: script.discord, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Support (Discord)</button>"}),
 				_createElement("a", {href: script.url, target: "_blank", rel:"noreferrer", innerHTML: "<button type='button' class='button-38aScr lookFilled-1Gx00P colorBrand-3pXr91 sizeSmall-2cSMqn grow-q77ONN'>Source (GitHub)</button>"})
 			])
 		]);
