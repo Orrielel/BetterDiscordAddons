@@ -7,7 +7,7 @@ const BetterImagePopups = (function() {
 	const script = {
 		name: "Better Image Popups",
 		file: "BetterImagePopups",
-		version: "1.5.8",
+		version: "1.5.9",
 		author: "Orrie",
 		desc: "Improves the image popups with full resolution images (if activated) and zooming from native size when clicking on them",
 		url: "https://github.com/Orrielel/BetterDiscordAddons/tree/master/Plugins/BetterImagePopups",
@@ -28,7 +28,7 @@ const BetterImagePopups = (function() {
 		css: {
 			script:`
 .bip-container {text-align: center;}
-.bip-container .scrollerWrap-2lJEkd {min-height: unset;}
+.bip-container .scrollerWrap-2lJEkd {min-height: unset; max-width: 100vh;	max-height: 100vh; display: inline;}
 .bip-container .imageWrapper-2p5ogY img {position: static;}
 .bip-container .spinner-2enMB9 {position: absolute;}
 .bip-container .bip-scroller {display: flex; align-items: self-start; margin-bottom: 6px; max-height: calc(100vh - 220px); max-width: calc(100vw - 220px); overflow: auto;}
@@ -46,7 +46,7 @@ const BetterImagePopups = (function() {
 .bip-container .orrie-tooltip .tooltipTop-XDDSxx {bottom: calc(100% + 10px);}
 .bip-container .orrie-tooltip .tooltipBottom-3ARrEK {top: 100%;}
 .bip-container.bip-scaling .scrollerWrap-2lJEkd .tooltip {display: none;}
-.bip-container .downloadLink-1ywL9o {align-self: unset; text-transform: capitalize;}
+.bip-container .downloadLink-1ywL9o {align-self: unset; text-transform: capitalize; position: relative;}
 .bip-container .bip-seperator {margin: 0 5px;}
 .bip-container span.downloadLink-1ywL9o {display: none;}
 
@@ -431,7 +431,7 @@ const BetterImagePopups = (function() {
 		observer({addedNodes}) {
 			if (addedNodes.length > 0) {
 				const node = addedNodes[0];
-				if (node.classList && node.classList.contains("modal-3c3bKg")) {
+				if (node.classList && node.classList.contains("layer-2KE1M9")) {
 					const wrapper = node.getElementsByClassName("imageWrapper-2p5ogY")[0];
 					if (wrapper && !wrapper.classList.contains("embedVideoImageComponent-34z3di") && !node.getElementsByClassName("uploadModal-2ifh8j")[0]) {
 						BdApi.clearCSS(`${script.file}-zoom`);
